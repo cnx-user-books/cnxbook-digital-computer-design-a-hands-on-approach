@@ -1,0 +1,1052 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Binary Arithmetic</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78079</md:content-id>
+  <md:title>Binary Arithmetic</md:title>
+  <md:abstract>This chapter overviews binary arithmetic including finite precision arithmetic for addition, subtraction, multiplication, and division. One’s and two’s complement representations for negative numbers in digital systems are introduced. Hardware adder is given as an example for fundamental digital computing.</md:abstract>
+  <md:uuid>9bca5916-0866-4a52-91e2-c803b344b1c6</md:uuid>
+</metadata>
+
+<content>
+    <para id="import-auto-idm398063952"><emphasis effect="bold">Binary Arithmetic</emphasis>
+    </para><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm788634032" fo:font-style="normal" fo:font-weight="normal">Binary arithmetic is used in digital systems mainly because the numbers (decimal and floating-point numbers) are stored in binary format in most computer systems. All arithmetic operations such as addition, subtraction, multiplication, and division are done in binary representation of numbers. It is necessary to understand the binary number representation to figure out binary arithmetic in digital computers. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm595662304" fo:font-style="normal" fo:font-weight="normal">In most ALU (arithmetic logic unit) hardware, the operated numbers are stored in a fixed number of bits, a typical value between 6 and 16 decimal digits. Therefore, there is a precision limit or precision error performing binary arithmetic on computers. This binary arithmetic is called fixed-precision arithmetic. This contrasts to arbitrary-precision arithmetic, such as Java BigInteger, a technique that calculations are performed on numbers whose precision is only dependent on the amount of memory available in the system. In other words, a number could occupy memory space as large as possible if there is a need for higher precision. We will focus on fixed-precision arithmetic from now on.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm609541888" fo:font-style="normal" fo:font-weight="normal">Since the precision of numbers stored in the computer is fixed, the size of numbers is fixed and determined when the computer is built. A common integer size found in computer systems is 8, 16, 32, and 64 bits. Once the computer is built, the size of numbers is fixed and may not be changed. Therefore, as a programmer who develops computer programs running on the computer architecture, it makes sense to know what the precision limit is for the underlying architecture. This way some precision errors such as rounding error may be avoided. For example,  in integer precision is equal to  not . If  is expected, the program has to be rewritten in a way to take care of the precision. To remedy this, most programming languages offer type conversions. To get  in the previous example, simply rewrite it as . The  will tell a compiler to allows float point space for it and assign floating point arithmetic, instead of integer arithmetic. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm647436208" fo:font-style="normal" fo:font-weight="normal">We will discuss binary arithmetic from the logic design perspective in the following sections. Quite often that there are more than one logic design for a binary operation, a “better one” is always a best choice. The better one means the complexity is manageable and the logic circuit is simple. In hardware domain, simply is good and simply normally leads to better performance. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm394788832" fo:font-style="normal" fo:font-weight="normal">
+      <emphasis effect="bold">Finite Precision Arithmetic</emphasis>
+    </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm545586048" fo:font-style="normal" fo:font-weight="normal">Consider operations are limited to 2-digit non-negative decimal integers. So the numbers are 0, 1, 2, …, 99, and denoted as . The result of an operation among the numbers has to be in the set . Otherwise, the operation is invalid. There a valid operation is defined as follows.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm656650000" fo:font-style="normal" fo:font-weight="normal">, where , and  is an operator. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm436670800" fo:font-style="normal" fo:font-weight="normal">So a valid operation will map two numbers in the set to another number in the set. The operator can be addition, subtraction, multiplication, division, and the like. Taking addition as an example,  is a valid operation because the result  is still in the set. However,  is not, because the result  is not in the set and only 00 is. In a more precise way, a valid addition over the set  is as follows.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm585862848" fo:font-style="normal" fo:font-weight="normal"> where  and . </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm593039808" fo:font-style="normal" fo:font-weight="normal">Since  are non-negative, the result of adding  and  is also non-negative. Thus, we only need to limit the result to be less than 100. So it is still in the set .</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm584354640" fo:font-style="normal" fo:font-weight="normal">Another concern is the carry. In the 2-digit non-negative decimal system, adding the first digit of two numbers may be larger than 9, say . In that case we write down  as the result for this position, and keep one as the carry for the next position (to the left). Table 1 illustrates a decimal addition example of  . </para>
+    <para id="import-auto-idm347656512">Table 1 An Example of Carry for a Decimal Addition</para>
+    <table id="eip-795" summary="table 1">
+<tgroup cols="4"><tbody>
+  <row>
+    <entry>Carry</entry>
+    <entry>1</entry>
+    <entry/>
+    <entry/>
+  </row>
+  <row>
+    <entry/>
+    <entry/>
+    <entry>3</entry>
+    <entry>4</entry>
+  </row>
+  <row>
+    <entry>+</entry>
+    <entry/>
+    <entry>1</entry>
+    <entry>8</entry>
+  </row>
+  <row>
+    <entry/>
+    <entry/>
+    <entry>5</entry>
+    <entry>2</entry>
+  </row>
+</tbody>
+</tgroup>
+</table><para id="import-auto-idm626908848">Addition</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm449790656" fo:font-style="normal" fo:font-weight="normal">In the binary numeral system, the symbol set is composed of 0 and 1. A positional binary number is a sequence of 0’s and 1’s. Given an -bit binary number, , the leftmost bit  is called most significant bit (MSB) because its weight is , and the rightmost bit  is called least significant bit (LSB) for the reason that it only weights . Once the binary numbers are lined up with their weights, i.e. powers of 2, they may be operated just like the decimal arithmetic. It makes no difference when numbers in another format such as hexadecimal are operated. Consider a 4-bit non-negative numeral system. There are numbers from  to , i.e., decimal  to . So, any valid operation among these numbers should result in one of them. Also, the carry mechanism works similar to the decimal addition. For example, Table 2 shows an example of carry for a binary addition. Compared to the decimal carry, the binary carry will “carry” 2 from the first position over the second position. In the addition case, the only possible carry occurs when both operands are 1, i.e.,  with carry 1. </para>
+    <para id="import-auto-idm552532256">Table 2 An Example of Carry for a Binary Addition</para>
+    <table id="import-auto-idm382810384" summary="">
+      <tgroup cols="6">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <colspec colnum="6" colname="c6"/>
+        <thead>
+          <row>
+            <entry>Carry</entry>
+            <entry/>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry/>
+            <entry/>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>In the first position:</entry>
+          </row>
+          <row>
+            <entry>+</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry/>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm617325264" fo:font-style="normal" fo:font-weight="normal"> In general, the carry mechanism applies to other numeral systems such as octal and hexadecimal. The value of carry in additions is always one. The number we write down for this position is calculated by , where  is the sum of the two numbers, and  is the radix or the base. The value of carry could be larger than one in cases such as multiplication. Table 3 shows an example of carry for an octal addition whereas Table 4 gives an example of carry for a hexadecimal addition. </para>
+    <para id="import-auto-idm600431120">Table 3 An Example of Carry for an Octal Addition</para>
+    <table id="import-auto-idm824169168" summary="">
+      <tgroup cols="5">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <thead>
+          <row>
+            <entry>Carry</entry>
+            <entry/>
+            <entry>1</entry>
+            <entry/>
+            <entry/>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>1</entry>
+            <entry>2</entry>
+            <entry>3</entry>
+            <entry>In the first position:</entry>
+          </row>
+          <row>
+            <entry>+</entry>
+            <entry>1</entry>
+            <entry>4</entry>
+            <entry>9</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry>2</entry>
+            <entry>7</entry>
+            <entry>4</entry>
+            <entry/>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para id="import-auto-idm361472960">Table 4 An Example of Carry for an Hexadecimal Addition</para>
+    <table id="import-auto-idm590408704" summary="">
+      <tgroup cols="5">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <thead>
+          <row>
+            <entry>Carry</entry>
+            <entry/>
+            <entry>1</entry>
+            <entry/>
+            <entry/>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>A</entry>
+            <entry>B</entry>
+            <entry>C</entry>
+            <entry>In the first position:</entry>
+          </row>
+          <row>
+            <entry>+</entry>
+            <entry>1</entry>
+            <entry>2</entry>
+            <entry>5</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry>B</entry>
+            <entry>E</entry>
+            <entry>1</entry>
+            <entry/>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para id="import-auto-idm619085504">Hardware Adder</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm579167792" fo:font-style="normal" fo:font-weight="normal">Since numbers stored in computers are in binary format, a hardware adder is built based on binary inputs. Recall that when adding two binary digits in each position, a carry may be generated, which is then added in the position to the left. Based on this observation, a -bit hardware adder is built upon  one-bit adders, each of which is taken care of the one-bit addition for one position. Therefore, we should build the one-bit adder first and combine  of them together to perform -bit addition.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm451925056" fo:font-style="normal" fo:font-weight="normal">In hardware design, a very first and important step is find out what inputs and output are, and what their relations are? The inputs to the one-bit adder are one bit, say , from one operand, one bit, say , from another, and don’t forget one carry bit, say , from the previous position. The outputs are obviously the sum, say , and the carry bit, say . With the inputs and outputs ready, the next step is find out their relations. The following truth table (Table 5) shows the relations. The truth table is built based on the binary arithmetic that ,  with carry 1, and  with carry 1.</para>
+    <para id="import-auto-idm555556288">Table 5 The Truth Table of One-Bit Adder</para>
+    <table id="import-auto-idm455967056" summary="table 5">
+<tgroup cols="5"><colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <thead>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>input</entry>
+            <entry>input</entry>
+            <entry>input</entry>
+            <entry>output</entry>
+            <entry>output</entry>
+          </row>
+          <row>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+          </row>
+          <row>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+          </row>
+          <row>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+          </row>
+        </tbody>
+      
+</tgroup>
+</table><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm332221808" fo:font-style="normal" fo:font-weight="normal"> Most hardware circuits are built based on their truth table. So it is important to tabularize the truth table to show the relations of inputs and outputs. The truth has two outputs and they should be treated separately when simplifying the Boolean expression. In other words, one Boolean expression will represent the relation of the inputs and the sum ; another will represent the relation of the inputs and the carry out . The Boolean expressions for the outputs are as follows:</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm570570896" fo:font-style="normal" fo:font-weight="normal">Note that the expression for  can be simplified using the Karnaugh map but the other Boolean expression may not. With the Boolean expressions, the hardware is built accordingly as shown in Figure 1. Note that the not gate in the diagram is implemented using the INV component in the library of the Xilinx ISE schematic design tool.</para>
+    <figure id="import-auto-idm609071648">
+      <media id="import-auto-idm586583152" alt="">
+        <image mime-type="image/png" src="../../media/officeArt object-382b.png" height="552" width="517"/>
+      </media>
+    </figure>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm627901984" fo:font-style="normal" fo:font-weight="normal">Figure 1 The Circuit of the Sum of the One-Bit Hardware Adder</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm626628720" fo:font-style="normal" fo:font-weight="normal">The adder circuit can be verified according the its truth table using simulation tool such as the Xilinx ISim. The ISim tool will simulate the circuit based on any inputs, called stimuli, set by a tester. The ISim will simulate the circuit and report outputs, which are then verified according to the truth table. To use ISim to simulate your circuit, a test bench will be created. The test bench contains an instance of the unit under test (UUT) and stimuli, a combination of input values. In our case, the UUT is the adder, and the inputs are . The ISim will then output a waveform as shown in Figure 2. In the first column of the waveform, the inputs along with the output signals are listed. On the top of the waveform is the timeline from 0 to 100,000 with the unit picoseconds. A tester should validate the outputs signals at each time instance when the input changes. However, it is tedious to check should there were a lot of inputs with lots of combinations. Therefore, ISim provides an assert statement to automate the verification process. In the above simulation test bench, the following state will automatically check if wherever the  is supposed to be 1.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm420357312" fo:font-style="normal" fo:font-weight="normal">
+      
+    </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm456827552" fo:font-style="normal" fo:font-weight="normal">Note that this statement is placed right after the input stimuli are provided. In this case, when  is 1,  is 1, and  is 0, the output signal  is supposed to be 1 according to the truth table. In case that the simulation result shows the  is 0, the message quoted will be reported and the tester will be aware of this error after the simulation is performed. Note also that the message typically should include the test case detail. So when this error is found, this particular test case with the corresponding input values will be used to debug the original design. </para>
+    <para id="import-auto-idm352034624"/>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm326802848" fo:font-style="normal" fo:font-weight="normal">Figure 2 The Waveform of the One-Bit Adder from the ISim Simulator</para>
+    <para id="import-auto-idm329976608">Negative Numbers</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm421856304" fo:font-style="normal" fo:font-weight="normal">Mathematically, adding a negative number is equivalent to taking out the absolute value of the number, i.e., subtraction. In two’s complement system, the two’s complement of a number is equal to the negation of this number. In a 4-bit signed binary numeral system, using the two’s complement method, the represented numbers range from -8 to 7. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm661053984" fo:font-style="normal" fo:font-weight="normal">The two’s complement representation of a number  is equal to . For example, to find the two’s complement representation of  in the 4-bit system, we first find the representation of , which is .  The binary number is then converted using two’s complement method. The two’s complement of  is . Given a negative number in two’s complement representation, it is hard to tell what decimal value it represents. Yet, we can first convert it to a positive number using two’s complement and convert it to decimal. It is a bit tedious. Is there a direct calculation just like converting a positive binary number to decimal? The answer is yes. Here is why?</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm536501328" fo:font-style="normal" fo:font-weight="normal">To find the decimal value of , all we need is calculate the sum by definition and take out , where  is the total number of bits. An example is depicted in Table 6, which directly calculates the sum as if it were a positive number, and add  to it.  </para>
+    <para id="import-auto-idm374190992">Table 6 An Example of Direct Conversion of a Negative Binary Number Represented in Two’s Complement</para>
+    <table id="eip-490" summary="table 6">
+<tgroup cols="5"><tbody>
+  <row>
+    <entry>Positions</entry>
+    <entry/>
+    <entry/>
+    <entry/>
+    <entry/>
+  </row>
+  <row>
+    <entry>Binary Number</entry>
+    <entry>1</entry>
+    <entry>0</entry>
+    <entry>0</entry>
+    <entry>1</entry>
+  </row>
+</tbody>
+</tgroup>
+</table><para id="import-auto-idm582466960">Overflow</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm356854336" fo:font-style="normal" fo:font-weight="normal">Due to the limited space to store numbers in computer systems, the fixed-precision arithmetic may result in an invalid operation in which the result cannot be represented in the system. This is referring to as overflow. If such situation happens, computer hardware will flag a bit normally found in a status word (a special register for status report in CPU). The run-time system, normally the operating system, will report it to the running software and an exception or a trap will be raised for a suitable action to be taken.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm605748192" fo:font-style="normal" fo:font-weight="normal">An overflow occurs when the result of an operation is larger than the maximal number or smaller than the minimal number that a system represents. For addition and subtraction operations, the condition for an overflow to occur is as follows:</para>
+    <list id="import-auto-idm418965312" list-type="enumerated" number-style="lower-alpha">
+      <item>Sum two positive numbers but the result becomes negative, or </item>
+      <item>Sum two negative numbers but the result becomes positive. </item>
+    </list>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm419564688" fo:font-style="normal" fo:font-weight="normal">If we consider subtraction, a positive number minus a negative number leads to the case a. A negative number minus a positive number belongs to case b. On the other hand, the following cases will not cause overflow.</para>
+    <list id="import-auto-idm422795920" list-type="enumerated" number-style="lower-alpha">
+      <item>Sum two numbers of different signs, i.e., one positive and one negative, or</item>
+      <item>Minus two numbers of the same signs, i.e., two positives or two negatives.</item>
+    </list>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm566627648" fo:font-style="normal" fo:font-weight="normal">If subtraction is considered, the case includes a positive number minus a negative number, and a negative number minus a negative number. In the 4-bit signed system, if we try to overflow an addition with two numbers of different signs, select the maximal number, i.e., 7, and the largest negative number, i.e., -1. Summing the two  will not cause overflow. On the other hand, if we select the smallest positive and the smallest negative number with an attempt to underflow the addition, the result  is still okay. Therefore, under such situation that summing of two numbers with different signs, there will not be any overflow. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm755443776" fo:font-style="normal" fo:font-weight="normal">The overflow in the fixed-precision arithmetic invalidates some properties held in regular arithmetic. The associate law is not valid in the fixed-precision arithmetic.  For example, in the 4-bit signed system,  because adding 3 and 5 will cause an overflow which invalidates the operation. Moreover, the distribution law is not valid, either. For example,  for the same reason that  will cause overflow. Note that the commutative law still applies. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm546546384" fo:font-style="normal" fo:font-weight="normal">
+      <emphasis effect="bold">Subtraction</emphasis>
+    </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm575835760" fo:font-style="normal" fo:font-weight="normal">Subtracting a number from another is equivalent to adding a negative number. In binary arithmetic, we first apply two’s complement to the subtrahend, and then add the two’s complement of the subtrahend to the minuend. The result will be the difference. </para>
+    <para id="import-auto-idm585920864">Table 7 An Example of Subtracting 3 from 7 Using Two's Complement Addition</para>
+    <table id="import-auto-idm577698464" summary="">
+      <tgroup cols="12">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <colspec colnum="6" colname="c6"/>
+        <colspec colnum="7" colname="c7"/>
+        <colspec colnum="8" colname="c8"/>
+        <colspec colnum="9" colname="c9"/>
+        <colspec colnum="10" colname="c10"/>
+        <colspec colnum="11" colname="c11"/>
+        <colspec colnum="12" colname="c12"/>
+        <thead>
+          <row>
+            <entry>Carry</entry>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry/>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Minuend</entry>
+            <entry/>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry/>
+            <entry/>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+          </row>
+          <row>
+            <entry>Subtrahend</entry>
+            <entry>-</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry/>
+            <entry>+</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+          </row>
+          <row>
+            <entry>Difference</entry>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm612170704" fo:font-style="normal" fo:font-weight="normal">Using two’s complement for subtraction greatly simplifies the computer design as we only need to build a hardware adder for both addition and subtraction. Note that the negative 2 is stored in its two’s complement format in memory. So there is no need to build a special hardware circuit for the conversion. Also, the most significant bit (MSB) yields a carry, which can be safely ignored because adding two numbers of different signs will cause any overflow.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm424719888" fo:font-style="normal" fo:font-weight="normal">
+      <emphasis effect="bold">Multiplication</emphasis>
+    </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm448953056" fo:font-style="normal" fo:font-weight="normal">Binary multiplication is similar to decimal multiplication, and in fact, the binary one is much easier than the decimal one. Let’s revisit the multiplication technique learnt from elementary schools. Table 8 shows the technique to multiply 1234 by 4321. Observe that each time the multiplicand is multiplied by a digit of the multiplier, and the partial product is written down in line with the multiplier digit.  The product is obtained by adding up all the partial products. Note that the number of digits for the product should be the sum of the numbers of the multiplicand digits and multiplier digits. In the previous example, the number of the product digits is 7. Should there were a carry at the leftmost digit, the total number of the product digits is 8. The doubled size is normally considered in computer design. In a typical CPU, multiplication is done by a special hardware circuit not in the ALU. There may have several hardware multipliers for fast computation.</para>
+    <para id="import-auto-idm441082816">Table 8 An Example of Decimal Multiplication</para>
+    <table id="import-auto-idm596968784" summary="">
+      <tgroup cols="9">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <colspec colnum="6" colname="c6"/>
+        <colspec colnum="7" colname="c7"/>
+        <colspec colnum="8" colname="c8"/>
+        <colspec colnum="9" colname="c9"/>
+        <thead>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>1</entry>
+            <entry>2</entry>
+            <entry>3</entry>
+            <entry>4</entry>
+            <entry>Multiplicand</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>4</entry>
+            <entry>3</entry>
+            <entry>2</entry>
+            <entry>1</entry>
+            <entry>Multiplier</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>1</entry>
+            <entry>2</entry>
+            <entry>3</entry>
+            <entry>4</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>2</entry>
+            <entry>4</entry>
+            <entry>6</entry>
+            <entry>8</entry>
+            <entry/>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry/>
+            <entry>3</entry>
+            <entry>7</entry>
+            <entry>0</entry>
+            <entry>2</entry>
+            <entry/>
+            <entry/>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry>4</entry>
+            <entry>9</entry>
+            <entry>3</entry>
+            <entry>6</entry>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry>5</entry>
+            <entry>3</entry>
+            <entry>3</entry>
+            <entry>2</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>4</entry>
+            <entry>Product</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm587304144" fo:font-style="normal" fo:font-weight="normal">In the binary case, the same multiplication technique applies. Let’s take a look at an example, and observe how a hardware multiplier can be implemented. Table 9 illustrates an example of binary multiplication. Observe that the rows with an arrow () are identical to the multiplicand, and the rest are all zeros. Also, the non-zero rows are from the one’s digits of the multiplier. When adding up the partial products (all equal to the multiplicand), they only shift left a number of positions according where the multiplier digit is. </para>
+    <para id="import-auto-idm453703584">Table 9 An Example of Binary Multiplication</para>
+    <table id="import-auto-idm439134560" summary="">
+      <tgroup cols="9">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <colspec colnum="6" colname="c6"/>
+        <colspec colnum="7" colname="c7"/>
+        <colspec colnum="8" colname="c8"/>
+        <colspec colnum="9" colname="c9"/>
+        <thead>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>Multiplicand</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>Multiplier</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry/>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry/>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry/>
+            <entry/>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry/>
+            <entry/>
+            <entry/>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>Product</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm376611200" fo:font-style="normal" fo:font-weight="normal">With the above observation, a hardware multiplier is designed based on an adder and two shifters. The adder is used to add partial products, whereas the shifters are used to shift the multiplicand left at a time after a corresponding bit in the multiplier is checked, and shift right the multiplier. Figure 2 illustrates the flowchart of the hardware multiplication algorithm. In this algorithm, there are three registers, one for the multiplicand, one for the multiplier, and one for the product. The registers for the multiplicand and multiplier are shift registers. The multiplicand register will shift left whereas the multiplier register will shift right in each iteration. If the size of the multiplier is  bits, the size of the multiplier register needs only  bits. However, the registers for the product and the multiplicand will have to have  bits, simply because the shift left operation for the multiplicand register and the potential space need for the product.  These requirements can be improved if we instead shift the product to the right. Figure 3 shows the improved version of the multiplication.</para>
+    <figure id="import-auto-idm412957536">
+      <media id="import-auto-idm357197648" alt="">
+        <image mime-type="image/png" src="../../media/Image1-ed82.png" height="610" width="352"/>
+      </media>
+    </figure>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm414243696" fo:font-style="normal" fo:font-weight="normal">Figure 3 The Flowchart of a Hardware Binary Multiplication Algorithm</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm459790832" fo:font-style="normal" fo:font-weight="normal">In the improved version shown in Figure 3, instead of shifting multiplicand left, the product register is shifted to the right in each iteration. Thus, the shift register for the multiplicand is saved. However, the adder that adds the multiplicand the partial product will have to store the result to the high half bits. Compared to the previous version, the improved version requires less hardware resource and should perform better based on the rule of thumb that “the less, the better” in hardware design. </para>
+    <figure id="import-auto-idm448638992">
+      <media id="import-auto-idm456013296" alt="">
+        <image mime-type="image/png" src="../../media/Image2-53e7.png" height="559" width="360"/>
+      </media>
+    </figure>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm576722128" fo:font-style="normal" fo:font-weight="normal">Figure 4 An Improved Version of a Hardware Multiplier</para>
+    <section id="import-auto-idm418327456">
+      <title>Devision</title>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm586796752" fo:font-style="normal" fo:font-weight="normal">With the experience learnt from the hardware multiplier design in the previous section, binary division works similarly. Let’s start with an example of long division using the technique from the elementary school. Table 10 illustrates the long division for  divided by . In decimal, it is 178 divided by 10. The quotient is 17 and the remainder is 8. We call 178 the dividend and 10 the divisor. Their relation is . </para>
+      <para id="import-auto-idm449911536">Table 10 An Example of Binary Division Based on Traditional Long Division</para>
+      <table id="import-auto-idm435951696" summary="">
+        <tgroup cols="15">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <colspec colnum="7" colname="c7"/>
+          <colspec colnum="8" colname="c8"/>
+          <colspec colnum="9" colname="c9"/>
+          <colspec colnum="10" colname="c10"/>
+          <colspec colnum="11" colname="c11"/>
+          <colspec colnum="12" colname="c12"/>
+          <colspec colnum="13" colname="c13"/>
+          <colspec colnum="14" colname="c14"/>
+          <colspec colnum="15" colname="c15"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>Quotient</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Divisor</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>)</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>Dividend</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry/>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry/>
+              <entry>*</entry>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>Remainder</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm791486016" fo:font-style="normal" fo:font-weight="normal">The binary long division is easier than its decimal version because there are only two choices (0 or 1) when we guess the quotient digits in each iteration. If the first digit of the dividend portion is 0, the quotient digit will be 0. However, if the first digit of the dividend portion is 1, the quotient digit could be either 1 or 0. In the example shown in Table 10, most of the time the quotient digit is 1 when the first digit of the dividend portion is 1. In the row with an asterisk, however, selecting 1 as the quotient digit will be wrong because the divisor is larger than the dividend portion. In that case, , the result after subtraction will be , i.e., , because the dividend is 10 but the dividend portion is 9 in decimal. Therefore, selecting quotient digit equal to the first digit of the dividend portion may fail. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm450746272" fo:font-style="normal" fo:font-weight="normal">In order to take care of the failure case, we need to validate the result of the subtraction in each iteration. Assume both the dividend and the divisor are positive. The quotient and the remainder are non-negative. The result of each subtraction should be non-negative. If the result is negative, the quotient digit should be 0 and the dividend portion should remain the same. In the previous example, the row with an asterisk, the subtraction result is . The quotient digit should be 0 and the dividend portion should be restored back to  not .</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm596895968" fo:font-style="normal" fo:font-weight="normal">So the binary division algorithm is similar to that of the binary multiplication. The divisor is stored in a shift register, and it is shifted to the right in each iteration. Each time we only got one bit for the quotient, to keep the quotient bits, we can append one bit to the LSB of the quotient register and shift it to the left in each iteration. So a shift register is needed for the quotient. The subtraction can be implemented using an adder by converting the subtrahend to its two’s complement. Figure 4 shows the flowchart of the algorithm.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm446421328" fo:font-style="normal" fo:font-weight="normal">In the binary division algorithm shown in Figure 4, two shift registers are needed. One is for the divisor and the other is for the quotient. Their length is as long as that of the dividend. Including a register for the dividend, there are totally 3 registers. Although the first bit of the dividend portion may not be equal to the quotient bit, the subtraction result serves as a correct decision. If the subtraction result is non-negative, the quotient bit is 1, and the subtraction result is used to update the dividend. On the other hand, if the subtraction result is negative, the dividend remains intact.  Note that the operation that adding one to the quotient can be integrated to the shifter for the quotient. A normal shift left operation will put zero the LSB. We could just append one while shifting the quotient register left.</para>
+      <figure id="import-auto-idm832260992">
+        <media id="import-auto-idm554779472" alt="">
+          <image mime-type="image/png" src="../../media/Image3-4839.png" height="719" width="405"/>
+        </media>
+      </figure>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm793201456" fo:font-style="normal" fo:font-weight="normal">Figure 5 The Flowchart of a Binary Division Algorithm</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm636278672" fo:font-style="normal" fo:font-weight="normal">
+        <emphasis effect="bold">Summary</emphasis>
+      </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm392815040" fo:font-style="normal" fo:font-weight="normal">The binary arithmetic (addition, subtraction, multiplication, and division) discussed in this chapter operates in a similar way to its decimal version. By using two’s complement representation, negative numbers are represented in a way that subtraction will be done by addition. This greatly reduces the hardware complexity in CPU design. Therefore, the four binary arithmetic operations require only adder, shifter, and two’s complement hardware components.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm635646048" fo:font-style="normal" fo:font-weight="normal">Due to the fixed-precision arithmetic, i.e., numbers are stored in a fixed length register, programmers and hardware designers must be aware of the limit of the fixed-precision. When a number is beyond the maximal number or below the minimal number of a fixed length register that may represent, an overflow or an underflow occurs. When that happens, the computation result is incorrect and should be discarded. This is typically the case that no result is better than a wrong result. </para>
+    </section>
+
+    <section id="import-auto-idm1334857552">
+      <title>Booth’s Algorithm</title>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1206229904">Booth algorithm gives a procedure for multiplying binary integers in signed 2’s complement representation in efficient way, i.e., less number of additions/subtractions required in general. It operates on the fact that strings of 0’s in the multiplier require no addition but just shifting and a string of 1’s in the multiplier from bit weight <m:math display="inline"><m:semantics><m:msup><m:mn>2</m:mn><m:mi>k</m:mi></m:msup><m:annotation encoding="StarMath 5.0">{2} ^ {k}</m:annotation></m:semantics></m:math> to weight <m:math display="inline"><m:semantics><m:msup><m:mn>2</m:mn><m:mi>m</m:mi></m:msup><m:annotation encoding="StarMath 5.0">{2} ^ {m}</m:annotation></m:semantics></m:math> can be treated as <m:math display="inline"><m:semantics><m:msup><m:mn>2</m:mn><m:mrow><m:mi>k</m:mi><m:mo stretchy="false">+</m:mo><m:mn>1</m:mn></m:mrow></m:msup><m:annotation encoding="StarMath 5.0">{2} ^ {k +1}</m:annotation></m:semantics></m:math> to <m:math display="inline"><m:semantics><m:msup><m:mn>2</m:mn><m:mi>m</m:mi></m:msup><m:annotation encoding="StarMath 5.0">{2} ^ {m}</m:annotation></m:semantics></m:math>.</para><para id="import-auto-idm398069232">As in all multiplication schemes, booth algorithm requires examination of the multiplier bits and shifting of the partial product. Prior to the shifting, the multiplicand may be added to the partial product, subtracted from the partial product, or left unchanged according to the following rules:</para>
+      <list id="import-auto-idm1103124896" list-type="enumerated" number-style="arabic">
+        <item>The multiplicand is subtracted from the partial product upon encountering the first least significant 1 in a string of 1’s in the multiplier</item>
+        <item>The multiplicand is added to the partial product upon encountering the first 0 (provided that there was a previous ‘1’) in a string of 0’s in the multiplier.</item>
+        <item>The partial product does not change when the multiplier bit is identical to the previous multiplier bit.</item>
+      </list>
+    </section>
+    <section id="import-auto-idm1176990880">
+      <title>Booth’s Algorithm Flowchart</title>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1106577648">The Booth’s algorithm can be described using the following flowchart. We name the register that keeps the partical product as A, the multiplicand as M, the multiplier as Q, the extra bit <m:math display="inline"><m:semantics><m:msub><m:mi>Q</m:mi><m:mrow><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msub><m:annotation encoding="StarMath 5.0">{Q} rsub {-1}</m:annotation></m:semantics></m:math> attached to <m:math display="inline"><m:semantics><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{Q} rsub {0}</m:annotation></m:semantics></m:math>, which is the least significant bit of the multiplier, and the counter as Count. The flowchart for the booth algorithm is shown below.</para><figure id="import-auto-idm1194919504">
+        <media id="import-auto-idm1201472656" alt="">
+          <image mime-type="image/png" src="../../media/Picture 3-26b9.png" height="334" width="388"/>
+        </media>
+      </figure>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1301810976">A and the appended bit <m:math display="inline"><m:semantics><m:msub><m:mi>Q</m:mi><m:mrow><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msub><m:annotation encoding="StarMath 5.0">{Q} rsub {-1}</m:annotation></m:semantics></m:math> are initially cleared to 0 and the sequence Count is set to a number n equal to the number of bits in the multiplier. The two bits of the multiplier in <m:math display="inline"><m:semantics><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{Q} rsub {0}</m:annotation></m:semantics></m:math> and <m:math display="inline"><m:semantics><m:msub><m:mi>Q</m:mi><m:mrow><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msub><m:annotation encoding="StarMath 5.0">{Q} rsub {-1}</m:annotation></m:semantics></m:math> are inspected. If the two bits are equal to 10, it means that the first 1 in a string has been encountered. This requires subtraction of the multiplicand from the partial product in A. If the 2 bits are equal to 01, it means that the first 0 in a string of 0’s has been encountered. This requires the addition of the multiplicand to the partial product in A.</para><para id="import-auto-idm1329137504"/>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm347815712">When the two bits are equal, the partial product does not change. An overflow cannot occur because the addition and subtraction of the multiplicand follow each other. As a consequence, the 2 numbers that are added always have a opposite signs, a condition that excludes an overflow. The next step is to shift right the partial product and the multiplier (including <m:math display="inline"><m:semantics><m:msub><m:mi>Q</m:mi><m:mrow><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msub><m:annotation encoding="StarMath 5.0">{Q} rsub {-1}</m:annotation></m:semantics></m:math>). This is an arithmetic shift right (ashr) operation which A, Q, and <m:math display="inline"><m:semantics><m:msub><m:mi>Q</m:mi><m:mrow><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msub><m:annotation encoding="StarMath 5.0">{Q} rsub {-1}</m:annotation></m:semantics></m:math> shifts to the right and leaves the sign bit in A unchanged. The sequence counter Count is decremented and the computational loop is repeated n times.</para></section>
+    <section id="import-auto-idm370499984">
+      <title>Examples</title>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1179907872">Let’s computate <m:math display="inline"><m:semantics><m:mrow><m:mrow><m:mo stretchy="false">−</m:mo><m:mn>3</m:mn></m:mrow><m:mrow><m:mi>×</m:mi><m:mo stretchy="false">−</m:mo><m:mn>7</m:mn></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">- 3 ×-7</m:annotation></m:semantics></m:math> using the Booth’s algorithm. The 2’s complement representations for them are 1101 and 1001, respectively. So initially A = 0000, Q = 1001, M = 1101, M’ = 0010, and <m:math display="inline"><m:semantics><m:mrow><m:msub><m:mi>Q</m:mi><m:mrow><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msub><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">{Q} rsub {-1} =0</m:annotation></m:semantics></m:math>. The final resule is 21, which is stored in A and Q.</para><table id="import-auto-idm1102910000" summary="">
+        <tgroup cols="5">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <thead>
+            <row>
+              <entry>
+                <emphasis effect="bold">OPERATION</emphasis>
+              </entry>
+              <entry>
+                <emphasis effect="bold">A</emphasis>
+              </entry>
+              <entry>
+                <emphasis effect="bold">Q</emphasis>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:msub>
+                      <m:mi>Q</m:mi>
+                      <m:mrow>
+                        <m:mo stretchy="false">−</m:mo>
+                        <m:mn>1</m:mn>
+                      </m:mrow>
+                    </m:msub>
+                    <m:annotation encoding="StarMath 5.0">{Q} rsub {-1}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <emphasis effect="bold">Count</emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry/>
+              <entry>0000</entry>
+              <entry>1001</entry>
+              <entry>0</entry>
+              <entry>4</entry>
+            </row>
+            <row>
+              <entry>A + M’ + 1</entry>
+              <entry>0011</entry>
+              <entry>1001</entry>
+              <entry>0</entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>ASHR</entry>
+              <entry>0001</entry>
+              <entry>1100</entry>
+              <entry>1</entry>
+              <entry>3</entry>
+            </row>
+            <row>
+              <entry>A + M</entry>
+              <entry>1110</entry>
+              <entry>1100</entry>
+              <entry>1</entry>
+              <entry/>
+            </row>
+            <row>
+              <entry>ASHR</entry>
+              <entry>1111</entry>
+              <entry>0110</entry>
+              <entry>0</entry>
+              <entry>2</entry>
+            </row>
+            <row>
+              <entry>ASHR</entry>
+              <entry>1111</entry>
+              <entry>1011</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+            </row>
+            <row>
+              <entry>A + M’ + 1</entry>
+              <entry>0010</entry>
+              <entry>1011</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+            </row>
+            <row>
+              <entry>ASHR</entry>
+              <entry>0001</entry>
+              <entry>0101</entry>
+              <entry>1</entry>
+              <entry/>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm1180268144">
+      <title>Why Booth’s Algorithm Works?</title>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm404404240">Consider a positive multiplier consisting of a block of 1’s surrounded by 0’s. For example, 00111110. The product, <m:math display="inline"><m:semantics><m:mrow><m:mi>M</m:mi><m:mi>×</m:mi><m:mn>00111110</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">M × 00111110 </m:annotation></m:semantics></m:math> is given by  <m:math display="inline"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>×</m:mi><m:mrow><m:mo stretchy="false" fence="true">(</m:mo><m:mrow><m:mrow><m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>2</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>3</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>4</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>5</m:mn></m:msup></m:mrow></m:mrow><m:mo stretchy="false" fence="true">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A×( {2} ^ {1} + {2} ^ {2} + {2} ^ {3} + {2} ^ {4} + {2} ^ {5} )</m:annotation></m:semantics></m:math>, which is <m:math display="inline"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>×</m:mi><m:mrow><m:mo stretchy="false" fence="true">(</m:mo><m:mrow><m:mrow><m:msup><m:mn>2</m:mn><m:mn>6</m:mn></m:msup><m:mo stretchy="false">−</m:mo><m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup></m:mrow></m:mrow><m:mo stretchy="false" fence="true">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A×( {2} ^ {6} - {2} ^ {1} )</m:annotation></m:semantics></m:math>. So the total number of operations is reduced to two. Given M as a multiplicand, Q as a multiplier, we have the following</para><para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm404341600"><m:math display="block"><m:semantics><m:mtable columnalign="left"><m:mtr><m:mrow><m:mi>M</m:mi><m:mi>×</m:mi><m:mo stretchy="false" fence="true">[</m:mo>
+  <m:mo stretchy="false" fence="true">(</m:mo>
+      <m:msub><m:mi>Q</m:mi><m:mn>-1</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub> 
+      <m:mo stretchy="false" fence="true">)</m:mo>
+      <m:msup><m:mn>2</m:mn><m:mn>0</m:mn></m:msup>
+      <m:mo stretchy="false" fence="true">+</m:mo>
+
+      <m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>1</m:mn></m:msub> 
+      <m:mo stretchy="false" fence="true">)</m:mo>
+      <m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup>
+      <m:mo stretchy="false" fence="true">+...+</m:mo>
+
+      <m:msub><m:mi>Q</m:mi><m:mn>n-2</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>n-1</m:mn></m:msub> 
+      <m:mo stretchy="false" fence="true">)</m:mo>
+      <m:msup><m:mn>2</m:mn><m:mn>n-1</m:mn></m:msup>
+       
+   <m:mo stretchy="false" fence="true">]</m:mo></m:mrow>
+
+</m:mtr>
+<m:mtr>
+<m:mrow><m:mi>=</m:mi><m:mi>M</m:mi><m:mi>×</m:mi><m:mo stretchy="false" fence="true">[</m:mo>
+  <m:mo stretchy="false" fence="true">(</m:mo>
+      <m:msub><m:mi>Q</m:mi><m:mn>-1</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub> 
+      <m:mo stretchy="false" fence="true">)</m:mo>
+      <m:msup><m:mn>2</m:mn><m:mn>0</m:mn></m:msup>
+      <m:mo stretchy="false" fence="true">+</m:mo>
+
+      <m:mn>2</m:mn><m:mo stretchy="false" fence="true">(</m:mo><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>1</m:mn></m:msub> 
+      <m:mo stretchy="false" fence="true">)</m:mo>
+      <m:msup><m:mn>2</m:mn><m:mn>0</m:mn></m:msup>
+<m:mo stretchy="false" fence="true">+</m:mo>
+
+      <m:mn>2</m:mn><m:mo stretchy="false" fence="true">(</m:mo><m:msub><m:mi>Q</m:mi><m:mn>1</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>2</m:mn></m:msub> 
+      <m:mo stretchy="false" fence="true">)</m:mo>
+      <m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup>
+
+      <m:mo stretchy="false" fence="true">+...+</m:mo>
+      <m:mn>2</m:mn><m:mo stretchy="false" fence="true">(</m:mo><m:msub><m:mi>Q</m:mi><m:mn>n-2</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>n-1</m:mn></m:msub> 
+      <m:mo stretchy="false" fence="true">)</m:mo>
+      <m:msup><m:mn>2</m:mn><m:mn>n-2</m:mn></m:msup>
+      <m:mo stretchy="false" fence="true">)</m:mo>
+            
+   <m:mo stretchy="false" fence="true">]</m:mo></m:mrow>
+</m:mtr>
+
+
+<m:mtr>
+<m:mrow><m:mi>=</m:mi><m:mi>M</m:mi><m:mi>×</m:mi>
+  <m:mo stretchy="false" fence="true">(</m:mo>
+
+      <m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub><m:msup><m:mn>2</m:mn><m:mn>0</m:mn></m:msup> 
+      <m:mo stretchy="false" fence="true">+</m:mo>
+
+      <m:msub><m:mi>Q</m:mi><m:mn>1</m:mn></m:msub><m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup> 
+      <m:mo stretchy="false" fence="true">+</m:mo>
+
+      <m:mo stretchy="false" fence="true">+...+</m:mo>
+      <m:msub><m:mi>Q</m:mi><m:mn>n-1</m:mn></m:msub><m:msup><m:mn>2</m:mn><m:mn>n-1</m:mn></m:msup> 
+      
+
+      <m:mo stretchy="false" fence="true">)</m:mo>
+            
+   </m:mrow>
+</m:mtr>
+
+<m:mtr><m:mrow>
+<m:mo stretchy="false" fence="true">=</m:mo><m:mi>M</m:mi><m:mi>×</m:mi><m:mi>Q</m:mi>
+</m:mrow></m:mtr>
+
+</m:mtable>
+</m:semantics></m:math>
+
+      </para><para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1090652416">Note that the 2’s complementation of Q has the value of  <m:math display="inline"><m:semantics><m:mrow><m:mrow><m:msup><m:mrow><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub><m:mn>2</m:mn></m:mrow><m:mn>0</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mrow><m:msub><m:mi>Q</m:mi><m:mn>1</m:mn></m:msub><m:mn>2</m:mn></m:mrow><m:mn>1</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:mi>…</m:mi><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mrow><m:mi>n</m:mi><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msub></m:mrow><m:msup><m:mn>2</m:mn><m:mrow><m:mi>n</m:mi><m:mo stretchy="false">−</m:mo><m:mn>1</m:mn></m:mrow></m:msup></m:mrow><m:annotation encoding="StarMath 5.0">{{Q} rsub {0} 2} ^ {0} + {{Q} rsub {1} 2} ^ {1} +…- {Q} rsub {n-1} {2} ^ {n-1}</m:annotation></m:semantics></m:math>. </para></section>
+  </content>
+</document>

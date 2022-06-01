@@ -1,0 +1,1287 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Assembly Programming - Part 2</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78635</md:content-id>
+  <md:title>Assembly Programming - Part 2</md:title>
+  <md:abstract>This chapter introduces MSP 430 assembly programming language such as instruction formats, addressing modes, subroutine call and return mechanisms (cross-reference PL/Language Translation and Execution), I/O and interrupts, and Heap vs. Static vs. Stack vs. Code segments. Explain the organization of the classical von Neumann machine and its major functional units. Describe how an instruction is executed in a classical von Neumann machine, with extensions for threads, multiprocessor synchronization, and SIMD execution. Summarize how instructions are represented at both the machine level and in the context of a symbolic assembler. Demonstrate how to map between high-level language patterns into assembly/machine language notations. Explain different instruction formats, such as addresses per instruction and variable length vs. fixed length formats. Explain how subroutine calls are handled at the assembly level. Explain the basic concepts of interrupts and I/O operations. Write simple assembly language program segments. Show how fundamental high-level programming constructs are implemented at the machine-language level.</md:abstract>
+  <md:uuid>b7a84562-291c-40d2-8aa6-c112ceccc3ea</md:uuid>
+</metadata>
+
+<content>
+    
+   <section id="fs-idm1014864512">
+<title>Emulated Instruction</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm319874976" fo:font-style="normal" fo:font-weight="normal">Emulated instructions are aliases of instructions with fixed operands. For example, increment of a loop variable by 1 is a common case in most applications. So an emulated instruction, INC, is created to increase its operand by 1 in IAR. The actual instruction is the ADD instruction. The advantage of using emulated instructions is obvious that the program would be readable, and sometimes the performance is better. </para>
+    <para id="eip-949">INC R4      ADD #1, R4     immediate addressing                                                             
+The emulated instruction acts like a single instruction macro. The difference is that a macro is user-defined whereas an emulated is predefined by the system. The transcription depends on the assembler implementation. The above increment emulated instruction may be transcribed to the following better performance instruction using constant generator for one. 
+
+ADD 0(R3), R4       0(R3) constant generator for 1
+However, the INC instruction is known by the assembler (different assembler may define different emulated instructions), not the CPU directly. The assembler will transcribe the emulated instruction to the actual instruction. 
+In the IAR system, there are 23 emulated instruction defined as listed in Table 12. The emulated instructions contain 1) carry related operations (ADC, CLRC, DADC, SETC, SBC), 2) bit operations in SR (CLRC, CLRN, CLRZ, DINT, EINT, SETC, SETN, SETZ), 3) common increment/decrement (DEC, DECD, INC, INCD), 4) stack operation (POP), 5) others (BR, NOP, RET, RLA, RLC, TST). 
+</para><para id="import-auto-idm317363328">Table 12 MSP430 Emulated Instructions</para>
+    <table id="import-auto-idm586429712" summary="">
+      <tgroup cols="3">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Emulated</entry>
+            <entry>Transcribed</entry>
+            <entry>Remark</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>ADC.x dst</entry>
+            <entry>ADDC.x #0,dst </entry>
+            <entry>Add carry to destination</entry>
+          </row>
+          <row>
+            <entry>BR dst </entry>
+            <entry>MOV dst,PC </entry>
+            <entry>Branch to destination</entry>
+          </row>
+          <row>
+            <entry>CLRC</entry>
+            <entry>BIC #1,SR </entry>
+            <entry>Clear carry bit</entry>
+          </row>
+          <row>
+            <entry>CLRN </entry>
+            <entry>BIC #4,SR </entry>
+            <entry>Clear negative bit</entry>
+          </row>
+          <row>
+            <entry>CLRZ </entry>
+            <entry>BIC #2,SR </entry>
+            <entry>Clear zero bit</entry>
+          </row>
+          <row>
+            <entry>DADC.x dst</entry>
+            <entry>DADD.x #0,dst </entry>
+            <entry>Decimal add carry to destination</entry>
+          </row>
+          <row>
+            <entry>DEC.x dst </entry>
+            <entry>SUB.x #1,dst </entry>
+            <entry>Decrement</entry>
+          </row>
+          <row>
+            <entry>DECD.x dst</entry>
+            <entry>SUB.x #2,dst </entry>
+            <entry>Double decrement</entry>
+          </row>
+          <row>
+            <entry>DINT </entry>
+            <entry>BIC #8,SR </entry>
+            <entry>Disable interrupts</entry>
+          </row>
+          <row>
+            <entry>EINT </entry>
+            <entry>BIS #8,SR </entry>
+            <entry>Enable interrupts</entry>
+          </row>
+          <row>
+            <entry>INC.x dst</entry>
+            <entry>ADD.x #1,dst </entry>
+            <entry>Increment</entry>
+          </row>
+          <row>
+            <entry>INCD.x dst</entry>
+            <entry>ADD.x #2,dst </entry>
+            <entry>Double increment</entry>
+          </row>
+          <row>
+            <entry>INV.x dst </entry>
+            <entry>XOR.x #−1,dst </entry>
+            <entry>Invert</entry>
+          </row>
+          <row>
+            <entry>NOP </entry>
+            <entry>MOV #0,R3 </entry>
+            <entry>No operation</entry>
+          </row>
+          <row>
+            <entry>POP dst </entry>
+            <entry>MOV @SP+,dst </entry>
+            <entry>Pop from stack</entry>
+          </row>
+          <row>
+            <entry>RET </entry>
+            <entry>MOV @SP+,PC </entry>
+            <entry>Return from subroutine</entry>
+          </row>
+          <row>
+            <entry>RLA.x dst </entry>
+            <entry>ADD.x dst,dst </entry>
+            <entry>Rotate left arithmetic (shift left 1 bit)</entry>
+          </row>
+          <row>
+            <entry>RLC.x dst </entry>
+            <entry>ADDC.x dst,dst </entry>
+            <entry>Rotate left through carry</entry>
+          </row>
+          <row>
+            <entry>SBC.x dst </entry>
+            <entry>SUBC.x #0,dst </entry>
+            <entry>Subtract borrow (1−carry) from destination</entry>
+          </row>
+          <row>
+            <entry>SETC </entry>
+            <entry>BIS #1,SR </entry>
+            <entry>Set carry bit</entry>
+          </row>
+          <row>
+            <entry>SETN </entry>
+            <entry>BIS #4,SR </entry>
+            <entry>Set negative bit</entry>
+          </row>
+          <row>
+            <entry>SETZ </entry>
+            <entry>BIS #2,SR </entry>
+            <entry>Set zero bit</entry>
+          </row>
+          <row>
+            <entry>TST.x dst </entry>
+            <entry>CMP.x #0,dst </entry>
+            <entry>Test destination </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm567579584" fo:font-style="normal" fo:font-weight="normal">Note that most of the constants such as 0, 1, 2, 4, 8, and -1, may be replaced with constant generators to get a better performance. The NOP operation would not change any values but consume a machine cycle. In cases where the CPU has to wait on some events, the NOP is filled to achieve this delay. </para>
+     </section>
+   <section id="fs-idm293809184">
+<title>Arithmetic and Logical Operations</title>
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm570880000" fo:font-style="normal" fo:font-weight="normal">An expression is a combination of operators and operands that may be evaluated to a single value. For example,  is an expression that defines the sum of the four operands . Some operations such as multiplication and division are not provided directly by MSP430’s instruction set. Those missing operations will have to be implemented in subroutines or macros. The instruction set in MSP430 uses destination operand as a source operand. Therefore, the above expression may be translated to the following machine code.</para>
+      <code id="eip-913" display="block">MOV R3, R4 ; initialize R4 to 0
+    ADD x, R4 ; x + R4 -&gt; R4
+    ADD y, R4 ; y + R4 -&gt; R4
+    ADD z, R4 ; z + R4 -&gt; R4
+    ADD #1234, R4 ; 1234 + R4 -&gt; R4</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm527853536" fo:font-style="normal" fo:font-weight="normal">After the above statements are executed, the sum of the four numbers will be stored in the register R4. </para>
+      
+       </section>
+   <section id="fs-idm243561760">
+<title>Assignments</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm585021456" fo:font-style="normal" fo:font-weight="normal">After an evaluation of an expression, the value is stored in a variable for future reference. Otherwise, it makes no sense to compute the expression. As a matter of fact, this simple assignment has been employed in each ADD instruction, where the destination operand always receives the sum. In the previous example, we may assign the expression to a variable, say, <emphasis effect="italics">v, </emphasis>as follows:</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm245954208" fo:font-style="normal" fo:font-weight="normal">The machine code for this assignment includes the evaluation of the expression, and a MOV statement at the end to store the result (R4) in the variable <emphasis effect="italics">v</emphasis>. </para>
+      <code id="eip-262" display="block">MOV R3, R4 ; initialize R4 to 0
+   ADD x, R4 ; x + R4 -&gt; R4
+   ADD y, R4 ; y + R4 -&gt; R4
+   ADD z, R4 ; z + R4 -&gt; R4
+   ADD #1234, R4 ; 1234 + R4 -&gt; R4
+   MOV R4, v ; store result in v
+  </code>
+ </section>
+   <section id="fs-idm626143472">
+<title>Commutative Operators</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm657164368" fo:font-style="normal" fo:font-weight="normal">Operations like addition, logical AND, and logical OR, are commutative, meaning that the order of their operands does not affect the result. For example, . Therefore, adding <emphasis effect="italics">x</emphasis> first or <emphasis effect="italics">y</emphasis> first yields the same result. However, if the <emphasis effect="italics">x, y</emphasis> are in registers, there is a concern as where to put the sum. If one of the values of <emphasis effect="italics">x</emphasis> and <emphasis effect="italics">y</emphasis>, is needed for future computation, that value should be placed as the source operand.  In the following example, R4 keeps the value of x after the addition. So R4 may participate in computation that needs the value of <emphasis effect="italics">x </emphasis>without reloading its value from memory. Moving data from memory unnecessarily will not only result in worse performance, but also increase code size.</para>
+      <code id="eip-956" display="block">MOV x, R4; x -&gt; R4
+    MOV y, R5; y -&gt; R5
+    ADD R4, R5 ; x + y -&gt; R5, R4 is intact</code>
+ </section>
+   <section id="fs-idm629782992">
+<title>Logical Expressions</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm563677376" fo:font-style="normal" fo:font-weight="normal">A logical expression is a relational expression or a Boolean expression that may be evaluated to either true or false. For example,  is a relational expression that defines the relation between <emphasis effect="italics">x</emphasis> and <emphasis effect="italics">y</emphasis>. However, there is no Boolean data type in assembly. What we can do is use 0 and 1 to represent false and true, respectively. In this way, we may assign a Boolean value to a Boolean variable as follows.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm565387792" fo:font-style="normal" fo:font-weight="normal">Here the assignment notation “:=” is used to differentiate it from the equal “=” sign, which checks the equality of two numbers. There is no direct instruction to translate  to a Boolean value in assembly. Therefore, a comparison (CMP) has to be used to check the relation first. The comparison results are set in the SR register. A control flow should be implemented to assign either 0 or 1 to the variable <emphasis effect="italics">z</emphasis>. Below is the machine code for the above Boolean assignment.</para>
+      <code id="eip-619" display="block">MOV y, R4; y -&gt; R4
+MOV z, R5; z -&gt; R5
+CMP R4, R5 ; y &gt; z?
+JC No
+Yes:MOV R3, x; x := 0
+BR Done
+No:MOV 0(R3), x; x := 1
+Done:</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm283273216" fo:font-style="normal" fo:font-weight="normal">In the above code, the label “Yes” is not necessary but it will make programs readable. It is inevitable to have a control structure implemented because the relational comparison stores the results in the SR register. The Boolean expression such as , may be implemented using bit-wise AND operation directly.  The following machine code implements the Boolean assignment.</para>
+      <code id="eip-998" display="block">MOV y, R4; y -&gt; R4
+MOV z, R5; z -&gt; R5
+AND R4, R5; R4 &amp; R5 -&gt; R5
+MOV R5, x; R5 -&gt; x</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm616787200" fo:font-style="normal" fo:font-weight="normal">Note that the bit-wise AND operation will yield 1 when both R4, and R5 have a value 1. In systems that assume 0 for false, and non-zero for true, the bit-wise AND operation may not work. For example, 0x2 and 0x1 are all logical true (non-zero) but . </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm215094928" fo:font-style="normal" fo:font-weight="normal">There is no explicit inclusive OR in MSP430 but the instruction BIS may be a substitute. The only difference is that SR is not affected by the BIS instruction. Should there is a following control structure dependent on the computation result, the BIS may be followed by a dummy ADD instruction. The following example illustrates the Boolean assignment .  </para>
+      <code id="eip-692" display="block">MOV y, R4; y -&gt; R4
+MOV z, R5; z -&gt; R5
+BIS R4, R5; R4 &amp; R5 -&gt; R5
+MOV R5, x; R5 -&gt; x</code>
+ </section>
+   <section id="fs-idm421822832">
+<title>Powers of Two Arithmetic</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm537812992" fo:font-style="normal" fo:font-weight="normal">Digital systems are based on binary arithmetic because the memory cell in hardware can only represent either high or low state. This creates some well-known relations between shifting and multiplication/division by two and its powers. The following section discusses these operations.</para>
+      
+       </section>
+   <section id="fs-idm248628208">
+<title>Multiply by Two to the Powers of Two</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm244340240" fo:font-style="normal" fo:font-weight="normal">If we contemplate the powers of two, 1, 2, 4, 8, 16 with their binary representations, 1, 10, 100, 1000, 10000, the left shifting regulation is found. Since numbers are stored in binary format in machines, we may left shift one bit of a value to achieve the same effect as multiply if by 2. If we left shift it again, we will actually multiply it by 4, which is . It turns out that any powers of 2 () will be done in this similar way. The following example illustrates multiply by  operation.</para>
+      <code id="eip-47" display="block">MOV x, R4; x -&gt; R4
+RLA R4; R4*2 -&gt; R4
+RLA R4; R4*2 -&gt; R4
+MOV R4, x; R4 -&gt; x
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm648673184" fo:font-style="normal" fo:font-weight="normal">It is worth mentioning that the RLA instruction is an emulated one, which actually uses the ADD instruction that adds the operand to itself. MSP430 provides rotation shift through carry. The carry bit requires to be cleared before rotations if a zero is expected. </para>
+      
+       </section>
+   <section id="fs-idm401069424">
+<title>Divide by Two to the Powers of Two</title>
+      
+     <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm204982000" fo:font-style="normal" fo:font-weight="normal">Divided by two or the powers of two may be implemented using right shift. For example, 4 (0100) right shifted by one bit will be 2 (0010). Note that right shift is not identical to divided by two. For example, a negative number in two’s complement format with its MSB 1 will be right shifted and the resultant value might become positive! For example, -7 in 4-bit two’s complement representation is 1001. If we right shift it by one bit, it becomes 0100, which is 4. Thus, MSP430 provides an arithmetic right shift (RRA) for this reason. The following example illustrates divide by  operation.</para>
+      <code id="eip-318" display="block">MOV x, R4; x -&gt; R4
+RRA R4; R4/2 -&gt; R4
+RRA R4; R4/2 -&gt; R4
+MOV R4, x; R4 -&gt; x
+</code>
+ </section>
+   <section id="fs-idm241552768">
+<title>Remainders</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm237652880" fo:font-style="normal" fo:font-weight="normal">A number divided by another yield quotient and remainder. The relation is , where <emphasis effect="italics">q</emphasis> is quotient and <emphasis effect="italics">r</emphasis> is the remainder after <emphasis effect="italics">x</emphasis> is divided by <emphasis effect="italics">y</emphasis>. General speaking, computation for the remainder requires an algorithm, if there is no direct instruction from the CPU, which is the case in MSP430. However, if the divisor (<emphasis effect="italics">y</emphasis>) is a powers of two, a simple logical AND operation will do the trick. For example, the remainder of a number <emphasis effect="italics">x</emphasis> divided by 8 is calculated as follows:</para>
+      <code id="eip-334" display="block">MOV x, R4; x -&gt; R4
+AND #0x7, R4; R4 &amp; 0x7 -&gt; R4</code><code id="eip-551" display="block">AND #0x7, R4;</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm241438864" fo:font-style="normal" fo:font-weight="normal">The binary representation of 0x7 is 0000 0000 0000 0111, which will extract the first 3 bits from the number. The first 3 bits (value 0 to 7) are the remainder of the number divided by 8. The immediate constant is always one less than the divisor, which is a powers of two. </para>
+      
+      
+    </section>
+    <section id="import-auto-idm220333088">
+      <title>Control Structure</title>
+ 
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm272102272" fo:font-style="normal" fo:font-weight="normal">Overview: Control structures implement program control flow such as repetitions, and conditional jumps. A piece of code in a program may be repeated for execution in a number of times. A loop is typically implemented for that piece of code. Some of the code may be executed based on a condition. If the condition holds, the code is executed. Otherwise, the code is bypassed. In some applications, computations are based on user’s inputs. Therefore, the code is organized to be executed based on the corresponding conditions from user’s inputs. </para>
+      
+       </section>
+   <section id="fs-idm244227536">
+<title>If Statement</title>
+    
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm582192048" fo:font-style="normal" fo:font-weight="normal">A simple IF statement evaluates a Boolean expression and executes the enclosed code if the Boolean expression is evaluated to true. The semantics can be described by the following statement in a typical high level language. </para>
+      <code id="eip-168" display="block">if (R4 == 0) {
+R5 := 1;
+}</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm277098608" fo:font-style="normal" fo:font-weight="normal">The value of R5 in the above statement will be 1 if R4 is 0. If R4 is not 0, R5 remains whatever value it holds. The statement includes a Boolean expression, R4==0, that is the condition for the following assignment statement. If the condition is true, the assignment statement is executed. If the condition is false, the assignment must be skipped. A jump instruction along with a label is used to skip instructions. Below is the translated machine code.</para>
+      <code id="eip-236" display="block">TST R4 ; test if R4==0
+JNZ Skip; jump to skip if R4 != 0
+MOV 0(R3), R5 ; R5 := 1
+Skip:</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1072164720" fo:font-style="normal" fo:font-weight="normal">In the above example, only the true statement appears. If R4 is not zero, R5 may be assigned to a value, say 2, a false statement can be implemented. The else-part is as follows:</para>
+      <code id="eip-709" display="block">if (R4 == 0) {
+R5 := 1;
+}
+else {
+R5 := 2;
+}</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm672558752" fo:font-style="normal" fo:font-weight="normal">Obviously, only one of two assignments is executed. The following machine code implements this if-then-else structure.</para>
+      <code id="eip-281" display="block">_if: TST R4 ; test if R4==0
+JNZ _else ; jump to else
+_then:
+MOV 0(R3), R5 ; R5 := 1
+BR _endif ; jump to endif
+_else:
+MOV @R3, R5 ; R5 := 2
+_endif:</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm250078320" fo:font-style="normal" fo:font-weight="normal">In the above example, the labels are prefixed with an underline to differentiate them from the predefined symbols in the system. The first two labels (_if and _then) are redundantly created for the purpose to make the code readable. The required labels are _else and _endif.  </para>
+       </section>
+   <section id="fs-idm475055472">
+<title>Switch Case Structure</title>
+      
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm291570256" fo:font-style="normal" fo:font-weight="normal">If there are several cases to consider, a structural implementation is a swith-case structure. For example, we may use the following switch-case structure to count the occurrence of letters.</para>
+      <code id="eip-844" display="block">switch(R4) {
+case ‘A’:
+R5++;
+break;
+case ‘B’:
+R6++;
+break;
+case ‘C’:
+R7++;
+break;
+default:
+R8++;
+}</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm273540640" fo:font-style="normal" fo:font-weight="normal">The above case-switch statement is translated to the following machine code.</para>
+      <code id="eip-8" display="block">CaseA: CMP #'A', R4 ; test if R4='A'
+JNZ CaseB ; jump to else
+
+INC R5 ; R5 := R5 + 1
+BR EndSwitch ; jump to EndSwitch
+CaseB:
+CMP #'B', R4 ; test if R4='B'
+JNZ CaseC ; jump to else
+
+INC R6 ; R6 := R6 + 1
+BR EndSwitch ; jump to EndSwitch
+CaseC:
+
+CMP #'C', R4 ; test if R4='c'
+JNZ Default ; jump to Default
+
+INC R7 ; R7 := R7 + 1
+BR EndSwitch ; jump to EndSwitch
+Default:
+INC R8 ; R8 := R8 + 1
+EndSwitch:</code>
+ </section>
+   <section id="fs-idm501472304">
+<title>Loops</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm281274016" fo:font-style="normal" fo:font-weight="normal">Loop is a common control structure and has been widely used in a program. Normally, a predicate composed of loop variables is used to determine if the loop should continue or terminates. The predicate is implemented in a Boolean expression, which may be evaluated before or after a loop iteration is executed. The while loop evaluates the loop predicate before a loop iteration starts. The repeat-until structure evaluates the loop predicate at the end of an iteration, which allows the loop to be executed at least once.  Should a loop become large, programmers may forget to modify loop variables, which results in an infinite loop. A more structural construct is for-loop which places the primer, predicate, and modification of loop variables upfront. It forces programmers to implement each component in the loop to avoid mistakes. </para>
+      
+       </section>
+   <section id="fs-idm431990368">
+<title>While loop</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm208092160" fo:font-style="normal" fo:font-weight="normal">The basic structure of a while loop includes primer, loop body, and modification of loop variables. The primer initializes loop variables, and evaluates the loop predicate. The loop body contains statements to be executed in the loop, and the modification of loop variables. The following while loop implements multiplication for .</para>
+      <code id="eip-948" display="block">x := 100;
+y := 200;
+p := 0;
+while (y != 0) {
+p := p + x;
+y := y – 1;
+}</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm589424080" fo:font-style="normal" fo:font-weight="normal">The above algorithm is translated to the following machine code. Assume variable <emphasis effect="italics">x</emphasis>, <emphasis effect="italics">y</emphasis>, and <emphasis effect="italics">p</emphasis> is associated with the register, R5, R4, and R6, respectively.</para>
+      <code id="eip-618" display="block">% R6 = R5 * R4
+MOV.W #100, R5 ; loop primer
+MOV.W #200, R4 ; used for countdown counter
+MOV.W R3, R6 ; init R6 to zero
+TST R4 ; predicate evaluation
+begin: JZ done ; conditional jump
+ADD R5, R6 ; loop statements
+DEC R4 ; modification of loop variables
+jmp begin ; repetition
+done: ; end of the loop</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm520827232" fo:font-style="normal" fo:font-weight="normal">All the instructions before “begin” are the loop primer. It is inevitable to have two labels “begin” and “done” in the program. The “begin” marks the beginning of the loop whereas the “done” label indicates the end of the loop. The predicate evaluation “TST R4” is added before entering the loop because the Z bit would not be set by the MOV instruction. It is however executed once because the further predicate evaluation is done automatically by the instruction “DEC R4” which also decreases the loop variable R4 by one. If it reaches zero, the Z bit will be set and it will not be cleared by the “jmp begin” instruction. So the following “JZ done” instruction will correctly terminates the loop. </para>
+      
+       </section>
+   <section id="fs-idm618576144">
+<title>Repeat-Until</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm535829504" fo:font-style="normal" fo:font-weight="normal">If a loop has to be executed at least once, the repeat-until structure is used. This is especially useful if some variables are initialized in a loop, and used for further computation after the loop. The repeat-until construct will guarantee the variable initialization. The following example computes the length of a null-terminated string. In IAR, the following declaration allocates null-terminated string (the actual allocated space is one more than the length of the string).</para>
+      <code id="eip-258" display="block">RSEG DATA16_N
+str DB "1234" ; define a null-terminated string
+; "1234"
+len DB 0 ; len of strin, initialize to 0</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm274465904" fo:font-style="normal" fo:font-weight="normal">Note that the system will allocate 5 bytes for the double quotes string “1234”. If the single quotes are used instead such as ‘1234’, only 4 bytes are allocated. In the case, there is no null character at the end. Even though it saves some space, there is no way of size inference for the stored string.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm243013184" fo:font-style="normal" fo:font-weight="normal">The following algorithm computes the length of a null-terminated string using the repeat-until construct. What we want to find out is the index of the character string where there is a null character. Therefore, the index will be the length of the string. </para>
+      <code id="eip-778" display="block">y = -1;
+Repeat {
+y = y + 1;
+} until (str[y] == 0);
+len = y;</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm668544832" fo:font-style="normal" fo:font-weight="normal">The primer of the repeat-until construct will normally set values to be one less than the start pints. The reason is due to the nature of the repeat-until which changes loop variables before the condition test.  In the above string length computation, the initial value of the index <emphasis effect="italics">y </emphasis> is set to -1. So the computation can start at 0, which is the first character of the string. Moreover, the array access str[y] in the until statement requires to be index addressing if the TST instruction is used. Since MSP430 won’t allow base to be a register in index addressing, i.e., R(R) format, the actual array address calculation requires another register.  The following translated code implements the above algorithm. </para>
+      <code id="eip-444" display="block">MOV @R3+, R4 ; set R4 to -1
+MOV #str-1, R5 ; R5 keeps address of the string-1
+repeat:
+ADD 0(R3), R4 ; R4 + 1 -&gt; R4
+ADD 0(R3), R5 ; R5 + 1 -&gt; R5
+TST.B 0(R5) ; test if str[y] is null
+JZ until; jump to until (done)
+JMP repeat; repeat the loop
+until:
+MOV.B R4, len; store the length</code>
+ </section>
+   <section id="fs-idm493111968">
+<title>For-loop</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm504074928" fo:font-style="normal" fo:font-weight="normal">For-loop is highly recommended for loop implementation as it has a very good structure for all the constituents of a loop. The initialization, predicate, and loop variable modifications are sitting together. This good programming practice would avoid hard-to-debug errors in loop implementation. In the string length calculation example, the following algorithm employs a for-loop.</para>
+      <code id="eip-847" display="block">for (y = 0; str[y]!=0; y++);
+len = y + 1;</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm279996688" fo:font-style="normal" fo:font-weight="normal">The body of the above for-loop construct is empty as most of the tasks are done in the for-loop header. The following translated machine code for the string length computation has exact number of instruction (8 instructions) as it is implemented using repeat-until construct. However, the for-loop evaluates the loop condition first. Therefore, the initialization part is straightforward that the index is set to 0 not -1. The address of the string is also set to its beginning address not one less than that. </para>
+      <code id="eip-371" display="block">MOV R3, R4 ; initialize R4 to 0
+MOV #str, R5; R4 keeps address of str
+for: TST.B 0(R5)
+JZ endFor
+INC R4
+INC R5
+JMP for
+endFor:
+MOV.B R4, len</code>
+ </section>
+   <section id="fs-idm604393728">
+<title>Register usage and Loops</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm271709680" fo:font-style="normal" fo:font-weight="normal">Perhaps, loops constitute most of the execution time for a program. A rule of thumb is put variables involved in the body of a loop into registers if possible, because the access time to registers is about several hundred magnitudes faster than memory accesses. Thus, the programming paradigm would be first load variables from memory in the primer part of a loop. Then the computation in the loop body will mainly reference to registers. After the loop terminates, the variables are stored back to memory. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm330117120" fo:font-style="normal" fo:font-weight="normal">In some cases there are not enough registers (only a handful is available at the time for the loop execution), register may be pushed to stack before entering the loop. After the loop terminates, registers are then restored from the stack. By doing so, the registers may be reused in the loop to improve performance. </para>
+       </section>
+   <section id="fs-idm489949504">
+<title>Performance</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm329315280" fo:font-style="normal" fo:font-weight="normal">The 80/20 rule states that 80% of a program execution time is spent on 20% of its code. The 20% of the code most likely would be loops. Therefore, loop performance has direct impacts on the overall program runtime performance. In the following sections, techniques in optimizing loops are presented.</para>
+       </section>
+   <section id="fs-idm599592208">
+<title>Test at the End</title>
+      
+      
+    
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm229961376" fo:font-style="normal" fo:font-weight="normal">There are two jump instructions in the example for string length computation. These two jump instructions may be combined to one in each loop iteration. This one less instruction would save a lot of time should the loop iterates hundreds of thousands of times! Below is the optimized implementation for for-loop. The other loop structures are similar.</para>
+      <code id="eip-303" display="block">MOV R3, R4 ; initialize R4 to 0
+MOV #str, R5 ; R4 keeps address of str
+JMP test ; jump to test
+for:
+INC R4 ; R4 + 1 -&gt; R4
+INC R5 ; R5 + 1 -&gt; R5
+test: TST.B 0(R5) ; test if str[y] = null
+JNZ for ; repeat the loop
+endFor:
+MOV.B R4, len ; assign the length</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm667472976" fo:font-style="normal" fo:font-weight="normal">Note that the optimized code contains 8 instructions but the main loop (from the label for: to the statement JNZ for) only has 4 instructions, which has 5 instructions in the repeat-until and for-loop implementations.</para>
+      
+       </section>
+   <section id="fs-idm448630416">
+<title>Instruction Weights in a Loop</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm285647408" fo:font-style="normal" fo:font-weight="normal">Indirect addressing has a lighter instruction weight than index addressing in MSP430. The limit of the destination addressing forces the index addressing in the condition test instruction TST.B in the above code. A further optimization chance is to take advantage of the rich source addressing in MSP430. Since the TST is an emulated instruction, which uses CMP instruction actually.  Therefore, by using the CMP instruction, we may employ indirect auto-increment addressing on the source operand for the string address update. This would increment the string address and indirect access to a string character at the same time. Below is the implementation.</para>
+      <code id="eip-931" display="block">MOV R3, R4 ; intialize R4 to 0
+MOV #str, R5 ; R4 keeps address of str
+JMP test ; jump to test
+for:
+INC R4 ; R4 + 1 -&gt; R4
+test: CMP.B @R5+, R3 ; test if str[y] = null
+JNZ for ; repeat the looop
+endFor:
+MOV.B R4, len ; assign the length</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm536142496" fo:font-style="normal" fo:font-weight="normal">The total instruction count is down to 7, and most importantly, the number of instruction in the main loop is down to only 3. It is worth mentioning that the indirect auto-increment addressing has a better performance as the index addressing has to fetch the base constant in addition to the instruction fetch.</para>
+      
+       </section>
+   <section id="fs-idm441864816">
+<title>Executing the Loop Backwards</title>
+      
+   
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm238037472" fo:font-style="normal" fo:font-weight="normal">If a loop iterates 100 times, the loop variable would go from 0 to 99. A register is normally associated with the loop variable. After each iteration, the loop variable is increased by one. The loop condition would be testing if the loop variable equals to 99, which may require a subtraction and check if the result is zero. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm277349440" fo:font-style="normal" fo:font-weight="normal">In some CPUs, testing zero is faster than comparing if two numbers are the same. Normally, comparing two numbers requires a subtract instruction. If two numbers are equal to each other, subtracting one from the other results in zero. Checking if a number is zero is actually OR’ing all the bits. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm660830192" fo:font-style="normal" fo:font-weight="normal">If a loop iterates 100 times, the loop may go from 100 down to 1. The loop variable would start at 100, and decrease by one in each iteration. By the time, it reaches zero, the loop terminates. So the loop condition will be checking if the loop variable equals to zero. This zero testing is normally better performance than subtraction. Moreover, the loop condition test is required for each iteration. Its performance has a direct impact on a loop.</para>
+       </section>
+   <section id="fs-idm469562528">
+<title>Nested Loops</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm331383184" fo:font-style="normal" fo:font-weight="normal">Nested loops are loops within loops. For example, in a two-dimensional matrix multiplication, there are three loops. Assume the matrix  where the subscripts are the dimension of each matrix, respectively. Below is the algorithm to compute the matrix multiplication.</para>
+      <code id="eip-938" display="block">for (i=0;i&lt; m;i++) {
+for (j=0;j&lt; n;j++) {
+for (k=0;k&lt; r;k++) {
+C[i,j] = C[i,j]+A[i,k]*B[k,j]
+}
+}
+}</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm233517552" fo:font-style="normal" fo:font-weight="normal">In the above matrix multiplication algorithm, the initial values for  are zero. The time complexity is , where  is the maximal dimension of the matrices.  </para>
+      
+       </section>
+   <section id="fs-idm446841136">
+<title>Timing Delay Loop</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm245778528" fo:font-style="normal" fo:font-weight="normal">In most applications, there is a need to slow down program executions. For example, if an LED is turned on and off for each second, there is a one second delay in-between on and off. There are ways for this delay, such as timers, loops, and the like. The easiest way is a delay loop, which is a loop without any useful computation. The following example illustrates a delay loop for about 2000 cycles.</para>
+      <code id="eip-889" display="block">MOV #1000, R4
+delay_loop:
+DEC R4
+JNZ delay_loop</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm304149360" fo:font-style="normal" fo:font-weight="normal">The loop will iterates 1000 times with the value of R4 changing from 1000 to 1. The DEC instruction is an emulated instruction for the instruction SUB.<emphasis effect="italics">x</emphasis> #1,<emphasis effect="italics">dst.</emphasis> The immediate value 1 can be from the constant generator 0(R3). So it takes one cycle. Another cycle is for the instruction JNZ delay_loop. Therefore, in each loop iteration, there are two cycles consumed. Altogether, the whole loop spends 2000 cycles. If the MSP430 is running at 25 MHz, the 2000 cycles will be equivalent to 80 ns. In this case, a one-second delay would have to set R4 to 12500000. However, the maximal possible value for R4 (2 bytes) will be 0xFFFF, which is 65535 in decimal. Therefore, to implement one-second delay, a nested loop is required. The following nested loop implements a one-second delay running at 25 MHz. </para>
+      <code id="eip-20" display="block">MOV #190, R4; set outer loop count for 190
+MOV R3, R5 ; set R5 to 0
+delay_loop:; entry point for both loops
+DEC R5; R5–1 -&gt; R5, inner loop counter
+JNZ delay_loop; loop if R5 not 0
+DEC R4; R4-1 -&gt; R4, outer loop counter
+JNZ delay_loop; loop if R4 not 0</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm648841552" fo:font-style="normal" fo:font-weight="normal">The inner loop with loop counter R5 iterates 65536 times for the two instructions. Therefore, the initial value for the outer loop counter is set to 190, which is equal to . Both loops are running backward. The total instruction cycles for the nested loop is , which is closer to the CPU clock rate, 25 MHz. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm204943088" fo:font-style="normal" fo:font-weight="normal">This type of delay is not accurate in a sense that the actual instruction counts may differ and may be subject to the underlying assembler. An accurate time delay may be achieved using timers and interrupts. In applications that require accurate timing, the approach using timers should be implemented.</para>
+      
+ </section>
+   <section id="fs-idm596230064">
+<title>Macros</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm241349760" fo:font-style="normal" fo:font-weight="normal">Assembly macros are user-defined code blocks that are used to substitute every macro occurrence in a program. Each macro is associated with a name with its arguments. Using macros is like assembler mnemonic instructions once the macros are defined. The assemblers will replace macro names with their code blocks using text substitutions. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm612588640" fo:font-style="normal" fo:font-weight="normal">The following define a macro to swap two numbers. To swap two numbers, it is inevitable to use a temporary space (R15). Thus, if R15 is used for something else, it has to be pushed to stack and restored after the macro.</para>
+      <code id="eip-104" display="block">swap MACRO A, B; define a macro swap with two
+mov.w A, R15; arguments, A and B
+mov.w B, A; swap A and B via R15
+mov.w R15, B ; move R15 to B
+ENDM; end of macro</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm244341536" fo:font-style="normal" fo:font-weight="normal">Here the macro name is swap, which will be used to call this macro. The arguments A and B will receive values passed and used for the macro expansion. Because both A and B are source and destination operands for some statements in the macro, they can only be register addressing or index addressing.  The assembler directive MACRO and ENDM are used to enclose a macro definition. Macro definitions may be placed at the beginning of the code segment or at the end of an assembly program (after the infinite loop statement JMP $ and before the assembly direction END). Note that everything after END will not be compiled! The following calls to this macro illustrate its uses.</para>
+      <code id="eip-400" display="block">swap R4, R5; swap R4 and R5
+MOV #0x0202, R4; set R4 to 0x0202
+MOV #0x0204, R5; set R5 to 0x0204
+swap 0(R4), 0(R5); swap words at 0x0202 and 0x0204</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm505303584" fo:font-style="normal" fo:font-weight="normal">Marco names by default in IAR are case sensitive. So if upper cases are preferable, they should be defined accordingly. In the above example, the macro swap is called by its name followed by two operands. The operands may be registers or index addressing operands. The index addressing allows swap two words in memory as is shown in the above example.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm291461248" fo:font-style="normal" fo:font-weight="normal">This macro uses R15 as a temporarily storage during swap. If R15 is used for some other purposes and its value has to be retained, R15 may be pushed to stack and restored after the swap is done. Here is the code for backing up and restoring R15 for stack.</para>
+      <code id="eip-497" display="block">swap MACRO A, B; define a macro swap with two
+PUSH R15; push R15 to stack
+mov.w A, R15; arguments, A and B
+mov.w B, A; swap A and B via R15
+mov.w R15, B ; move R15 to B
+POP R15; restore R15 from stack
+ENDM; end of macro</code><para id="import-auto-idm224966016">Assembly macros provide a convenient way for programmers to aggregate code for some specific computations without compromising performance. Each referenced macro name is substituted by the actual code. From the programmer’s perspective, the macro makes programs readable and maintainable. However, the expanded code may take space. Unless code size is a concern, using macros is highly recommended.  </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm507705984" fo:font-style="normal" fo:font-weight="normal">Since the macros will be expanded on each occurrence, the labels used may need to be defined locally. If the labels are not declared locally, the assembler will flag an error on the second macro call. If the labels within a macro are not set to local, they may not be used for a jump instruction target as the macro definition is used for the assembler internally. There is no code space allocated for the macro definition itself. Therefore, it does not make any sense to jump to a macro definition directly.</para>
+      <code id="eip-480" display="block">max MACRO A, B; define a macro max with two
+LOCAL L1; declare L1 locally
+CMP.W A, B ; compare A and B
+JNC L1; jump if A &gt; B
+MOV.W B, A
+L1: ENDM; end of macro</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm608988816" fo:font-style="normal" fo:font-weight="normal">It is a good programming paradigm to specify labels used in a macro local. So some names for an if-then-else structure may be reused. For example, the meaningful names used are _if, _then, _else, and _endif. </para>
+       </section>
+   <section id="fs-idm460495808">
+<title>Procedures and Functions</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm204633808" fo:font-style="normal" fo:font-weight="normal">A procedure (a.k.a. subroutine) is a function without a return value. A function is a group of instructions with an associated name and a set of arguments. The group of instructions may be executed according a set of actual arguments passed at the time of the function name is called. A procedure may perform some actions whereas a function is doing some computation and returning a value to the caller. Once a function is defined, it may be called just like a macro. The difference is that only a copy of a function’s code is stored in the system. During a function call, the control will be transfer to the function’s code address. At the end of a function call, the control will be transferred back to the next instruction of this function call in the caller. This control flow transfer requires a special CPU instruction, e.g., the CALL instruction in MSP430.  </para>
+       </section>
+   <section id="fs-idm599715968">
+<title>Functions</title>
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm307047248" fo:font-style="normal" fo:font-weight="normal">A function may be defined at the beginning of a code segment or the end of it before the direction END, like the places where a macro is defined. The name of a function is the label given in its definition. The last instruction of a function will be the RET instruction, which pops the return address for the stack and changes PC’s value. Once a function is defined, its name may be called using the immediate addressing (prefixed a pond sing # to a function name).</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm585111184" fo:font-style="normal" fo:font-weight="normal">The following example illustrates a procedure that delays about three machine cycles. Note that the definition is placed outside the address space for the main program, which is itself a function to be called by the system! </para>
+      <code id="eip-542" display="block">DelayTwoCycles:; define subroutine before main
+nop; delay one cycle
+nop; delay one cycle
+ret; return to next instruction after call
+call #DelayTwoCycles ; call DelayTwoCycles
+; make sure # is there ; the target address (immediate ; value) followed by the instruction</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm564558240" fo:font-style="normal" fo:font-weight="normal">The function name is actually a label, which declares the starting address of the function. The last instruction RET will take care of the return address and set the next PC to the return address. It is interesting that the call instruction followed by a function name prefixed with a pond sign. The pond sign indicates an immediate value, which is the name (starting address) of the function. </para>
+      
+       </section>
+   <section id="fs-idm483215728">
+<title>Parameters</title>
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm505658608" fo:font-style="normal" fo:font-weight="normal">For a function that implements an algorithm, it is often a must to pass parameters over. The function will perform computation based on the actual parameters. For example, if a function performs multiplication upon two numbers, the actual numbers will be passed at the time the function is called. The function body will perform computation based on formal parameters, place holders for the actual parameters. Therefore, before a function call, the actual parameters are stored in the place holders. Then a control transfer is triggered to the function. These place holders may be registers, memory, etc., which is an agreement between the caller and callee of a function. </para>
+      
+       </section>
+   <section id="fs-idm477646048">
+<title>Call by Value</title>
+      
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm314109056" fo:font-style="normal" fo:font-weight="normal">If the caller of a function just wants to pass several bytes of data, their values may be passed to the function. If the place holders for the values are registers, the designated registers will be set to the values accordingly. The function will then perform computation based on the values in the place holders. For example, a function may designate R4 and R5 as call-by-value parameters, and R5 will store the result. The caller will set R4 and R5 with actual values, and expect the result in R5.  </para>
+      
+       </section>
+   <section id="fs-idm587602400">
+<title>Call by Reference</title>
+      
+    
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm314294000" fo:font-style="normal" fo:font-weight="normal">If a parameter is an array, it is sometimes not wise to pass an array by its value because passing them over requires quite a few space, and what if only a few of them are accessed in computation. So only the address of an array is passed to a function. This mechanism is called call-by-reference. Call-by-reference parameters, however, require an indirect access to the actual values. Therefore, it typically needs a little extra time in function execution.</para>
+      
+       </section>
+   <section id="fs-idm399642848">
+<title>Call by Value-Returned</title>
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm227555296" fo:font-style="normal" fo:font-weight="normal">Call-by-reference parameters require indirect references to their actual value in a function. To eliminate this indirect access, the reference of a parameter is passed over a function, and the function will store its value for further references (direct access). At the end of the function, the value is written back to its caller via the passed address. This method is call-by-value-returned (a.k.a. value-result). If the parameter is referenced quite often, this approach is very efficient. However, if only a handful of references to the parameter, making a copy the parameter may not be costly.</para>
+      
+       </section>
+   <section id="fs-idm306764240">
+<title>Call by Result</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm538609472" fo:font-style="normal" fo:font-weight="normal">Call-by-result is almost identical to the call-by-value-returned except call-by-result does not pass data over a function. That is, the copying upon entering the function is not necessary. Therefore, call-by-result is more efficient than call-by-value-returned.</para>
+      
+       </section>
+   <section id="fs-idm439955776">
+<title>Call by Name</title>
+      
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm585110432" fo:font-style="normal" fo:font-weight="normal">Call by name is the parameter passing mechanism used in macros.  The call-by-name parameters are substituted for the formal parameter during a macro expansion. The swap macro expansion is illustrated as follows. </para>
+      <code id="eip-756" display="block">swap MACRO A, B; define a macro swap with two
+mov.w A, R15; arguments, A and B
+mov.w B, A; swap A and B via R15
+mov.w R15, B ; move R15 to B
+ENDM; end of macro
+swap R4, R5; macro call with paramters R4, and R5
+The macro call swap R4, R5 with the acutal parameters mapped to the foraml parameters A, and B, is illustarted as follows.
+mov.w R4, R15; R4 -&gt; A, R5-&gt; B
+mov.w R5, R4; swap R4 and R5 via R15
+mov.w R15, R5 ; move R15 to R5</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm290078304" fo:font-style="normal" fo:font-weight="normal">During the macro expansion, the actual parameter is used to replace every occurrence of its corresponding formal parameter. This text substitution may cause problems should there is a symbol conflict with the actual parameters. For example, if we pass R14 and R15 over the macro, the following shows the macro expansion.</para>
+      <code id="eip-991" display="block">mov.w R14, R15; R14-&gt;A, R15-&gt;B
+mov.w R15, R14; swap A and B via R15
+mov.w R15, R15 ; move R15 to B</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm241391408" fo:font-style="normal" fo:font-weight="normal">Obviously, the result is incorrect. After the execution of the macro, R15 will contain the value of R14 but R14 will remain its value. This is due to the name conflict on R15. Some languages such as Scheme provide hygienic macros, which guarantee macros not to cause collision with existing symbols. This naming conflict may not be solved simply by storing R15 in stack. In the above example, a workaround would be eliminating the use of the temporary register R15 as follows.</para>
+      <code id="eip-751" display="block">swap MACRO A, B; define a macro swap with two
+xor.w B, A; arguments, A and B
+xor.w A, B; swap A and B using XOR
+xor.w B, A;
+ENDM; end of macro</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm519553088" fo:font-style="normal" fo:font-weight="normal">The swap algorithm takes advantage of the exclusive OR for the equality axioms:  and . First, . Then . So . At this point, B got A. Applying the same operation again will put B in A. </para>
+      
+       </section>
+   <section id="fs-idm599192864">
+<title>Parameters in Registers</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm622172720" fo:font-style="normal" fo:font-weight="normal">Before a function call, the caller has to prepare the actual parameters for the function to perform with. The storage for these parameters is an agreement between the function and its caller. If the size of the storage is small (a number of bytes), the fastest and easiest way is to pass parameter via registers. The following example implements a shift-add multiplication algorithm.</para>
+      <code id="eip-999" display="block">mul: ; shift-add multiplication
+; R4 * R5 -&gt; R5
+PUSH R4 ; store R4
+PUSH R6 ; store R6
+PUSH R7 ; store R7
+MOV R3, R6 ; 0 -&gt; R6
+MOV @R3+, R7 ; 0xFFFF -&gt; R7 (counter)
+mulStart:
+CLRC ; clear Carry
+RRC R5 ; rotate right multiplier
+JNC noAdd ; no add if LSB of R5 is 0
+ADD R4, R6 ; R4 + R6 -&gt; R6
+noAdd: CLRC ; clear carry
+RRC R7 ; rotate right via carry
+JNC mulEnd ; done
+CLRC ; clear carry
+RLC R4 ; rotate left multiplicand
+JMP mulStart ; repeat
+mulEnd: MOV R6, R5 ; ending put product to R5
+POP R7 ; restore R7 (reverse order)
+POP R6 ; restore R6
+POP R4 ; restore R4
+RET</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm280557488" fo:font-style="normal" fo:font-weight="normal">The shift-add algorithm performs multiplication by right shifting the multiplier, and left shifting multiplicand, accumulating the multiplicand if the least significant bit (LSB) of the multiplier is non-zero in each iteration. The total number of iterations is the number bits of the multiplicand and the multiplier, which is 16 bits in MSP430. The register R6 is used for the partial product, and R7 is functioned as a counter for 32 iterations. The register R4 carrying the multiplicand and normally should not be changed. Because the registers (R4, R6 and R7) may be used in the caller, they are saved in stack on entry of the function, and restored on exit. The value R5 will be overwritten and thus its value needs not be saved. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm588354688" fo:font-style="normal" fo:font-weight="normal">In this implementation, R4 and R5 are used to carry the actual parameters from a caller. Therefore, the caller has to store their values before making the function call. The following example shows how to make a function call with call-by-value parameters.</para>
+      <code id="eip-983" display="block">MOV #10, R4
+MOV #20, R5
+CALL #mul</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm626185872" fo:font-style="normal" fo:font-weight="normal">The caller first sets R4 to 10, and R5 to 20, and expecting the product to be stored in R5. After function call, the values of R4 and R5 will be used to perform a multiplication. Since R4 provides the multiplicand and its value is saved to the stack on entry of the function, it will not be modified after the function call. This is compatible to the convention that the source operand will remain its value after the execution of an instruction in MSP430. </para>
+      
+       </section>
+   <section id="fs-idm620619440">
+<title>Parameters in Global Variables</title>
+      
+   
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm567887392" fo:font-style="normal" fo:font-weight="normal">Passing parameter via register is easy but there are only a number of registers in most of CPUs. In MSP430, there are only 12 registers (4 others are special function registers) available. An obvious place is the memory. Parameters may be allocated in a global memory area accessible to all the functions. At the beginning of a data segment (DATA16_N), e.g., in MSP430 is a candidate for the global variables. A map should be created for global variables stored in the data segment. Once created, all the functions will have to follow the agreement to access the global variables. Otherwise, an unexpected result may occur. Global variables, though simple, are not very efficient as each memory access is much slower than that of registers. This would be the last resort to consider for parameter passing.</para>
+      
+       </section>
+   <section id="fs-idm620138240">
+<title>Parameters in Stack</title>
+      
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm210627104" fo:font-style="normal" fo:font-weight="normal">Most of the high level programming languages such as the C language, and its derivatives pass parameters through stack. The system is allocated an activation record for each function call (instance).  In the activation record, there are actual parameters, static link, dynamic link, return address, and local variables of the function. Therefore, the caller of a function will push actual parameter to stack, and then make a function call. The following diagram shows the content of an activation record after a function call is made.</para>
+      <para id="import-auto-idm216998816">Table 13 A Typical Activation Record of a Function Call in Stack</para>
+      <table id="import-auto-idm651400576" summary="">
+        <tgroup cols="1">
+          <colspec colnum="1" colname="c1"/>
+          <thead>
+            <row>
+              <entry/>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Local variable 2</entry>
+            </row>
+            <row>
+              <entry>Local variable 1</entry>
+            </row>
+            <row>
+              <entry>Return address</entry>
+            </row>
+            <row>
+              <entry>Dynamic link</entry>
+            </row>
+            <row>
+              <entry>Static link</entry>
+            </row>
+            <row>
+              <entry>Actual parameter 2</entry>
+            </row>
+            <row>
+              <entry>Actual parameter 1</entry>
+            </row>
+            <row>
+              <entry/>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm216864096" fo:font-style="normal" fo:font-weight="normal"> The actual parameters are pushed in that order shown in Table 13.  The static link shows the relations between the function and its surrounding context. The dynamic link indicates the activation record that creates this one at runtime. The return address is the next instruction address after the function call, which is pushed by the call statement in MSP430. It is reasonable that the control should return back to the caller’s next instruction after the function finishes its execution. Local variables are defined and used in the function for computations.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm600498752" fo:font-style="normal" fo:font-weight="normal">The following example illustrates passing actual parameters through stack to a function in MSP430. First of all, the caller is in charge of pushing two actual parameters to stack, and then makes a function call. After the actual parameters are pushed, the stack contains the values for s1, and s2 in that order. The CALL instruction will then push the return address to the stack (on top of s1 and s2).</para>
+      <code id="eip-890" display="block">mul: ; shift-add multiplication
+; stack: s1, s2, ra
+PUSH R4 ; store R4
+PUSH R5 ; store r5
+PUSH R6 ; store R6
+PUSH R7 ; store R7
+; stack: s1, s2, ra, R4, R5, R6, R7
+MOV R3, R6 ; 0 -&gt; R6
+insert...
+MOV @R3+, R7 ; 0xFFFF -&gt; R7 (counter)
+insert...
+MOV 12(sp), R4; get s1 to R4
+insert...
+MOV 10(sp), R5; get s2 to R5
+mulStart:
+CLRC ; clear Carry
+RRC R5 ; rotate right multiplier
+JNC noAdd ; no add if LSB of R5 is 0
+ADD R4, R6 ; R4 + R6 -&gt; R6
+noAdd: CLRC ; clear carry
+RRC R7 ; rotate right via carry
+JNC mulEnd ; done
+CLRC ; clear carry
+RLC R4 ; rotate left multiplicand
+JMP mulStart ; repeat
+mulEnd: MOV R6, 12(sp); ending put product to s1 at stack
+POP R7 ; restore R7
+POP R6 ; restore R6
+POP R5 ; restore R5
+POP R4 ; restore R4
+MOV 0(sp), 2(sp) ; move ra next to s2
+INCD sp ; rewind stack
+RET</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm577330736" fo:font-style="normal" fo:font-weight="normal">Here is the call in the caller side. The caller and the function assume the parameters are in the following order: s1, s2, ra, where ra is the return address, and s1 will hold the return value, which is the product of s1 times s2.  That is after the function returns, the top of the stack should be the result. </para>
+      <code id="eip-436" display="block">PUSH #10 ; push first actual parameter to stack
+PUSH #20 ; push second actual parameter
+CALL #mul ; call multiplication function
+POP R4 ; pop return value from stack</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm229845168" fo:font-style="normal" fo:font-weight="normal">Note that the function shown in the above example receives parameters from the stack. It first stores registers to be used in stack. Then parameters are accessed and stored in registers using indexing addressing on the stack pointer (SP). Once the parameters are set, the computation algorithm is the same as a normal shift-add algorithm. The tricky part is the ending for stack manipulation. The result R6 is first stored to its designated location (s1) in stack. Stored registers are then restored. At this point, there are s1 (product), s2, and ra (return address) on stack. Since the RET instruction will access the top of the stack for return address, its value has to be put in the location at s2. Finally, the stack is rewound to it. So the net result for the stack is one element left (the product).</para>
+      
+       </section>
+   <section id="fs-idm517042560">
+<title>Parameters in Code Stream</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm805238368" fo:font-style="normal" fo:font-weight="normal">Normally, embedded processors have a larger program memory than data memory. Parameters may be passed along with the program code stream, i.e., the code memory. Code memory may contain data such as immediate values. Most of the CPUs support code memory access, and therefore actual parameters may be embedded in the code. The actual parameters are defined immediately followed by the function call instruction. It is also possible to place parameters before the function call instruction contingent to assembler’s support. However, the code memory is normally read-only access. So the return value has to be stored elsewhere. That means the parameters embedded in the code memory are static and may not be run-time values. The following example illustrates parameter passing via code memory in Silicon Labs IDE for 8051 processors.</para>
+      <code id="eip-460" display="block">power:
+mov r0, sp; SP -&gt; r0
+mov DPH, @r0; high byte of ra -&gt; DPH
+mova, #1;
+adda, r0;
+mov r0, a; SP + 1 -&gt; r0
+mov DPL, @r0; low byte of ra -&gt; DPL
+mova, #0
+movc a, @A+DPTR ; get return address
+mov r0, a ; store parameter 0xab to r0
+inc DPTR ; adjust return address
+mov r0, sp ; SP -&gt; r0
+mov @r0, DPH ; store high byte of ra
+mov a, #1
+add a, r0
+mov r0, a
+mov @r0, DPL ; store low byte of ra
+ret</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm333915840" fo:font-style="normal" fo:font-weight="normal">The function power is called using the following statement. The caller immediately defines a parameter 0xab followed by the function call instruction. The data is embedded in the code memory and its address is the return address after the function call instruction is executed. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm576371296" fo:font-style="normal" fo:font-weight="normal">call power; call the function power</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm332647600" fo:font-style="normal" fo:font-weight="normal">DB0xab; define a parameter 0xab</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm513763280" fo:font-style="normal" fo:font-weight="normal">The function power receives the parameter by referencing to the return address stored in the stack. The 8051 supports a set of instruction such as MOVC to access its code memory. Since it is 8-byte CPU, the 16-bit address has to be assembled to a data pointer (DPTR). With the DPTR 16-bit register, the code memory can be accessed. The parameter at the return address is then read out. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm579488832" fo:font-style="normal" fo:font-weight="normal">The last part of the above example is to adjust the return address stored in stack. Since the current return address points to the parameter, obviously not instruction, the return address has to be adjusted to bypass the parameter. In this case, the actual return address is increased by one. Again, the protocol of the parameter map is a contract between the function and its callers. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm518024256" fo:font-style="normal" fo:font-weight="normal">In the 8051 parameters in code stream example, the parameter (0xab) is defined directly followed by the function call instruction. The constant, however, is determined at compile time. What if we want to pass a variable that holds a runtime value over a function using this technique? A solution is to pass references of variables defined in the caller. The following example implements this idea in MSP430 using IAR. First of all, two arguments are defined as follows.</para>
+      <code id="eip-599" display="block">RSEG DATA16_N
+arg1 DW 0 ; parameter 1
+arg2 DW 0 ; parameter 2</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm310581936" fo:font-style="normal" fo:font-weight="normal">The variables arg1 and arg2 are declared with an initial value 0.  The caller may manipulate the two local variables at its will. Note that the first two lines of the following caller code may not have to be immediately before the function call instruction. The caller and the function (mul) assume that the function call instruction is followed by arg1 (one word), and followed by arg2 (another word). The address of arg1 is actually the return address when the function call is made. Therefore, the actual return address (next instruction after the function call) should be shifted by 4 (two words, two bytes each). The return value is assumed to be stored at the variable arg1. Therefore, the last line stores the result to R4 for further computation.</para>
+      <code id="eip-578" display="block">MOV #10, arg1
+MOV #20, arg2
+CALL #mul ; call multiplication function
+DW arg1 ; address of arg1
+DW arg2 ; address of arg2
+MOV arg1, R4</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm508359680" fo:font-style="normal" fo:font-weight="normal">The multiplication function is implemented with a slightly change in parameter passing. The following code illustrates parameters in code stream in MSP430. It is worth mentioning that the addresses of the parameters are passed over the function. The function employs the stored return address in stack as a reference to get the parameters. Once the addresses of the parameters are obtained, their actual values are stored in register R4 and R5. Similarly, at the end (mulEnd:), the results is written back to the caller’s local variable arg1. Finally, the actual return address stored in stack has to be added by 4 to bypass the two parameters.</para>
+      <code id="eip-140" display="block">mul: ; shift-add multiplication
+; code stream: @ra-&gt;s1, @ra+2-&gt;s2
+PUSH R4 ; store R4
+PUSH R5 ; store r5
+PUSH R6 ; store R6
+PUSH R7 ; store R7
+; stack: ra, R4, R5, R6, R7
+MOV 8(sp), R6 ; ra -&gt; R6
+MOV @R3+, R7 ; 0xFFFF -&gt; R7 (counter)
+MOV 0(R6), R4 ; get s1's address
+MOV 0(R4), R4 ; get s1's value
+MOV 2(R6), R5 ; get s2's address
+MOV 0(R5), R5 ; get s2's value
+MOV R3, R6 ; 0 -&gt; R6
+mulStart:
+CLRC ; clear Carry
+RRC R5 ; rotate right multiplier
+JNC noAdd ; no add if LSB of R5 is 0
+ADD R4, R6 ; R4 + R6 -&gt; R6
+noAdd: CLRC ; clear carry
+RRC R7 ; rotate right via carry
+JNC mulEnd ; done
+CLRC ; clear carry
+RLC R4 ; rotate left multiplicand
+JMP mulStart ; repeat
+mulEnd: MOV 8(sp), R4 ; get ra
+MOV 0(R4), R4 ; get s1's address
+MOV R6, 0(R4) ; ending put product to s1 at code stream
+POP R7 ; restore R7
+POP R6 ; restore R6
+POP R5 ; restore R5
+POP R4 ; restore R4
+ADD @SR, 0(SP); increase RA by 4 to bypass parameters
+RET</code>
+ </section>
+   <section id="fs-idm399193072">
+<title>Parameter Block</title>
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm558785376" fo:font-style="normal" fo:font-weight="normal">If there are a lot of parameters to be passed over a function, a designated parameter block may be used. A parameter block is a group of contiguous memory locations for parameters. All the caller needs to do is pass the beginning address of the parameter block over the function. The function then references parameters based on the beginning address of the parameter block. In this technique, only one parameter (the beginning address of the parameter block) needs be passed over the function. However, indirect accesses to parameters may be a little bit slower than direct access to register. Thus, this technique would be the last resort if performance is a concern. </para>
+       </section>
+   <section id="fs-idm477782288">
+<title>Functions Results</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm240510208" fo:font-style="normal" fo:font-weight="normal">Functions may return results back to their callers. In high level languages, a function without returning a value, e.g., void function in C, is called a procedure. Procedures are statements whereas functions are expressions. However, there is no difference between a function and a procedure in assembly languages. Normally, a function would return one value in high level language. In assembly, however, a function may return as many values as there is a need. The return value may be placed in register, stack, or memory. The following sections detail these mechanisms. </para>
+      
+      
+       </section>
+   <section id="fs-idm479097392">
+<title>Returning Function Results in a Register</title>
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm214982352" fo:font-style="normal" fo:font-weight="normal">The fastest way to returning function results is place them in registers. Except the special function registers such as PC, SP, SR, and R3 in MSP430, all registers are eligible for the return values. The problem is there is only a handful of registers. It is the programmer’s discretion to manage the registers. A good approach is reserve a designated set of registers for parameters. For example, registers R14 and R15 in MSP430 may be reserved for parameters. Thus, the caller would avoid using them in computation. They are only used to receive return values from a function. In case there is a need and it is inevitable to use the reserved registers, they have to be saved in stack and restored later.  </para>
+      
+       </section>
+   <section id="fs-idm599087568">
+<title>Returning Function Results on the Stack</title>
+      
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1039392416" fo:font-style="normal" fo:font-weight="normal">High level programming languages normally pass parameter through stack for its flexibility. Before a function call instruction, the caller has to push parameters to stack including the return value. Normally, the first push is for the return value, followed by parameters. This sequence is important as the function will reference parameters and the return value “slot” in that order. Based on this scenario, should a function returns more than one value, it just pushed more return value “slots” in stack. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm591880976" fo:font-style="normal" fo:font-weight="normal">What’s important is the function has to rewind the stack to a state that there are only return value “slots.” The process involves moving return address on top of the return value slots right before the function return. </para>
+      
+       </section>
+   <section id="fs-idm611938672">
+<title>Returning Function Results in Memory Locations</title>
+    
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm806155584" fo:font-style="normal" fo:font-weight="normal">Return values may be stored in a designated memory location. The approach is identical to global variables passing and parameter block passing. Global variables once defined are visible to functions. They may involve in the computation and so does storing results. Likewise, a parameter block is defined in a chunk of memory (each individual parameter may not be apparently defined). Passing the beginning address of a parameter block allows a function to access and store computation results in it. </para>
+       </section>
+   <section id="fs-idm593071616">
+<title>Side Effects</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm531961040" fo:font-style="normal" fo:font-weight="normal">In a function, registers or variables involved in its computation will be modified if they are not saved and restored afterwards. This is called side effect. A program may be designed to depend on the side effect. For example, a caller expects the modified value of a register after a function is returned. If the function is modified later, the side effect may be eliminated. This will cause a hard-to-debug error. Practically, computation subject to side effects should be avoided. </para>
+      
+       </section>
+   <section id="fs-idm244115952">
+<title>Local Variable Storage</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm247024544" fo:font-style="normal" fo:font-weight="normal">Local variables in high level languages are called auto variables, meaning that they are allocated in stack and wiped out after the function returns. In assembly, temporary storage may be allocated in stack. A function may issue several pushes to allocate space in stack. Each of them may be accessed relatively to the stack pointer (SP). When done computation, a matched amount of pops have to be issued, or the stack pointer (SP) is adjusted accordingly, to rewind the stack.</para>
+      
+       </section>
+   <section id="fs-idm232618720">
+<title>Recursion</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1201222992" fo:font-style="normal" fo:font-weight="normal">Recursion is a natural representation of some problems that have recursive definitions. A recursive definition typically specifies a recursive relation to a problem itself in terms of its problem size, and a base that defines the fundamental problem. For example, the sum of <emphasis effect="italics">n </emphasis>integers starting from 1 to <emphasis effect="italics">n </emphasis>is recursively defined as follows:</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm283568624" fo:font-style="normal" fo:font-weight="normal">
+        <emphasis effect="italics"/>
+      </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm295292912" fo:font-style="normal" fo:font-weight="normal">This recursive definition for the function <emphasis effect="italics">sum </emphasis>is based on itself with one less than the problem size (n-1). The base  is required. Otherwise, the copulation would never end. So basically the following derivation illustrates how to compute .</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm225302592" fo:font-style="normal" fo:font-weight="normal"> When we derive to sum(0), we know its value is 0 by the based definition. So its value is substituted for  used in computation . Therefore, . The value of  is then used to compute , which is . Doing this backwards and eventually  may be calculated. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm527918912" fo:font-style="normal" fo:font-weight="normal">The above recursive function may be implanted in any programming language that supports recursion. A C implementation is illustrated as follows.</para>
+      <code id="eip-562" display="block">int sum(int n) {
+if (n=0)
+return 0;
+return n+sum(n-1);
+}</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm283979424" fo:font-style="normal" fo:font-weight="normal">Note that the base case is first checked in the C function, and n is assumed to be a positive integer (why?). The function returns a value and takes a parameter. Typically, the return value and the parameter are allocated in stack. Otherwise, the return value may be wiped out by other function call instances. However, in this example, the return value may be allocated using a global variable. Anyhow, the following implementation pushes the return value in stack.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm517474912" fo:font-style="normal" fo:font-weight="normal">The caller first allocates a return value slot and sets a parameter in stack. So the function will have the return value, followed by the parameter, and followed by the return address.</para>
+      <code id="eip-760" display="block">PUSH R3 ; reserve return value
+PUSH #4 ; actual parameter 4
+CALL #sum ; call recursive function sum
+POP R4 ; pop parameter
+POP R4 ; pop return value</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm538733168" fo:font-style="normal" fo:font-weight="normal">The sum recursive function implemented in assembly deserves a carefully arrangement for parameters and return values in stack. First of all, the registers R4 and R4 are saved in stack because they are used in the computation in the body of the function. The stack pointer (SP) is used to reference the parameter and the return value. A rule of thumb is to have an exact number of pushes and pops when operating the stack in the code. Thus, the stack will be rewound back to its previous state as if there were nothing happened. This property should be maintained throughout the whole program. Otherwise, there is a risk to cause an out of memory error, which is normally resulted from an unmatched number of pushes and pops in stack operations.  </para>
+      <code id="eip-160" display="block">sum: ; sum(n)=n+sum(n-1), sum(0) = 0
+; stack: ret_value, n, ra
+PUSH R4 ; store R4
+PUSH R5 ; store R5
+; stack: ret_value, n, ra, R4, R5
+MOV 6(SP), R4 ; get n
+TST R4; test if n = 0
+JZ zero; jump to base case
+MOV R4, R5 ; keep n
+DEC R4 ; n-1 -&gt; R4
+PUSH R3 ; allocate slot for ret_value
+PUSH R4 ; push n-1
+CALL #sum; recursive call to sum
+POP R4; pop parameter
+POP R4 ; get ret_value
+ADD R4, R5; compute n+sum(n-1)
+MOV R5, 8(SP); store return value
+JMP endSum
+zero: MOV R3, 8(SP) ; reutrn 0 for base case
+endSum: POP R5 ; restore R5
+POP R4 ; restore R4
+RET</code>
+   </section>
+   <section id="fs-idm507771952">
+<title>Low Power Computing</title>
+
+      <para id="import-auto-idm600118768">There are two types of low power design techniques: dynamic frequency scaling (DFS), and dynamic voltage scaling (DVS). The power consumption of a device is proportional to , where  is frequency and  is the supplying voltage. Therefore, lower the frequency or voltage will reduce the power consumption. MSP430 is designed in a way that allows programmers to easily change the frequency and voltage.  In a later section, an example of using the very low frequency oscillator (VLO) in MSP430 for the clock source will be presented. It will provide about 12 KHz clocks (versus to 16 MHz in the full power mode), the lowest frequency you may get in MSP430.</para>
+      
+         </section>
+   <section id="fs-idm425992992">
+<title>Low Power Modes</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm221746672" fo:font-style="normal" fo:font-weight="normal">MSP430 is one of the off-the-shelf CPUs that support low power modes. There is one active mode along with five software selectable low power modes. An interrupt will wake up MSP430 from one of its low power modes. The ISR will be executed in the active mode, and MSP430 will return back to its previous low power mode after the ISR is finished. The following table shows the low power modes in MSP430. </para>
+      <para id="import-auto-idm285163616">Table 14 Low Power Modes in MSP430</para>
+      <table id="import-auto-idm285163488" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>Power Mode</entry>
+              <entry>Clock Settings</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Active mode (AM) </entry>
+              <entry>All clocks are active</entry>
+            </row>
+            <row>
+              <entry>Low-power mode 0 (LPM0) </entry>
+              <entry>CPU is disabled,  ACLK and SMCLK remain active,  MCLK is disabled</entry>
+            </row>
+            <row>
+              <entry>Low-power mode 1 (LPM1) </entry>
+              <entry>CPU is disabled,  ACLK and SMCLK remain active,  MCLK is disabled,  DCO’s dc-generator is disabled if DCO not used in active mode</entry>
+            </row>
+            <row>
+              <entry>Low-power mode 2 (LPM2) </entry>
+              <entry>CPU is disabled,  MCLK and SMCLK are disabled,  DCO’s dc generator remains enabled,  ACLK remains active</entry>
+            </row>
+            <row>
+              <entry>Low-power mode 3 (LPM3) </entry>
+              <entry>CPU is disabled,  MCLK and SMCLK are disabled,  DCO’s dc generator is disabled,  ACLK remains active</entry>
+            </row>
+            <row>
+              <entry>Low-power mode 4 (LPM4) </entry>
+              <entry>CPU is disabled,  ACLK is disabled,  MCLK and SMCLK are disabled,  DCO’s dc generator is disabled, Crystal oscillator is stopped</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+         </section>
+   <section id="fs-idm448624768">
+<title>Entering and Returning from Low Power Modes</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm282116432" fo:font-style="normal" fo:font-weight="normal">An interrupt wakes up MSP430 from any low power modes (LPM). On entering an interrupt service routine the following tasks will be performed:</para>
+      
+      <list id="import-auto-idm308831952" list-type="bulleted">
+        <item>PC and SR are stored on the stack</item>
+      </list>
+      
+      <list id="import-auto-idm653749392" list-type="bulleted">
+        <item>CPUOFF, SCG1, and OSCOFF bits are reset automatically</item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm283465136" fo:font-style="normal" fo:font-weight="normal">Resetting CPUOFF, SCG1, and OSCOFF bits means putting CPU in the active mode (full power). Therefore, by and large, interrupt service routines are executed in the full power mode.  On existing from an interrupt service routine, the following operations are executed:</para>
+      
+      <list id="import-auto-idm271198096" list-type="bulleted">
+        <item>Option 1:  Both PC and SR are restored.</item>
+      </list>
+      
+      <list id="import-auto-idm536442432" list-type="bulleted">
+        <item>Option 2: PC is restored but SR on the stack may be modified and return to a different LPM after RETI instruction is executed. </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm648977392" fo:font-style="normal" fo:font-weight="normal">It is possible to modify the saved SR, which contains low power control bits, in a way that the system will be running on another low power mode after an interrupt service routine is performed. The following example illustrates how CPU is woken up from LPM0 by an interrupt service routine. </para>
+      <code id="eip-496" display="block">; This example shows how ISR wakes up
+; MSP430 from LPM0.
+; Enter LPM0 Example
+BIS #GIE+CPUOFF,SR ; Enter LPM0
+; ... ; Program stops here
+;
+; Inside ISR
+; Exit LPM0 Interrupt Service Routine
+BIC #CPUOFF,0(SP) ; Exit LPM0 on RETI
+RETI</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm312877664" fo:font-style="normal" fo:font-weight="normal">On entry of an ISR, PC and SR are stored in stack as shown in Table 15. The stack pointer (SP) is pointing to the saved SR. Therefore, the ISR may modify its content at its will. In the above example, the CPUOFF bit is cleared. By the time, the instruction RETI restores PC and SR. It means the CPU will be running at the active mode. This mechanism is useful and prevalently used in modern computing system design, where a key press will wake up the system. The key press essentially generates an interrupt, which is then delivered by the CPU with its power mode modified. </para>
+      <para id="import-auto-idm210214448">Table 15 The Stack Content on Entry of an Interrupt Service Routine</para>
+      <table id="import-auto-idm240047616" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry/>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>SR</entry>
+              <entry>← SP</entry>
+            </row>
+            <row>
+              <entry>PC</entry>
+              <entry/>
+            </row>
+            <row>
+              <entry/>
+              <entry/>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm618358576" fo:font-style="normal" fo:font-weight="normal"/>
+         </section>
+   <section id="fs-idm244541936">
+<title>Clocking</title>
+      
+
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm250727024" fo:font-style="normal" fo:font-weight="normal">The design of low power operations in MSP430 lies in the software controllable clocks. There are user-accessible control bits for the clock sources including a main system clock (MCLK), sub-main system clock (SMCLK), and auxiliary clock (ACLK). There are built-in oscillators that generate clocks such as the low frequency/high frequency oscillator (XT1), the high frequency oscillator (XT2), the internal vary low frequency, low power oscillator with 12 KHz (VLO), and the internal digital clock oscillator (DCO). Both XT1 and XT2 may generate clock with frequencies ranging from 400 KHz to 16 MHz. Figure 7 describes the basic clock system in MSP430.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm326835856" fo:font-style="normal" fo:font-weight="normal">The bits, SCG1, SCG0, OSC OFF, and CPU OFF, in SR control the CPU clocking. When the SCG1 is set, the sub-main clock (SMCLK) is turned off. Setting SCG0 will turn digital clock (DC) generator. If OSC OFF is set, the LXFT1 oscillator is turned off. Setting the bit CPU OFF will turn off the main system clock (MCLK). There are frequency divisors (1/2/4/8) for ACLK, MCLK, and SMCLK. ACLK is software selectable from XT1 and VLO and is used for individual peripheral modules.  MCLK is software selectable from XT1, XT2 (if available), VLO, or DCO. </para>
+      <figure id="import-auto-idm514756592">
+        <media id="import-auto-idm1201346352" alt="">
+          <image mime-type="image/png" src="../../media/officeArt object-52c3.png" height="696" width="624"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm288159344">Figure 8 The Basic Clock System in MSP430<footnote id="import-auto-footnote-1"> The diagram is from Texas Instruments’ MSP430 user guide with the file name MSP430x2xxUserGuide_slau144e.pdf.</footnote></para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm317212144" fo:font-style="normal" fo:font-weight="normal">The control signals for vary low frequency oscillator (VLO) are stored in the BCSCTL3 register, a SFR, and its address is 0x0053. The LFXT1S_2 is a constant (0x20) defined in a header. The macro should be used instead of the actual value to improve program readability. So all we need to do is set BCSCTL3 to the LFXT1S_2 value. Since there is no need to change other bits in BCSCTL3, the BIS right fits into this purpose. The LFXT1S_2 is considered as a constant, along with the absolute addressing for SFRs. The statement to select VLO is depicted in the following</para>
+      <code id="eip-775" display="block">BIS.B #LFXT1S_2, &amp;BCSCTL3
+</code>
+         </section>
+   <section id="fs-idm242444048">
+<title>A Low Power Design Example</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm306297600" fo:font-style="normal" fo:font-weight="normal">MSP430 provides a very simple interface to control its low power modes. The rule of thumb in low power design is this: turn on components while they are needed. Most of the time, the system should be powered at its minimal energy consumption level just to maintain its states. This is crucial especially a system is powered by a battery pack. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm587296960" fo:font-style="normal" fo:font-weight="normal">In following example, the low power VLO will be used for clocking the whole system. Exercised is the low power mode 3 (LPM3), in which CPU, MCLK, SMCLK, and DCO are disabled. Only ACLK is active. To stop DCO, we need to set SCG0 and SCG1. Refer to the clock diagram in Figure 7, set SCG0 to stop DC generator. Set SCG1 will disconnect DCO and SMCLK. Both SCG0 and SCG1 are in SR. So we may use BIS to set them. Since SR is a word, the BIS.W instruction is used. Also, setting both SCG0 and SCG1 is combined to setting SGC0+SCG1.</para>
+      <code id="eip-808" display="block">#include "msp430.h" ; #define controlled include file
+NAME main ; module name
+PUBLIC main ; make the main label visible
+; outside this module
+ORG 0FFFEh
+DC16 init ; set reset vector to 'init' label
+RSEG CSTACK ; pre-declaration of segment
+RSEG CODE ; place program in 'CODE' segment
+init: MOV #SFE(CSTACK), SP ; set up stack
+main: NOP ; main program
+MOV.W #WDTPW+WDTHOLD,&amp;WDTCTL ; Stop watchdog timer
+
+BIS.B #LFXT1S_2, &amp;BCSCTL3 ; select VLO to source
+; ACLK
+BIC.B #OFIFG, &amp;IFG1 ; clear OFIFG
+BIS.W #(SCG0+SCG1), SR ; turn off DCO, and SMCLK
+BIS.B #SELM_3, &amp;BCSCTL2 ; select VLO to source MCLK
+BIS.W #CPUOFF+GIE, SR ; turn off MCLK
+JMP $amp; ; jump to current location 'amp$;'
+; (endless loop)
+END
+
+</code>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm512120736" fo:font-style="normal" fo:font-weight="normal">After selecting VLO, we have to clear the OSC fault flag in IFG1, interrupt flag register #1, at 0x0002. The interrupt flag is defined as OFIFG in the header. So we may use BIC to clear it. In MSP430 document, this is required. Otherwise, the system won’t work. Therefore, the BIC statement to clear the oscillator fault flag is added.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm283286752" fo:font-style="normal" fo:font-weight="normal">Note that the selected VLO would have to be routed to the MCLK. Otherwise, the CPU is not running at all because there is no clock into it. That is why the following statement is used to select the source of the MCLK from VLO.</para>
+      <code id="eip-681" display="block">BIS.B  #SELM_3, &amp;BCSCTL2  ; select VLO to source MCLK</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm211434640" fo:font-style="normal" fo:font-weight="normal">The statement that turns off MCLK, i.e., turns of CPU, should be placed after the instruction for other settings such as selecting VLO. Be aware that the system will be in “sleep” once the CPU is turned off. Also, the global interrupt should be enabled before putting CPU to a low power mode.  Or the CPU will not be awoken because it will not receive any interrupt, which activates CPU. </para>
+      
+   </section>
+   <section id="fs-idm461835984">
+<title>Interrupts</title>
+     <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm248359856" fo:font-style="normal" fo:font-weight="normal">Interrupts are a mechanism to notify CPU when some urgent events occur. For example, when a user presses a key on a keyboard, the keyboard hardware will generate an interrupt to notify CPU of this event. The CPU will 1) stop the current execution, 2) read the user’s input, and 3) resume its execution. </para>
+      
+         </section>
+   <section id="fs-idm439843120">
+<title>Interrupt Classification</title>
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm530848160" fo:font-style="normal" fo:font-weight="normal">Interrupts are classified to the following types: system reset, non-maskable interrupt, and maskable interrupt. Not all interrupts are with the same priority. The system reset has the highest priority, meaning that if there are pending interrupts, the system reset will be the first one to be delivered. Some interrupts may be masked (blocked), meaning that they will be ignored. Others may not be masked or ignored such as oscillator fault or access violation to flash memory, which is a non-maskable interrupt. Maskable interrupts includes global interrupt enable (GIE), individual interrupt enable (IE), and peripheral I/O such as general purpose I/O (GPIO). </para>
+         </section>
+   <section id="fs-idm186434848">
+<title>Interrupt Service Routine and Interrupt Vector</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm324903136" fo:font-style="normal" fo:font-weight="normal">When CPU is aware of an interrupt and it has to be delivered, a stored routine will be executed. This stored routine is called interrupt service routine (ISR). ISRs are programmed to suit an application’s need. The design of an ISR is identical to a subroutine except the return instruction should be “RETI” not “RET.” They may by stored anywhere in the code memory but their beginning addresses are stored in a designated location called interrupt vector.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm276463456" fo:font-style="normal" fo:font-weight="normal">The interrupt and reset vectors handle interrupt requests and system reset. In MSP430, one interrupt vector requires one word. So totally there are 32 interrupts allowed. The assigned address space is from 0xFFC0 to 0xFFFF. Each of the vectors stores the starting address of the corresponding interrupt service routine (ISR). For example, when there is an I/O interrupt request such as I/O data ready, the CPU will look for the corresponding interrupt vector and serve the I/O request by running its ISR. Interrupt provides high performance I/O, and is the fundamental mechanism for a multiprocessing system.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm270578112" fo:font-style="normal" fo:font-weight="normal">A vector is programmed by the user with the address of the corresponding interrupt service routine. It is recommended to provide an interrupt service routine for each interrupt vector that is assigned to a module. A dummy interrupt service routine can consist of just the RETI instruction and several interrupt vectors can point to it. If an interrupt vector contains an erroneous value due to an inappropriate initialization, the system may result in an “unstable” behavior. Because the interrupt may occur unexpectedly, the “odd” behavior is also not predictable. Therefore, it is really hard to find out this type of errors. It is highly recommended that the interrupt vector should be initialized during the system reset.  </para>
+      
+         </section>
+   <section id="fs-idm243613168">
+<title>Interrupt Acceptence</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm640906656" fo:font-style="normal" fo:font-weight="normal">Interrupts notify CPU of external events and CPU will response immediately. By “immediately,” it does not mean CPU will stop execution at the same clock cycle while interrupt is generated. If the interrupted instruction requires several clock cycles for its execution, the CPU will finish this instruction cycle. In other words, an interrupt is delivered in-between normal instructions. Once an interrupt is accepted, CPUs normally will perform a context switch and the corresponding ISR is loaded for servicing the interrupt request. Different CPUs may react to an interrupt slightly differently. The following illustrates how MSP430 responses to an interrupt.</para>
+      <list id="import-auto-idm585222672" list-type="bulleted">
+        <item>Any currently executing instruction is completed.</item>
+      </list>
+      <list id="import-auto-idm258648512" list-type="bulleted">
+        <item>The PC, which points to the next instruction, is pushed onto the stack.</item>
+      </list>
+      <list id="import-auto-idm475434624" list-type="bulleted">
+        <item>The SR is pushed onto the stack. So the current context is saved.</item>
+      </list>
+      <list id="import-auto-idm624643744" list-type="bulleted">
+        <item>The interrupt with the highest priority is selected if multiple interrupts occurred during the last instruction and are pending for service.</item>
+      </list>
+      <list id="import-auto-idm651684240" list-type="bulleted">
+        <item>The interrupt request flag resets automatically on single-source flags. Multiple source flags remain set for servicing by software.</item>
+      </list>
+      <list id="import-auto-idm615302224" list-type="bulleted">
+        <item>The SR is cleared. This terminates any low-power mode. Because the GIE bit is cleared, further interrupts are disabled. This is the way MSP430 being waken up for low power modes.</item>
+      </list>
+      <list id="import-auto-idm532159520" list-type="bulleted">
+        <item>The content of the interrupt vector is loaded into the PC. The program continues with the interrupt service routine at that address.</item>
+      </list>
+      <list id="import-auto-idm627694256" list-type="bulleted">
+        <item>On finishing execution of the ISR, the last instruction of an ISR, i.e., RETI, will restore SR, and then the PC. So the program continues its execution as if there were no interrupt.</item>
+      </list>
+      
+      
+      <list id="import-auto-idm582766384" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Interrupt Processing</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm475646592" fo:font-style="normal" fo:font-weight="normal">When an interrupt is delivered, the hardware will push PC and SR to stack. The PC is uploaded with the content of the corresponding vector, which is the beginning address of the ISR. The actual ISR code may be stored elsewhere but the assembly programmers may set the interrupt vector to predesigned ISRs. ISRs are developed by the assembly programmers. By and large, the ISR should not be too long.  </para>
+      
+         </section>
+   <section id="fs-idm424061744">
+<title>Return from Interrupts</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm246722240" fo:font-style="normal" fo:font-weight="normal">ISRs are similar to subroutines function-wise. Subroutines are called by the program whereas ISRs are called by the system. In MSP430, the instruction CALL for subroutines does not save SR. Only the next instruction address (PC) is saved in stack. On return, the RET instruction for subroutines only restore the save PC from the stack. ISRs, however, will have to restore both SR and PC. This is the reason why the return instruction for ISRs has to be RETI (return from an interrupt service routine) not RET.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm268117504" fo:font-style="normal" fo:font-weight="normal">In MSP430, the RETI instruction takes 5 cycles (CPU) or 3 cycles (MSP430x) to perform the following actions:</para>
+      
+      <list id="import-auto-idm313961856" list-type="bulleted">
+        <item>The SR with all previous settings pops from the stack. All previous settings of GIE, CPUOFF, etc. are now in effect, regardless of the settings used during an interrupt service routine.</item>
+      </list>
+      
+      <list id="import-auto-idm493157200" list-type="bulleted">
+        <item>The PC is restored from the stack.</item>
+      </list>
+      
+      <list id="import-auto-idm651257856" list-type="bulleted">
+        <item>The program resumes execution at the point where it was interrupted. </item>
+      </list>
+         </section>
+   <section id="fs-idm515413520">
+<title>Interrupts in Interrupts</title>
+      
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm244645632" fo:font-style="normal" fo:font-weight="normal">It is possible to interrupt an interrupt, which is currently under delivery. That is an interrupt is requested while an ISR is running, resulting in a nesting interrupt. Since the context is saved for each interrupted program, interrupting an interrupt is like a recursive function. This may consume quite a few of memory. In systems where memory is not abundant, this type of recursion should be avoided. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm605328496" fo:font-style="normal" fo:font-weight="normal">Interrupt nesting in MSP430 is permitted. Interrupt nesting is enabled if the GIE bit is set inside an interrupt service routine. When interrupt nesting is enabled, any interrupt occurring during an interrupt service routine will interrupt the routine, regardless of the interrupt priorities. </para>
+      
+         </section>
+   <section id="fs-idm637998080">
+<title>Caveats in Using Interrupts</title>
+     <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm218785504" fo:font-style="normal" fo:font-weight="normal">Interrupts are powerful and important to computer systems. Almost all CPUs come with interrupts. They are simple to be integrated into applications. However, they may be a bug source which is fairly hard to debug in systems that do not provide debugging interface for interrupts. In IAR, it provides interface via JTAG to debug programs, and a break point may be set inside an ISR. However, there are caveats in using interrupts as follows.</para>
+      <list id="import-auto-idm219498416" list-type="bulleted">
+        <item>Keep interrupt service routines short. A lengthy ISR may cause some problems. For example, the responsiveness of main program may be impeded.  Running ISR means the main program is suspended. A length ISR may also block further urgent interrupts if interrupts in an interrupt are not allowed. However, if the interrupts in an interrupt are allowed, memory space may be a concern. Therefore, the ISR should be the shorter, the better. If there is a need for some lengthy computation, the ISR may set a flag to notify the main program for further processing.</item>
+      </list>
+      <list id="import-auto-idm309592304" list-type="bulleted">
+        <item>Define all interrupt vectors. Not all interrupts are used in an application. For unused interrupts, their vectors are reserved by default. It is pretty much like a global variable is defined for the system, but its value is not initialized. By the time, the system involves the variable in some computation. Obviously, the result is not predictable. The interrupt vector contains the address of an ISR. If its content is not initialize to an effect address of an ISR, the system will execute something unexpected should the corresponding interrupt were delivered. In most cases, an invalid address will occur and the system halts. </item>
+      </list>
+      <list id="import-auto-idm275703552" list-type="bulleted">
+        <item>The shared data problem. Interrupts are the foundation of multiprocessing. In the basic form where there is a main program with an ISR, this creates an image of two execution threads: the main program, and the ISR. If the two threads share an object, the object would have to be protected. Otherwise, data integration would be violated. For example, if the shared object is a four byte integer (two words in MSP430), each operation on the integer should be applied to all four bytes. However, e.g., the main program may access the low word, and an interrupt occurs, the ISR then modifies the integer. By the time, the main program resumes, the high word is combined with the unmodified low word. Obviously, the integer is not the one used to be, nor the one after the modification. To solve this problem, a mechanism of something like semaphores should be implemented. </item>
+      </list>
+      
+         </section>
+   <section id="fs-idm428351040">
+<title>Timers</title>
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm281447424" fo:font-style="normal" fo:font-weight="normal">Timers in computer systems play an important role in providing timing information such as wall clock time, a delay that is inevitable, time sharing control, synchronization on two processes, and time stamps in documents. Most microprocessors are equipped with timers. There are different a variety of timers.</para>
+      
+      <list id="import-auto-idm629941856" list-type="bulleted">
+        <item>Watchdog: protect system against failure</item>
+      </list>
+      
+      <list id="import-auto-idm612017920" list-type="bulleted">
+        <item>Basic timer: interval timer for LCD</item>
+      </list>
+      
+      <list id="import-auto-idm624551248" list-type="bulleted">
+        <item>Real-time timer: provide wall clock</item>
+      </list>
+      
+      <list id="import-auto-idm635640864" list-type="bulleted">
+        <item>Timer_A: generate interrupts, external inputs, drive outputs, sampling, etc.</item>
+      </list>
+      
+      <list id="import-auto-idm636367696" list-type="bulleted">
+        <item>Timer_B: similar to Timer_A </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm474971728" fo:font-style="normal" fo:font-weight="normal">Timer_A is identical in all MSP430 family. That means if a program built on top of timers, and is to be developed for running on all MSP430 devices, Timer_A should be selected. Otherwise, some devices may not be equipped with the implemented timer, and the program may be running at that particular system.  </para>
+      
+         </section>
+   <section id="fs-idm385506128">
+<title>Timer A</title>
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm323253168" fo:font-style="normal" fo:font-weight="normal">The Timer A in MSP430 is composed of the following two main components:</para>
+      
+      <list id="import-auto-idm596745376" list-type="bulleted">
+        <item>Timer block: A 16-bit TAR register is in charge of counting. </item>
+      </list>
+      
+      <list id="import-auto-idm232242624" list-type="bulleted">
+        <item>Capture/compare channels: A register TACCRn keeps a preset count value. </item>
+      </list>
+      
+      
+      <list id="import-auto-idm242693824" list-type="bulleted">
+        <item>Capture: record the time (TAR) at which the input changes in TACCRn </item>
+      </list>
+      
+      
+      <list id="import-auto-idm624311792" list-type="bulleted">
+        <item>Compare: the current value (TAR) with TACCRn and update the output</item>
+      </list>
+      
+      
+      <list id="import-auto-idm215714320" list-type="bulleted">
+        <item>Request an interrupt by setting CCIFG in TACCRn </item>
+      </list>
+      
+      
+      <list id="import-auto-idm624953040" list-type="bulleted">
+        <item>Sample an input at a compare event</item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm317530832" fo:font-style="normal" fo:font-weight="normal">A control register TACTL is used to change the behavior of the timer A. The value stored in the register TACCR0 is used to compare with. TAR basically is a counting register. On each rising edge of a clock, it increases its value by one. So if we want the timer to count 100 cycles, the TACCR0 will be set to 100. The TAR will count its value from 0, 1, 2, 3, and so forth. On each count, the capture/compare channel will compare the values in TACCR0 and TAR. If they have the same value, then the timer will generate a timer interrupt. </para>
+      
+         </section>
+   <section id="fs-idm453488704">
+<title>Clock Sources</title>
+      
+      
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm503260704" fo:font-style="normal" fo:font-weight="normal">The counter TAR in the Timer A requires a clock source, which may be selected from ACLK or SMCLK. External clock source may be fed via TACLK or INCLK. The clock may be further divided by 2, 4, or 8 via the IDx bits in the TACTL control register. </para>
+      
+         </section>
+   <section id="fs-idm505633840">
+<title>Timer Operations</title>
+    
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm591527936" fo:font-style="normal" fo:font-weight="normal">When the clock source is active, and the mode control MCx&gt;0, the TAR starts counting. The MCx in TACTL determines one of the four operating modes listed as follows.</para>
+      <para id="import-auto-idm645040432">Table 16 Timer Operating Mode in MSP430</para>
+      <table id="import-auto-idm645040224" summary="">
+        <tgroup cols="3">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>MCx</entry>
+              <entry> Mode</entry>
+              <entry> Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>00</entry>
+              <entry> Stop</entry>
+              <entry> The timer is halted.</entry>
+            </row>
+            <row>
+              <entry>01</entry>
+              <entry> Up</entry>
+              <entry> The timer repeatedly counts from zero to the value of TACCR0.</entry>
+            </row>
+            <row>
+              <entry>10</entry>
+              <entry> Continuous</entry>
+              <entry> The timer repeatedly counts from zero to 0FFFFh.</entry>
+            </row>
+            <row>
+              <entry>11</entry>
+              <entry> Up/down</entry>
+              <entry> The timer repeatedly counts from zero up to the value of TACCR0 and back down to zero.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm582679232" fo:font-style="normal" fo:font-weight="normal">In the UP mode, the timer starts counting from 0. When the TAR reaches TACCR0, the TAR will be set to 0 and starts over again. Meanwhile, a timer interrupt will be generated. Therefore, the period of UP mode is equal to . If the TAR has a value that is larger than TACCR0, TAR will be set to 0 when the UP mode is selected.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm559655200" fo:font-style="normal" fo:font-weight="normal">The continuous mode provides a mechanism to an implement interval timer. Under this mode, the TAR keeps counting from 0 to 0xFFFF. The capture/compare registers TACCR0, TACCR1, and TACCR2 store the count values information for each period. For example, if an interval timer of 100 cycles is implemented, the TACCR0 is set to 100 for the first period. The timer counts from 0 to 100, and an interrupt is generated at clock 100. In the interrupt service routine, the TACCR0 is added by 100, which is 200, i.e., the total counts for the first and the second periods. For the second period, the timer will count from 101, 102, …, 200.  An interrupt is generated at clock 200. By doing this, an interval timer of 100 clock cycles is created. Similarly, TACCR1, and TACCR2 may be used for the other two independent intervals. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm587697584" fo:font-style="normal" fo:font-weight="normal">In the Up/Down mode, the timer is counting from 0 to TACCR0 and back down to 0. The Interrupt flags for the TACCR0 CCIFG and the TAIFG are set differently. The TACCR0 CCIFG interrupt flag is set when the timer counts from TACCR0 – 1 to TACCR0, whereas the TAIFG is set when the timer finishes counting down from 0x0001 to 0x0000.</para>
+      
+         </section>
+   <section id="fs-idm633052496">
+<title>A Timer Example</title>
+      
+     
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm317536128" fo:font-style="normal" fo:font-weight="normal">A timer is typically used with an interrupt service routine. The timer is in charge of timing whereas the interrupt service routine implements a system behavior for the event. The following example illustrates the use of a timer operating in the UP mode with an interrupt generated about once per second. In the interrupt service routine, an output port is toggled, which in turn toggle a connected LED one second at a time.  </para>
+      <code id="eip-933" display="block">#include "quot;msp430.h"quot; ; #define controlled include file
+NAME main ; module name
+PUBLIC main ; make the main label vissible
+; outside this module
+ORG 0FFFEh
+DC16 init ; set reset vector to 'init' label
+RSEG CSTACK ; pre-declaration of segment
+RSEG CODE ; place program in 'CODE' segment
+init: MOV #SFE(CSTACK), SP ; set up stack
+main: NOP ; main program
+MOV.W #WDTPW+WDTHOLD,&amp;WDTCTL ; Stop watchdog timer
+BIS.B #1, &amp;P1DIR ; set P1.0 to output mode
+BIS.B #LFXT1S_2, &amp;BCSCTL3 ; select VLO to source ACLK
+BIC.B #OFIFG, &amp;IFG1 ; clear OFIFG
+BIS.W #(SCG0+SCG1), SR ; turn off DCO, and SMCLK
+BIS.B #SELM_3, &amp;BCSCTL2 ; select VLO to source MCLK
+
+MOV.W #CCIE, &amp;TACCTL0 ; enable TA0 interrupt
+MOV.W #12000, &amp;TACCR0 ; set timing count
+MOV.W #TASSEL_1+MC_1, &amp;TACTL ; set ACLK for TA0 and
+; UP mode
+BIS.W #CPUOFF+GIE, SR ; turn off MCLK
+JMP $amp; ; jump to current location '$amp;'
+; (endless loop)
+TA0_ISR:; interrupt service routine for timer A
+XOR.B #001h, &amp;P1OUT ; toggle LED on p1.0
+RETI
+COMMON INTVEC ; specify interrupt vector segment
+ORG TIMERA0_VECTOR ; set PLC to TA's interrupt vector
+DW TA0_ISR ; assign ISR address
+
+END</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm583228304" fo:font-style="normal" fo:font-weight="normal">The interrupt service routine (TA0_ISR) is composed of two instructions: the XOR and the RETI. The XOR toggles the LED connected on the first bit of port 1 in EZ430-F2013 USB dongle. The RETI instruction is used for an ISR. Most importantly, the ISR has to be registered to the interrupt vector of the timer. The following code extracted from the above code will register the ISR.  </para>
+      <para id="import-auto-idm609872656"> COMMON  INTVEC  ; specify interrupt vector segment</para>
+      <code id="eip-947" display="block">COMMON INTVEC ; specify interrupt vector segment
+ORG TIMERA0_VECTOR ; set PLC to TA'apos;s interrupt vector
+DW TA0_ISR ; assign ISR address</code>
+
+    </section>
+  </content>
+</document>

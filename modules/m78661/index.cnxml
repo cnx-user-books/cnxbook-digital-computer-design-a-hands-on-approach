@@ -1,0 +1,273 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Hardware Security</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78661</md:content-id>
+  <md:title>Hardware Security</md:title>
+  <md:abstract>Hardware security as a discipline originated out of cryptographic engineering and involves hardware design, access control, secure multi-party computation, secure key storage, ensuring code authenticity, measures to ensure that the supply chain that built the product is secure among other things. 
+A hardware security module (HSM) is a physical computing device that safeguards and manages digital keys for strong authentication and provides cryptoprocessing. These modules traditionally come in the form of a plug-in card or an external device that attaches directly to a computer or network server.
+The study of hardware security starts from understanding topics such as Hardware/Firmware Security: Root of Trusts, Firmware Worms, BIOS/UEFI, and Chipsec. This chapter gives an overview of hardware security.</md:abstract>
+  <md:uuid>007be0f6-5e0b-4204-b953-a6591f542411</md:uuid>
+</metadata>
+
+<content>
+    <section id="import-auto-idm935608352">
+      <title>Overview</title>
+      <para id="import-auto-idm834597392">This chapter aims to give an overview of hardware security issues with Information Assurance and Security (IAS) learning materials from the systems perspective, including hardware, application programming interface, and operating systems. According to the guidelines on hardware rooted security in mobile devices [1], mobile devices are required to implement the following fundamental security primitives: roots of trust, an application programming interface (API) to the platform, and a policy enforcement engine. We believe it is important to verify these primitives’ integrity with hands-on experiments. Another focus in this module is low level programming (assembly programming in X86, ARM, or MIPS), and software reverse engineering, which are mandatory requirements for designation as a center of academic excellence in cyber operations by National Security Agency [2]. We will study hardware security in this module along with its countermeasures. We will demonstrate a tool, Intel’s Chipsec, to validate PC BIOS in terms of known vulnerabilities. Some tools such as OllyDbg [3] and IDApro [4] may be used to inspect memory contents.</para>
+    </section>
+    <section id="import-auto-idm816070528">
+      <title>Commonly Asked Terms</title>
+      <para id="import-auto-idm1151746240">First of all, we will study firmware worms such as CIH that attacks PCs and ThunderStruck2 that may attack MACs. Let’s first examine some common terms in this subject.</para>
+      <section id="import-auto-idm817676736">
+        <title>What is firmware?</title>
+        <para id="import-auto-idm1122752496">Firmware is a piece of software stored in read-on-memory (ROM) or flash memory that comes with hardware. For example, each time you run a MSP430 program in IAR Embedded Workbench and the FET debugger is set, your program actually is transferred to the flash memory in the MSP430 chip. So the program is there, even though your turn off the power to the hardware. When a computer starts, its firmware will be executed first followed by loading an operating system such as Windows or MAC OS. Firmware also exists in peripherals such as harddrives, network cards, USB memory sticks, MSP430 launch pads, etc. In PC, it is called BIOS that stands for basic input output system  </para>
+      </section>
+      <section id="import-auto-idm826864976">
+        <title>What is CIH?</title>
+        <para id="import-auto-idm825310096">CIH is a computer virus developed by a Taiwanese college student in 1998. This virus erases the first megabyte of a hard drive and PC BIOS firmware. It causes machines to hang or cue the blue screen death. Zero out the first megabyte of a hard drive will delete partition tables and master boot record (MBR), which is why CIH causes computers not bootable. </para>
+      </section>
+      <section id="import-auto-idm1169233648">
+        <title>How does CIH spread?</title>
+        <para id="import-auto-idm733399808">It hides itself in a Portable Executable (PE) file under Windows 95, 98, and ME. It does not spread via Windows NT-based operating systems such Windows XP, 7, 8, and 10. The virus code size is 1K that is chopped into small slivers and inserted into unused space in the tail of a PE header. As a result, the infected files do not grow their size at all.  </para>
+      </section>
+      <section id="import-auto-idm814541600">
+        <title>What is Thunderstrike 2 worm?</title>
+        <para id="import-auto-idm919989840">The Thurderstrike 2 is a firmware type of worms created by Xeno Kovah et al. to prove that MACs may be attacked via an Apple Thurderbolt Ethernet adapter. The worm hides on the option ROM on the Thurderbolt Ethernet adapter, which will be loaded and infect MAC’s firmware when connected.  </para>
+      </section>
+      <section id="import-auto-idm810497568">
+        <title>How does the Thurderstrike 2 spread? </title>
+        <para id="import-auto-idm1198406880">An attacker could compromise the boot firmware on MacBooks via phishing email or malicious web site. The compromised MacBooks will spread the worm by looking at any connected devices, such as Apple Thurderbolt Ethernet adapters, that have an option ROM. When the infected devices are inserted to other computers, they will load the optional ROM, which triggers flashing their boot firmware with the worm. </para>
+      </section>
+      <section id="import-auto-idm384607840">
+        <title>Why is the firmware worm difficult to be detected and removed?</title>
+        <para id="import-auto-idm392746592">Most the anti-virus software does not have the privilege to scan the firmware simply because its operations rely on the firmware. Moreover, the firmware may disguise itself by reporting normally for any requests from upper level applications. This makes it difficult to detect. Also, the firmware is basically part of hardware. Unless explicitly flash a clean firmware, re-installing OS will not remove the worm sitting in firmware.</para>
+      </section>
+      <section id="import-auto-idm380726256">
+        <title>Why firmware worms can attack different computers including MACs, Dell, Lenovo, Samsung, and HP?</title>
+        <para id="import-auto-idm876286432">Motherboard manufacturers typically create their firmwares from the same reference implementations such as EFI, UEFI, BIOS, AMI, DTK, Award, Lenovo, and Phoenix. If someone finds a bug in one, the vulnerability will exist in others with a high chance.</para>
+      </section>
+      <section id="import-auto-idm935213152">
+        <title>How to find out BIOS information on my computer?</title>
+        <para id="import-auto-idm1166436912">The first way is by restarting your computer. When the initial load (also called POST) screen is displayed, the BIOS Type and version is also displayed. If the load screen is displayed for only a few seconds, you can try pressing the Pause/Break key on your keyboard to pause the loading process. Pausing the screen should make it easier to find and read the BIOS information. When you're ready to resume the boot process, press Pause/Break again. If you want to change BIOS settings, typically press “DEL”  and “Enter” key will enter BIOS. Below is my BIOS screenshot.</para>
+        <para id="import-auto-idm1155516320">Second, the BIOS information is also shown through the Windows System Information. To open this tool click START, Programs, Accessories, System Tools, and then System Information. In the System Information window, displaying information about your computer, including the type of BIOS you have and the version, under the System Summary section. As can be seen in the picture below, this computer has a BIOS Version/DateLENOVO 9QKT31AUS, 10/26/2011.</para>
+        <figure id="import-auto-idm919951264">
+          <media id="import-auto-idm1057896272" alt="">
+            <image mime-type="image/png" src="../../media/Picture 1.png" height="468" width="624"/>
+          </media>
+        </figure>
+        <para id="import-auto-idm1149526432">Lastly, you can also find BIOS information in the Windows System Registry. While in the registry realize that improperly changing a setting can affect how Windows operates. So be careful if you choose to use this option to view your BIOS information.</para>
+        <para id="import-auto-idm1115630784">To access the System Registry, click START and in the Run or Search box type <emphasis effect="bold">regedit</emphasis> in the text field and press enter. In the Windows Registry navigate to the below Registry directory.</para>
+        <para id="import-auto-idm1118611168">HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System</para>
+        <para id="import-auto-idm1167154672">Find the subkeys <emphasis effect="bold">SystemBiosDate</emphasis> and <emphasis effect="bold">SystemBiosVersion</emphasis> to see the BIOS and version for your motherboard. As can be seen in the picture below, the BIOS date and version are shown in these two keys (blue highlighted).</para>
+        <figure id="import-auto-idm1115288624">
+          <media id="import-auto-idm914099312" alt="">
+            <image mime-type="image/png" src="../../media/Picture 2.png" height="468" width="624"/>
+          </media>
+        </figure>
+      </section>
+    </section>
+    <section id="import-auto-idm399797472">
+      <title>What is the countermeasure?</title>
+      <para id="import-auto-idm811557552">Don’t buy unknown devices or plugin devices for your computers. Infected firmware has to be re-flashed to remove the worm. This may require special hardware/software tools such as JTAG flash programmer.</para>
+      <para id="import-auto-idm814300576">NIST's (National Institute of Standards and Technology) has published two firmware protection guidance documents: BIOS protection guidelines and BIOS integration measurement guidelines.</para>
+      <para id="import-auto-idm347431168">Install Windows Driver Kit Version 7.1.0 and build Chipsec Windows driver.</para>
+      <figure id="import-auto-idm817108784">
+        <media id="import-auto-idm816769856" alt="">
+          <image mime-type="image/png" src="../../media/Picture 3-5174.png" height="468" width="624"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm725410384">Running Chipsec:</para>
+      <para id="import-auto-idm871259504">C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1.1.0\source\tool&gt;</para>
+      <para id="import-auto-idm822938304">python chipsec_main.py</para>
+      <para id="import-auto-idm712637936">[helper] OS: Windows 7 6.1.7601</para>
+      <para id="import-auto-idm1158168400">[helper] Using 'helper/win/win7_amd64' path for driver</para>
+      <para id="import-auto-idm401397856">WARNING: G[S]etFirmwareEnvironmentVariableExW function doesn't seem to exist</para>
+      <para id="import-auto-idm862109792">################################################################</para>
+      <para id="import-auto-idm1199606656">##  ##</para>
+      <para id="import-auto-idm347455664">##  CHIPSEC: Platform Hardware Security Assessment Framework  ##</para>
+      <para id="import-auto-idm858610336">##  ##</para>
+      <para id="import-auto-idm932459312">################################################################</para>
+      <para id="import-auto-idm813160464">Version 1.1.0</para>
+      <para id="import-auto-idm899827936">WARNING: Chipsec should only be used on test systems!</para>
+      <para id="import-auto-idm385507536">WARNING: It should not be installed/deployed on production end-user systems.</para>
+      <para id="import-auto-idm828797040">WARNING: See WARNING.txt</para>
+      <para id="import-auto-idm342987808">OS  : Windows 7 6.1.7601 AMD64</para>
+      <para id="import-auto-idm895792304">Platform: Desktop 2nd Generation Core Processor (Sandy Bridge CPU / Cougar Point</para>
+      <para id="import-auto-idm807862432"> PCH)</para>
+      <para id="import-auto-idm843489776"> VID: 8086</para>
+      <para id="import-auto-idm710611920"> DID: 0100</para>
+      <para id="import-auto-idm1121328592">CHIPSEC : 1.1.0</para>
+      <para id="import-auto-idm813331088">[*] loading common modules from ".\chipsec\modules\common" ..</para>
+      <para id="import-auto-idm1204011568">[+] loaded chipsec.modules.common.bios_kbrd_buffer</para>
+      <para id="import-auto-idm1205857840">[+] loaded chipsec.modules.common.bios_ts</para>
+      <para id="import-auto-idm349512624">[+] loaded chipsec.modules.common.bios_wp</para>
+      <para id="import-auto-idm905329632">[+] loaded chipsec.modules.common.smm</para>
+      <para id="import-auto-idm888429792">[+] loaded chipsec.modules.common.smrr</para>
+      <para id="import-auto-idm1127823984">[+] loaded chipsec.modules.common.spi_lock</para>
+      <para id="import-auto-idm881899152">[+] loaded chipsec.modules.common.secureboot.keys</para>
+      <para id="import-auto-idm831464800">[+] loaded chipsec.modules.common.secureboot.variables</para>
+      <para id="import-auto-idm921155952">[*] loading platform specific modules from ".\chipsec\modules\snb" ..</para>
+      <para id="import-auto-idm808352000">[*] loading modules from ".\chipsec\modules" ..</para>
+      <para id="import-auto-idm697479616">[+] loaded chipsec.modules.module_template</para>
+      <para id="import-auto-idm1125261040">[*] running loaded modules ..</para>
+      <para id="import-auto-idm938634144">[+] imported chipsec.modules.common.bios_kbrd_buffer</para>
+      <para id="import-auto-idm905099920">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm1130554640">.1.0\source\tool\chipsec\modules\common\bios_kbrd_buffer.py</para>
+      <para id="import-auto-idm343067168">[x][ =======================================================================</para>
+      <para id="import-auto-idm351668144">[x][ Test: Pre-boot Passwords in the BIOS Keyboard Buffer</para>
+      <para id="import-auto-idm861633408">[x][ =======================================================================</para>
+      <para id="import-auto-idm805703920">[*] Keyboard buffer head pointer = 0x32 (at 0x41A), tail pointer = 0x32 (at 0x41</para>
+      <para id="import-auto-idm1109007632">C)</para>
+      <para id="import-auto-idm890460768">[*] Keyboard buffer contents (at 0x41E):</para>
+      <para id="import-auto-idm812732656">20 00 20 00 20 00 20 00 20 00 20 00 20 00 20 00 |</para>
+      <para id="import-auto-idm1135398000">20 00 20 00 20 00 20 00 20 00 20 00 20 00 20 00 |</para>
+      <para id="import-auto-idm812307680">[-] Keyboard buffer tail points inside the buffer (= 0x32)</para>
+      <para id="import-auto-idm813483184"> It may potentially expose lengths of pre-boot passwords. Was your password 1</para>
+      <para id="import-auto-idm1207245184">1 characters long?</para>
+      <para id="import-auto-idm1172728512">[*] Checking contents of the keyboard buffer..</para>
+      <para id="import-auto-idm1123316976">[+] PASSED: Keyboard buffer looks empty. Pre-boot passwords don't seem to be exp</para>
+      <para id="import-auto-idm807342432">osed</para>
+      <para id="import-auto-idm1186959296">[+] imported chipsec.modules.common.bios_ts</para>
+      <para id="import-auto-idm380662208">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm867901104">.1.0\source\tool\chipsec\modules\common\bios_ts.py</para>
+      <para id="import-auto-idm726926704">[x][ =======================================================================</para>
+      <para id="import-auto-idm347665504">[x][ Test: BIOS Interface Lock and Top Swap Mode</para>
+      <para id="import-auto-idm826927024">[x][ =======================================================================</para>
+      <para id="import-auto-idm815293456">[*] RCBA General Config base: 0xFED1F400</para>
+      <para id="import-auto-idm808747968">[*] GCS (General Control and Status) register = 0x00000C01</para>
+      <para id="import-auto-idm906945600"> [10] BBS  (BIOS Boot Straps)  = 0x3</para>
+      <para id="import-auto-idm810117760"> [00] BILD (BIOS Interface Lock-Down) = 1</para>
+      <para id="import-auto-idm1195486112">[*] BUC (Backed Up Control) register = 0x00000000</para>
+      <para id="import-auto-idm805765824"> [00] TS (Top Swap) = 0</para>
+      <para id="import-auto-idm879435536">[*] BC (BIOS Control) register = 0x00</para>
+      <para id="import-auto-idm915570912"> [04] TSS (Top Swap Status) = 0</para>
+      <para id="import-auto-idm897886384">[*] BIOS Top Swap mode is disabled</para>
+      <para id="import-auto-idm833526800">[+] PASSED: BIOS Interface is locked (including Top Swap Mode)</para>
+      <para id="import-auto-idm392718688">[+] imported chipsec.modules.common.bios_wp</para>
+      <para id="import-auto-idm814363440">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm916097008">.1.0\source\tool\chipsec\modules\common\bios_wp.py</para>
+      <para id="import-auto-idm1057927744">[x][ =======================================================================</para>
+      <para id="import-auto-idm1204722048">[x][ Test: BIOS Region Write Protection</para>
+      <para id="import-auto-idm706232016">[x][ =======================================================================</para>
+      <para id="import-auto-idm821670432">[*] BIOS Control (BDF 0:31:0 + 0xDC) = 0x00</para>
+      <para id="import-auto-idm343492416"> [05]  SMM_BWP = 0 (SMM BIOS Write Protection)</para>
+      <para id="import-auto-idm385675888"> [04]  TSS  = 0 (Top Swap Status)</para>
+      <para id="import-auto-idm928409600"> [01]  BLE  = 0 (BIOS Lock Enable)</para>
+      <para id="import-auto-idm815393296"> [00]  BIOSWE  = 0 (BIOS Write Enable)</para>
+      <para id="import-auto-idm1155938096">[-] BIOS region write protection is disabled!</para>
+      <para id="import-auto-idm363814608">[*] BIOS Region: Base = 0x00180000, Limit = 0x003FFFFF</para>
+      <para id="import-auto-idm721562048">SPI Protected Ranges</para>
+      <para id="import-auto-idm344726848">------------------------------------------------------------</para>
+      <para id="import-auto-idm921227296">PRx (offset) | Value  | Base  | Limit  | WP? | RP?</para>
+      <para id="import-auto-idm1172078608">------------------------------------------------------------</para>
+      <para id="import-auto-idm832038240">PR0 (74)  | 00000000 | 00000000 | 00000000 | 0  | 0</para>
+      <para id="import-auto-idm935988256">PR1 (78)  | 00000000 | 00000000 | 00000000 | 0  | 0</para>
+      <para id="import-auto-idm862492912">PR2 (7C)  | 00000000 | 00000000 | 00000000 | 0  | 0</para>
+      <para id="import-auto-idm710620432">PR3 (80)  | 00000000 | 00000000 | 00000000 | 0  | 0</para>
+      <para id="import-auto-idm813393200">PR4 (84)  | 00000000 | 00000000 | 00000000 | 0  | 0</para>
+      <para id="import-auto-idm886573504">[!] None of the SPI protected ranges write-protect BIOS region</para>
+      <para id="import-auto-idm1195404400">[!] BIOS should enable all available SMM based write protection mechanisms or co</para>
+      <para id="import-auto-idm817455008">nfigure SPI protected ranges to protect the entire BIOS region</para>
+      <para id="import-auto-idm381381248">[-] FAILED: BIOS is NOT protected completely</para>
+      <para id="import-auto-idm806102576">[+] imported chipsec.modules.common.smm</para>
+      <para id="import-auto-idm709431536">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm1121492416">.1.0\source\tool\chipsec\modules\common\smm.py</para>
+      <para id="import-auto-idm347995296">[x][ =======================================================================</para>
+      <para id="import-auto-idm340277728">[x][ Test: Compatible SMM memory (SMRAM) Protection</para>
+      <para id="import-auto-idm873476752">[x][ =======================================================================</para>
+      <para id="import-auto-idm1182663040">[*] Compatible SMRAM Control (00:00.0 + 0x88) = 0x1A</para>
+      <para id="import-auto-idm1156042464"> [06]  D_OPEN  = 0 (SMRAM Open)</para>
+      <para id="import-auto-idm863292656"> [05]  D_CLS  = 0 (SMRAM Closed)</para>
+      <para id="import-auto-idm341555344"> [04]  D_LCK  = 1 (SMRAM Locked)</para>
+      <para id="import-auto-idm902920800"> [03]  G_SMRAME  = 1 (SMRAM Enabled)</para>
+      <para id="import-auto-idm392668080"> [02:00] C_BASE_SEG = 2 (SMRAM Base Segment = 010b)</para>
+      <para id="import-auto-idm346186752">[*] Compatible SMRAM is enabled</para>
+      <para id="import-auto-idm809962096">[+] PASSED: Compatible SMRAM is locked down</para>
+      <para id="import-auto-idm1195608720">[+] imported chipsec.modules.common.smrr</para>
+      <para id="import-auto-idm1154701296">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm1169233808">.1.0\source\tool\chipsec\modules\common\smrr.py</para>
+      <para id="import-auto-idm890803760">[x][ =======================================================================</para>
+      <para id="import-auto-idm813092752">[x][ Test: CPU SMM Cache Poisoning / SMM Range Registers (SMRR)</para>
+      <para id="import-auto-idm837300672">[x][ =======================================================================</para>
+      <para id="import-auto-idm384665104">[+] OK. SMRR are supported in IA32_MTRRCAP_MSR</para>
+      <para id="import-auto-idm709338240">[*] Checking SMRR Base programming..</para>
+      <para id="import-auto-idm1154144656">[*] IA32_SMRR_BASE_MSR = 0x00000000B7000006</para>
+      <para id="import-auto-idm361491296"> BASE  = 0xB7000000</para>
+      <para id="import-auto-idm1126548480"> MEMTYPE = 6</para>
+      <para id="import-auto-idm1148641824">[+] SMRR Memtype is WB</para>
+      <para id="import-auto-idm1115865392">[+] OK so far. SMRR Base is programmed</para>
+      <para id="import-auto-idm844875824">[*] Checking SMRR Mask programming..</para>
+      <para id="import-auto-idm834576816">[*] IA32_SMRR_MASK_MSR = 0x00000000FF800800</para>
+      <para id="import-auto-idm937834224"> MASK  = 0xFF800000</para>
+      <para id="import-auto-idm911512880"> VLD  = 1</para>
+      <para id="import-auto-idm893207504">[+] OK so far. SMRR are enabled in SMRR_MASK MSR</para>
+      <para id="import-auto-idm843500592">[*] Verifying that SMRR_BASE/MASK have the same values on all logical CPUs..</para>
+      <para id="import-auto-idm817696256">[CPU0] SMRR_BASE = 00000000B7000006, SMRR_MASK = 00000000FF800800</para>
+      <para id="import-auto-idm1134527520">[CPU1] SMRR_BASE = 00000000B7000006, SMRR_MASK = 00000000FF800800</para>
+      <para id="import-auto-idm857692624">[+] OK so far. SMRR MSRs match on all CPUs</para>
+      <para id="import-auto-idm382317600">[+] PASSED: SMRR protection against cache attack seems properly configured</para>
+      <para id="import-auto-idm882342480">[+] imported chipsec.modules.common.spi_lock</para>
+      <para id="import-auto-idm876955120">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm702983808">.1.0\source\tool\chipsec\modules\common\spi_lock.py</para>
+      <para id="import-auto-idm1171449968">[x][ =======================================================================</para>
+      <para id="import-auto-idm835999696">[x][ Test: SPI Flash Controller Configuration Lock</para>
+      <para id="import-auto-idm1106404464">[x][ =======================================================================</para>
+      <para id="import-auto-idm349165584">[*] HSFSTS register = 0x0000E008</para>
+      <para id="import-auto-idm925609488"> FLOCKDN = 1</para>
+      <para id="import-auto-idm828476736">[+] PASSED: SPI Flash Controller configuration is locked</para>
+      <para id="import-auto-idm930698208">[+] imported chipsec.modules.common.secureboot.keys</para>
+      <para id="import-auto-idm1201195392">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm886514256">.1.0\source\tool\chipsec\modules\common\secureboot\keys.py</para>
+      <para id="import-auto-idm891157040">[x][ =======================================================================</para>
+      <para id="import-auto-idm899424528">[x][ Test: Protection of Secure Boot Key and Configuraion EFI Variables</para>
+      <para id="import-auto-idm714719248">[x][ =======================================================================</para>
+      <para id="import-auto-idm823119264">[*] SKIPPED: Currently this module can only run on Windows 8 or greater or Linux</para>
+      <para id="import-auto-idm1198155472">. Exiting..</para>
+      <para id="import-auto-idm1125073040">[+] imported chipsec.modules.common.secureboot.variables</para>
+      <para id="import-auto-idm716413504">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm1131729056">.1.0\source\tool\chipsec\modules\common\secureboot\variables.py</para>
+      <para id="import-auto-idm1157824176">[x][ =======================================================================</para>
+      <para id="import-auto-idm703173552">[x][ Test: Attributes of Secure Boot EFI Variables</para>
+      <para id="import-auto-idm703405472">[x][ =======================================================================</para>
+      <para id="import-auto-idm350567040">[*] SKIPPED: Currently this module can only run on Windows 8 or higher or Linux.</para>
+      <para id="import-auto-idm894854640"> Exiting..</para>
+      <para id="import-auto-idm1194296352">[+] imported chipsec.modules.module_template</para>
+      <para id="import-auto-idm1189928816">[*] Module path: C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1</para>
+      <para id="import-auto-idm1146229600">.1.0\source\tool\chipsec\modules\module_template.py</para>
+      <para id="import-auto-idm924276096">[x][ =======================================================================</para>
+      <para id="import-auto-idm722725328">[x][ Test: Module Template</para>
+      <para id="import-auto-idm704183232">[x][ =======================================================================</para>
+      <para id="import-auto-idm352677392">[+] PASSED: Test Passed</para>
+      <para id="import-auto-idm347879264">[CHIPSEC] ***************************  SUMMARY  ***************************</para>
+      <para id="import-auto-idm1167859632">[CHIPSEC] Time elapsed  0.394</para>
+      <para id="import-auto-idm1131875760">[CHIPSEC] Modules total  9</para>
+      <para id="import-auto-idm817872960">[CHIPSEC] Modules failed to run 0:</para>
+      <para id="import-auto-idm1137173280">[CHIPSEC] Modules passed  6:</para>
+      <para id="import-auto-idm842604544">[+] PASSED: chipsec.modules.common.bios_kbrd_buffer</para>
+      <para id="import-auto-idm1116800816">[+] PASSED: chipsec.modules.common.bios_ts</para>
+      <para id="import-auto-idm927783728">[+] PASSED: chipsec.modules.common.smm</para>
+      <para id="import-auto-idm825967408">[+] PASSED: chipsec.modules.common.smrr</para>
+      <para id="import-auto-idm719989504">[+] PASSED: chipsec.modules.common.spi_lock</para>
+      <para id="import-auto-idm381954752">[+] PASSED: chipsec.modules.module_template</para>
+      <para id="import-auto-idm881379680">[CHIPSEC] Modules failed  1:</para>
+      <para id="import-auto-idm861503808">[-] FAILED: chipsec.modules.common.bios_wp</para>
+      <para id="import-auto-idm886268752">[CHIPSEC] Modules with warnings 0:</para>
+      <para id="import-auto-idm852613008">[CHIPSEC] Modules skipped 2:</para>
+      <para id="import-auto-idm1143962960">[*] SKIPPED: chipsec.modules.common.secureboot.keys</para>
+      <para id="import-auto-idm711070032">[*] SKIPPED: chipsec.modules.common.secureboot.variables</para>
+      <para id="import-auto-idm1149847520">[CHIPSEC] *****************************************************************</para>
+      <para id="import-auto-idm1162417408">[CHIPSEC] Version:  1.1.0</para>
+      <para id="import-auto-idm868809264">C:\dan\projects\PLab\SystemFundamentals\chipsec-1.1.0\chipsec-1.1.0\source\tool&gt;</para>
+</section>
+<section id="manual-added-001">
+      <title>References</title>
+<list id="write-numbers-list" list-type="enumerated" start-value="1" mark-suffix="." item-sep=".">
+      <item id="import-auto-idm861662384">Rodger A. Grimes, “What do you need know about firmware attacks?” <link url="http://www.infoworld.com/article/2618113/security/what-you-need-to-know-about-firmware-attacks.html">http://www.infoworld.com/article/2618113/security/what-you-need-to-know-about-firmware-attacks.html</link>, Aug. 2012. </item>
+      <item id="import-auto-idm854246368">CIH virus, https://en.wikipedia.org/wiki/CIH_%28computer_virus%29</item>
+      <item id="import-auto-idm830079136">D. Cooper, W. Polk, A. Regenscheid, and M. Souppaya, NIST BIOS Protection Guidelines, Special Publication 800-147, <link url="http://csrc.nist.gov/publications/nistpubs/800-147/NIST-SP800-147-April2011.pdf">http://csrc.nist.gov/publications/nistpubs/800-147/NIST-SP800-147-April2011.pdf</link></item>
+      <item id="import-auto-idm1152067424">A. Regenscheid and K. Scarfone, BIOS Integrity Measurement Guidelines (Draft), Special Publication 800-155 (Draft), <link url="http://api.viglink.com/api/click?format=go&amp;jsonp=vglnk_144717222092810&amp;key=0a7039c08493c7c51b759e3d13019dbe&amp;libId=igtkyosf010113at000DAkoseb9dl&amp;loc=http%3A%2F%2Fwww.infoworld.com%2Farticle%2F2618113%2Fsecurity%2Fwhat-you-need-to-know-about-firmware-attacks.html&amp;v=1&amp;out=http%3A%2F%2Fcsrc.nist.gov%2Fpublications%2Fdrafts%2F800-155%2Fdraft-SP800-155_Dec2011.pdf&amp;ref=https%3A%2F%2Fwww.google.com&amp;title=What%20you%20need%20to%20know%20about%20firmware%20attacks%20%7C%20InfoWorld&amp;txt=Special%20Publication%20800-155">http://api.viglink.com/api/click?format=go&amp;jsonp=vglnk_144717222092810&amp;key=0a7039c08493c7c51b759e3d13019dbe&amp;libId=igtkyosf010113at000DAkoseb9dl&amp;loc=http%3A%2F%2Fwww.infoworld.com%2Farticle%2F2618113%2Fsecurity%2Fwhat-you-need-to-know-about-firmware-attacks.html&amp;v=1&amp;out=http%3A%2F%2Fcsrc.nist.gov%2Fpublications%2Fdrafts%2F800-155%2Fdraft-SP800-155_Dec2011.pdf&amp;ref=https%3A%2F%2Fwww.google.com&amp;title=What%20you%20need%20to%20know%20about%20firmware%20attacks%20%7C%20InfoWorld&amp;txt=Special%20Publication%20800-155</link></item>
+      <item id="import-auto-idm811211168">Farzan Hussain, “Firmware Worm Permanently Infects Macs in Seconds,” <link url="https://www.hackread.com/firmware-worm-infect-macs/">https://www.hackread.com/firmware-worm-infect-macs/</link>, Aug. 2015. </item>
+      <item id="import-auto-idm1119326912">Intel Chipsec, https://github.com/chipsec</item>
+</list>
+    </section>
+  </content>
+</document>

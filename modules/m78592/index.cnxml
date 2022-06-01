@@ -1,0 +1,263 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Central Processing Unit (CPU)</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78592</md:content-id>
+  <md:title>Central Processing Unit (CPU)</md:title>
+  <md:abstract>This chapter describes Central Processing Unit (CPU) with its types and processing power. Introductory Material and Performance Technology trends, measuring CPU performance, Amdahl’s law and averaging performance metrics. Components of instruction sets, understanding instruction sets from an implementation perspective, RISC and CISC and example instruction sets. Ripple carry, carry lookahead, and other adder designs, ALU and Shifters hardware design. Single-cycle and multi-cycle datapaths, control of datapaths.</md:abstract>
+  <md:uuid>8a883f32-eb73-426b-a3b7-b9a6d6bde00b</md:uuid>
+</metadata>
+
+<content>
+
+<section id="fs-idm311770992">
+      <title>Central Processor Unit (CPU)</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm512002976" fo:font-style="normal" fo:font-weight="normal">CPU is the brain of a computer system. All the computations are performed in CPU. It controls other peripherals, monitors input/output, reports errors, and the like. A computer system cannot live without a CPU. </para>
+    </section>
+<section id="fs-idm603757872">
+      <title>Introduction</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm265500496" fo:font-style="normal" fo:font-weight="normal">CPU is the most important part of a computer system (perhaps, most expensive as well). It is, often, referred to simply as the central processor, or just processor. CPU performs most calculations. In early computers, CPU may be manufactured on one or more printed circuit boards. Today, CPU used in personal computers (PC) is built in a single chip called a microprocessor. Note that PC has another meaning in computer architecture discipline, which is program counter. Since the 1970's, microprocessors have dominated the CPU market and implementation.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm503523072" fo:font-style="normal" fo:font-weight="normal">The package of CPUs could be square, rectangle, or round. They are small and their sizes are up to several square inches. Intel and AMD are two major CPU manufacturers for PCs. Normally, a CPU will have up to several hundred metallic connectors or pins to outside for receiving or issuing signals. Most motherboards of PCs come with a CPU socket to keep CPU in place. Each CPU will have a corresponding CPU socket, and the socket is designed with fool-proof, i.e., it can only accept the right type of CPU with the right orientation. Other small CPUs such as SMDs (surface mount devices) are soldered on a circuit board.  Each motherboard will support only a specific type or range of CPU. Small fans on a heat sink are normally required and installed on top of a CPU to effectively dissipate heat.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm308302144" fo:font-style="normal" fo:font-weight="normal">Typically, a CPU is composed of the following: arithmetic logic unit (ALU), control unit, and registers. ALU performs arithmetic and logical operations, such as addition, subtraction, logical AND, logical OR, logical NOT, shifter, and so on. Normally complex operations like multiplication or division are implemented in another unit. The control unit fetches instructions from memory, stores it in an instruction register, decodes the instruction, and sends control signals to other units within CPU. For example, the control unit will send ADD opcode to the ALU when an add instruction is in execution.</para>
+    </section>
+<section id="fs-idm403343888">
+      <title>Von Neumann Machines</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm227152992" fo:font-style="normal" fo:font-weight="normal">Early computer design, specifically calculators, has the “program” hardcoded in the computer. So the computer can only run one specifically program. It would be really hard to run another program because the whole hardware has to be reconfigured and rebuilt. John Von Neumann proposed a computing model that runs a stored program, a set of instructions, sequentially. This makes running another program easily, simply replacing the stored program with another program. </para>
+    </section>
+<section id="fs-idm405045216">
+      <title>RISC vs. CISC</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm534799744" fo:font-style="normal" fo:font-weight="normal">In general, we may classify CPUs into RISC and CISC architectures. RISC stands for reduced instruction set computer whereas CISC abbreviates complex instruction set computer. The RISC design is centered on simple. Each of the instructions in the RISC chips is simple. Only a handful of instructions are required. A complex operation is then decomposed to several simple instructions. Therefore, by and large it achieves a higher clock rate and performs more instructions per clock cycle than a CISC processor.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm215244240" fo:font-style="normal" fo:font-weight="normal">On the other hand, a CISC chip has a large amount of different and complex instructions. A complex instruction will require more hardware resource than a simple one. Owning to the increase density of VLSI chips, the chip space is not an issue. With the idea that hardware is always faster than software, and an abundant hardware space, packing a powerful instruction set in a chip is what the CISC camp advocates. Meanwhile, the more powerful instruction set, the less number of instructions and the shorter programs will be. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm312935472" fo:font-style="normal" fo:font-weight="normal">Because the complex instruction design, CISC chips require longer time to run an instruction. However, for a specific task, the CISC program needs less instructions compared to the RISC counterpart because each complex instruction may fulfill several operations. CPU manufacturers, such as Intel and AMD, produce CISC processors (x86 architecture), while Apple (Motorola 68000/IBM PowerPC) and SUN (Sparc) promote RISC architecture.  Most programs developed for CISC architecture (AMD/INTEL/VIA) are compatible. However, the RISC programs are not quite compatible.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm230476432" fo:font-style="normal" fo:font-weight="normal">There always exists a dispute between RISC and CISC architectures as which one is better. The RISC camp argues that the design is simple, the instruction is faster, and the chip is cheaper. By making the hardware simpler, the software has to be sophisticated to achieve performance. Thus, software becomes very complex. System software developers need to generate more lines of code for the same tasks than the CISC architecture. As is indicated by the Moore law that the chip density will be doubled in every eighteen months, the CISC camp claims that the CISC chips are becoming faster and cheaper anyway. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm257924320" fo:font-style="normal" fo:font-weight="normal">Chip design is toward to a hybrid architecture. Many of the recent CPUs support both RISC and CISC instructions. For example, traditional RISC architectures provide data movement instructions between memory and registers only, but MSP430, a RISC-like architecture, has instructions that move data from one location to another in memory. In terms of the number of instructions, there are more instructions in CISC than that in RISC. However, the PowerPC 601 (RISC) supports more instructions than the Pentium (CISC). Moreover, some techniques, such as pipelining, used in RISC are found to be applied in many CISC CPUs. Therefore, the hybrid architecture may be prevalent in the future. </para>
+    </section>
+<section id="fs-idm403008560">
+      <title>I/O</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm498935488" fo:font-style="normal" fo:font-weight="normal">There are several ways of data input and output (I/O) to/from CPU and other devices.  </para>
+    
+    <list id="import-auto-idm632253184" list-type="enumerated" number-style="arabic"><item>
+        
+        <emphasis effect="bold">Buses</emphasis>
+      </item>
+      <item>
+        
+        <emphasis effect="bold">Component Selection</emphasis>
+      </item>
+      <item>
+        
+        <emphasis effect="bold">Intel Microprocessor Development</emphasis>
+      </item>
+    </list><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm661909904" fo:font-style="normal" fo:font-weight="normal">A little history about microprocessor development in Intel is depicted in the following sections. The sections are described by the number of bits of data processed by a processor at a time. An <emphasis effect="italics">n</emphasis>-bit processor is one that processes <emphasis effect="italics">n</emphasis>-bit data in its instruction. Of course, if the operation is binary, both operands are of width <emphasis effect="italics">n</emphasis> bits.  </para>
+    
+    
+    </section>
+<section id="fs-idm467507904">
+      <title>4-Bit Processor</title>
+ <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm333434656" fo:font-style="normal" fo:font-weight="normal">The early CPUs Intel designed are for calculators such as 4004 used in Busicom calculator. The Intel 4004 processor is the first single-chip microprocessor (released in 1971), running at 740 KHz with 4-bit bus width, and 640 byte addressable memory, and 4 KB program memory. The program memory and data memory are separated. Instruction length is 8-bit (one byte), and data word is 4-bit. There are 46 instructions (41 are 8-bit wide, and 5 are 16-bit wide), and 16 registers of 4 bits each. All communication including data and addressees between CPU and RAM/ROM is via a 4-bit data bus. Therefore, it requires several clock cycles to fetch and execute instructions.  As an example, the ADD instruction adds a register to the accumulator will require 3 clock cycles to send the PC (12-bit address; 4-bit at a time), two cycles to fetch the 8-bit instruction (4-bit at a time), one cycle for instruction register, one cycle for temp operand register, and one cycle for write back to a register. So totally the Intel 4004 requires 8 clock cycles to execute an 8-bit instruction. For 16-bit instructions, they require 16 clock cycles. Since the Intel 4004 is designed for calculator, recursion is not allowed, and there is a limit on procedure calls for three levels deep only, i.e., a longest procedure call chain is four. The stack to keep each of the procedure context is hardcoded in the CPU. Since it processes 4-bit data at a time (e.g., add two 4-bit data together), the Intel 4004 is called 4-bit processor. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm459724576" fo:font-style="normal" fo:font-weight="normal">Intel 4040 (released in 1974), the successor of the Intel 4004, adds interrupt and single step features with extensions: 60 instructions, 8 KB program memory, 24 registers, 7-level deep procedure calls. </para>
+    
+    </section>
+<section id="fs-idm650936752">
+      <title>8-Bit Processor</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm500950576" fo:font-style="normal" fo:font-weight="normal">Introduced in 1972 and developed in tandem with 4004, Intel 8008 is the first 8-bit processor running at 500 KHz. Its data and address share an 8-bit wide bus. The total addressable program memory is 16 KB. The Intel 8008 was originally designed for the Datapoint 2200 programmable terminal (with 2 cassette tape drives, each with 130KB capacity) of the Computer Terminal Corporation (CTC) company located at San Antonio, TX, later renamed to Datapoint for its high volume sales of Datapoint 2201. However, the original Datapoint 2200 did not equip with the 8008 for its delayed delivery and not meeting CTC’s performance goal. Instead of a microprocessor, the CTC’s TTL design (about 100 SSI/MSI chips) was used in the datapoint 2200. Nevertheless, the seminal importance of the 8008 design is that it is the first member in the x86-family CPUs.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm268540320" fo:font-style="normal" fo:font-weight="normal">Two years after the release of the 8008, Intel introduced 8080 in 1974. The 8080 greatly increases clock rate to 2 MHz about 10 times faster than 8008. The data bus is 8-bit wide and address lines are 16 bits. So the total addressable memory is  B, i.e., 64 KB. The 8080 is the first CPU that is designed to have an address bus separated from the data bus. The assembly language is downward compatible with 8008, i.e., the program running on 8008 may also be running on 8080. It is used in traffic light controllers. 8080 also introduces a 16-bit stack pointer, which replaces the internal stack of 8008. It is interesting that 8008 requires two transactions to transfer a 14-bit address to a memory address register (MAR) via its 8-bit data/address bus.  Obviously, there is a waste of 2 bits in the second address transaction. The addressing ability of the 8008 is limited by its 14-bit program counter, and thus it is addressable to 16 KB memory.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm256347680" fo:font-style="normal" fo:font-weight="normal">The 8-bit CPU development later on focuses on power supply, direct memory access (DMA), etc. The digit “5” in 8085 (released in 1976) indicates the CPU requires 5V only, instead of it predecessors which requires both 5V and 12V. The 8085 also introduced maskable and non-maskable interrupts, and DMA. There are 7 8-bit registers in 8080/8085, named A, B, C, D, E, H, and L, where A is the accumulator, and the rest may work as independent byte registers or three 16-bit register pairs, named BC, DE, and HL. Though 8080/8085 is an 8-bit processor, it has some 16-bit operations. For example, the DAD instruction may add any of the 16-bit register pairs to the HL register pair. </para>
+    
+    </section>
+<section id="fs-idm491228288">
+      <title>8-Bit Microcontroller</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm231817456" fo:font-style="normal" fo:font-weight="normal">During the development of 8-bit processors, Intel integrates CPU with ROM, RAM, timers, interrupts, I/O ports, etc., to a single component microcontroller. A design using the 8080 processor may also need tens of other TTLs such as RAM, ROM, and other supporting ICs. This integration greatly simplifies application design and shortens time to market. The first microcontroller (8048, 8035, 8748) was released in 1976, called MCS-48 series. The 8749 comes with 2K EPROM (erasable programmable ROM). MCS-48 has a similar design to Harvard architecture<footnote id="import-auto-footnote-1"> The Harvard architecture, originated from Harvard Mark I, an electro-mechanic computer, is a computer architecture with a separate data storage from the program memory.  </footnote>, with internal (up to 4K) or external ROM, and 64-256 bytes on-chip RAM. Due to its low cost, and full-fledge development tools, MCS-48 is used extensively in consumer electronics such as PC keyboards, TV remotes, toys, etc. MCS-48 was later replaced by MCS-51 (higher capacity and more features).</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm232231904" fo:font-style="normal" fo:font-weight="normal">MCS-51 was released by Intel in 1980. Owning to its simplicity, MCS-51 was quite popular for embedded systems. From then on, it has been used for introductory microcontroller courses in engineering schools. Thought Intel had discontinued MCS-51 product lines, other venders are still producing and enhancing MCS-51 products. Different vendors may manufacture slightly different MCS-51 but the basic features should be included. Note that the “C” in the produce code indicates CMOS, which consumes less power than its NMOS versions.</para>
+    </section>
+<section id="fs-idm628883840">
+      <title>Bit-Slice Processor</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm611270096" fo:font-style="normal" fo:font-weight="normal">In late 1974, Intel introduced bit-slice processors (3000 family). Bit-slicing is a technique to build a processor using components of smaller width. For example, a 4-bit processor may be built by cascading 4 one-bit processors. One of the advantages of bit-slicing is that a complex processor can be economically built from off-the-shelf components, and bipolar transistors may be used in a smaller processor that make it much faster than using NMOS or CMOS transistors. The 3000 family includes control unit, 2-bit ALU, look ahead carry generator, etc. </para>
+    
+    </section>
+<section id="fs-idm402447744">
+      <title>16-Bit Processor</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm669530496" fo:font-style="normal" fo:font-weight="normal">Eight years after the introduction of 8-bit processors, Intel released 16-bit processor x86 family in 1978. The clock rate is increased up to 10 MHz. The memory is organized in odd and even banks so as to read 16-bit data in one clock cycle. The first X86 processor released is 8086. Its width of data bus is 16, and that of the address bus is 20. Therefore, the addressable memory is , i.e., one megabyte. IBM PC XT is based on 8088, where the data bus is 8-bit wide instead of 16. IBM PC AT is based on 80286 running up to 25 MHz. 80286 has a data bus of 16-bit wide  and an address bus of 24-bit wide. Therefore, its addressable memory is 16 MB. 80286 was released in 1982, where 80186 was also released but its fixed address design for DMA controller, timers, and interrupts, is different from IBM PC. Thus, there is no PC equipped with 80186. It is worth mentioning that 80286 added memory protection hardware to support multitasking operating systems with per-process address space. </para>
+    
+    </section>
+<section id="fs-idm470920368">
+      <title>32-Bit Processor</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm255688528" fo:font-style="normal" fo:font-weight="normal">Seldom known is that the first Intel’s 32-bit processor is iAPX 432, released in 1981, not the well-known 80386DX, released in 1985. The iAPX 432 is built to support multitasking, object-oriented programming and memory management such as garbage collection in hardware. Unfortunately, the complex design led to slow clock rates much less than the targeted 10 MHz; Only up to 8 MHz is achieved. Its bit-aligned variable length instructions (complex decoding), fault tolerance bus interface unit (40% bus time waste in wait states), and lack of caches (memory latency) result in low performance. The performance is about ¼ the speed of the 80286 running at the same clock rate. However, the expensive hardware design may have to be exposed to software to achieve high performance. An Ada compiler implemented without taking advantage of the underlying hardware features turn out to be the major problem. For example, the Ada compiler uses the expensive inter-module procedure calls for every procedure, instead of an obvious branch and link instruction; it also uses an enter_environment call to set up memory protection for every variable, though most of the time a program is running inside an existing environment and need not be checked; what even worse is that call by value is always used in passing parameters, resulting in a huge amount of duplicated memory content. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm232232656" fo:font-style="normal" fo:font-weight="normal">The iAPX 432 supports object-oriented memory and garbage collection. The memory design adopts segmented memory with up to  segments of up to 64 KB each. The total virtual memory space is  bytes and the total physical memory is  bytes. Programs use a segment address and an offset within that segment to access an object. Segments are referenced by an access descriptor which contains an index to a system object table and a set of access rights. Segments may contain either access descriptors, or object data. Therefore, an object access involves 1) read access descriptor and check access rights, 2) read system object table and find out object address, and 3) read the data. To improve object access performance, a later version of iAPX 432 release 3 combines one access segment and one data segment to form a 128 KB segment, which eliminates one memory access and doubles the virtual memory space. The system object table that keeps object addresses may be used for mark-sweep garbage collection. Unlike C programming, objects created in iAPX 432 do not need to be deallocated when they are no longer needed, or they become garbage. There is no explicit instruction for freeing an object in the system. Part of the Dijkstra’s parallel mark-sweep garbage collection is implemented in microcode using the system object table. Each object is marked as black, white, or grey as needed. The operation system includes the other part of the garbage collection to complete the garbage collection function.</para>
+    </section>
+<section id="fs-idm478337520">
+      <title>32-Bit x86 Processor</title>
+ 
+    
+   <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm238382096" fo:font-style="normal" fo:font-weight="normal">The first 32-bit processor in the x86 family is 80386DX, released in 1985. It supports clock rates up to 33 MHz. Both the data bus and address bus are 32-bit in width that supports 4 GB addressable memory space, and 64 TB virtual memory. Memory protection realizes paged virtual memory and virtual-86 mode. These memory features are fundamental requirements of modern operating systems such as OS/2, Linux, Vista, and Mac OS. The 80386 processor is mainly used in desktop computing. A lower cost version of this processor is 80386SX, released in 1988. The 80386SX uses a 16-bit data bus, and a 24-bit address bus, with addressable memory 16 MB, and virtual memory 32 GB. The internal architecture is 32-bit similar to the DX version. However, there is no Math co-processor. The SX version is targeted at mobile computing and entry-level PCs. The 80386SL, released in 1990, has a larger addressing capability than its SX version. Its addressable memory is 4GB, and virtual memory size is 1TB. The 80386EX, released in 1994, is similar to 80386SX but with a lot of on-chip peripherals such as timers, power management, I/O, DMA, JTAG test logic, etc. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm314590080" fo:font-style="normal" fo:font-weight="normal">The 80486DX, released in 1989, integrates Math co-processors, and 8 KB level-one cache. Most of the 80386 motherboards have an IC socket for 80387, the Math co-processor. What makes the 80486 different from 80386 is that its level-one cache, on-chip Math co-processor, address memory space is 4 GB, and virtual memory size is 1 TB. It also pushes clock rates up to 50 MHz. In 1991, Intel released 80486SX, which is identical to the DX version but without the Math co-processor.  Note that the 80487SX is the Math co-processor, which is the same as 80486DX with different pin configuration to prevent users from installing an 80486DX instead of 80487SX.  Released in 1992, 80486DX2 improved the clock rates up to 100 MHz, about twice the speed as the first DX version. The 80486SL, released in 1992, is used for laptop computers. The 80486DX4, released in 1994, with 4 GB addressable memory and 64 TB virtual memory, is used in high performance desktop and laptop computers.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm454801104" fo:font-style="normal" fo:font-weight="normal">Pentium processors, released in 1993, are 32-bit processors with a 64-bit data bus and a 32-bit address bus. The addressable memory is 4 GB, and virtual memory size is 64 TB. It is a superscalar architecture, running on 5 volts, and used in desktop computing. It has a larger level-one cache of 16 KB. The clock rates of the Pentium processors range from 60 MHz to 300 MHz. Dependent on different process technologies, the original Pentium processor has several versions: P5 (0.8 ) in 1993, P54 (0.6 ) in 1994, P54CQS (0.35 ) in 1995, P54CS (0.35 ) in 1995, and P55C (0.35 ) in 1997. The P55C is a Pentium processor with an MMX (multimedia extension) instruction set, and L1 cache of 32 KB.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm282290096" fo:font-style="normal" fo:font-weight="normal">P6 starts with the Pentium Pro processor, released in 1995, which leads to Pentium II and Pentium III. Pentium Pro is the first Intel processor with 2 level caches: 16 KB L1 cache and 256/512 KB L2 cache, running up to 200 MHz.  Pentium II, released in 1997, adds MMX to Pentium Pro, with 32 KB L1 cache and 512 KB L2 cache. Starting from Pentium II, the processor package style is changed to a single edge contact cartridge (SECC). With the 0.13  process technology, Pentium II-based processor reaches a 500 MHz clock rate.  Pentium II Celeron, released in 1998: Covington has 32KB L1 cache but no L2 cache running up to 300 MHz, and Mendocino has 32KB L1 cache and 128 KB integrated cache, running up to 500 MHz. Pentium II Xeon, released in 1998, comes with up to 2 MB L2 cache running up to 450 MHz. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm279940992" fo:font-style="normal" fo:font-weight="normal">Based on Pentium II architecture, Intel added streaming SIMD extension to Pentium III processors. It also improves L2 transfer, and pushes clock rates to 1.4 GHz. Introduced in 1999, Pentium III Xeon has L2 cache of size up to 2 MB, and a 64-bit system bus. It is worth noting that there are Pentium III versions of Celeron (released in 2000), which adopt socket 370 instead of SECC. They are mainly for mobile computing. Other Intel 32-bit processors for mobile computing include Pentium M (2003), and Celeron M (2003). In 2006, Intel started producing dual core processors such as Core Duo and Dual Core Xeon LV, both of which are equipped with improved SSE3 SIMD instructions. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm604989152" fo:font-style="normal" fo:font-weight="normal">There is another branch of P6 processors called P68, NetBurst microarchitecture, which includes hyper pipelined technology and rapid execution engine. The hyper pipeline is a deeper pipeline (20 or 31 stages versus 10 stages in Pentium III). The deeper pipeline will increase the number of instructions per cycle (IPC). Thus, the performance is improved. However, the deeper pipeline also means high penalty on branch mis-prediction. Intel reduces the mis-prediction by introducing the rapid execution engine with a claim of 33% reduction in mis-prediction. Processors in this category include Pentium 4 (2000), Itanium (2001), Xeon (2001), Itanium 2 (2002), Mobile Pentium 4-M (), Pentium 4 EE (2003), Pentium 4 E (2004), and Pentium 4 F (2004). </para>
+    </section>
+<section id="fs-idm415832400">
+      <title>64-Bit Processor</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm650783024" fo:font-style="normal" fo:font-weight="normal">There are instruction set architectures for Intel’s 64-bit processors: IA64 and Intel 64.  The IA 64 a new instruction set, totally different from x86. It is a 64-bit parallel architecture, implementing branch predication, speculation, and prediction. The branch predication is a technique to reduce mis-predication cost by allowing each instruction to conditionally be executed or nop (no operation). There are 128-bit registers to hold instructions, and each of the 128-bit register (one instruction word) contains 3 instructions. Each fetch may read 2 instruction words from L1 cache, resulting in 6 instructions in execution per cycle. Intel 64 is also known as AMD64 or x86-64. Intel 64 is an extension of the x86 instruction set. This architecture has been implemented by AMD, Intel, and Via. IA 64 and Intel 64 are not compatible.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm439581120" fo:font-style="normal" fo:font-weight="normal">Processors in IA64 include Itanium (2001) and Itanium II (2002). Processors in Intel 64 include Pentium 4F(2005), Pentium D (2005), Pentium EE (2005), Xeon (2004), Core 2(2006), Pentium Dual Core (2007), Celeron, Celeron M, Core i3, Core i5, and Core i7.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm458305120" fo:font-style="normal" fo:font-weight="normal"/>
+    </section>
+<section id="fs-idm195502928">
+      <title>Case Study 80C51</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm317404720" fo:font-style="normal" fo:font-weight="normal">The 80C51 is a mixed-signal MCU with part number C8051F005. It has 2304 bytes (256B+2KB) data RAM, 32KB Flash, 4 Bytes Port I/O (P0-P3), 4 16-bit timers, programmable oscillator  clock (2 (default)-16 MHz), two 12-bit DACs, one 12-bit ADC, and 21 vectored interrupt sources. The following figure shows the components in the 80C51 chip. <figure id="import-auto-idm269979200"><media id="import-auto-idm332361824" alt=""><image mime-type="image/png" src="../../media/officeArt object-cf0e.png" height="360" width="365"/></media></figure></para>
+    
+    
+    <list id="import-auto-idm731105616" list-type="enumerated" number-style="arabic"><item>
+        
+        <emphasis effect="bold">Memory Map</emphasis>
+      </item>
+    </list><para id="import-auto-idm303940736">Perhaps, the most important thing to know before programming is the memory map in addition to instruction set. The 80C51 has a standard program and data address configuration. It includes 256 bytes of data RAM, with the upper 128 bytes dual-mapped. Indirect addressing accesses the upper 128 bytes of general purpose RAM, and direct addressing accesses the 128 byte SFR address space. The lower 128 bytes of RAM are accessible via direct and indirect addressing. The first 32 bytes are addressable as four banks of general-purpose registers, and the next 16 bytes can be byte addressable or bit addressable. The following figure shows the memory map. It is worth mentioning that there are 3 memory spaces (one for program, one for internal data, and the other for external data). They all start from 0x0. This is a drastically different design compared to MSP430!</para>
+    <figure id="import-auto-idm280892560">
+      <media id="import-auto-idm691015856" alt="">
+        <image mime-type="image/png" src="../../media/Image1-571c.png" height="432" width="536"/>
+      </media>
+    </figure>
+    <para id="import-auto-idm512038992">mov A, direct; direct addressing, move direct to Amov direct, A; direct addressing, move A to directmov A, @R; indirect addressing, move indirect to Amov @R, A; indirect addressing, move A to indirect</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm642928464" fo:font-style="normal" fo:font-weight="normal">Based on the above instructions with addressing modes, add two statements to the tutorial program: one to set the value 0x12 at 0xF0 in the RAM; the other to set the value 0x34 at 0xF0 for the SFR B. Show your work to the instructor.</para>
+    <para id="import-auto-idm674011808">One of the four banks of general purpose registers (0x00 – 0x1F) may be activated at a time. So there are 8 registers (R0 to R8) you may manipulate at a time. Two bits in the program status word (PSW), like SR in MSP430, determine which bank is active. This allows fast context switching when entering subroutines and interrupt service routines. Indirect addressing modes use registers R0 and R1 as index registers. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm467002240" fo:font-style="normal" fo:font-weight="normal"><emphasis effect="italics">Bit addressable</emphasis> memory form 0x20 to 0x2F may be accessed as 128 individual addressable bits. Each bit has a bit address from 0x00 to 0x7F. Bit 0 of the byte at 0x20 has bit address 0x00 while bit 7 of the byte at 0x20 has bit address 0x07. Bit 7 of the byte at 0x2F has bit address 0x7F. The instruction MOV C, 22h.3 will move the 3<sup>rd</sup> bit at 0x22 to the carry. The instruction setb and clr are used to set or clear a bit. This notation will make the bit manipulation easier. Add two statements to the tutorial program to 1) set the value 0x21 at 0x23 in the RAM, and 2) set the first bit (bit 1) at 0x23 in the RAM. Show your work to the instructor. </para>
+    </section>
+<section id="fs-idm433348912">
+      <title>Program Status Word (PSW)</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm276682208" fo:font-style="normal" fo:font-weight="normal">One of the SFRs is PSW, which is at 0xD0. It keeps execution status. </para>
+    <table id="import-auto-idm620747168" summary="">
+      <tgroup cols="8">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <colspec colnum="6" colname="c6"/>
+        <colspec colnum="7" colname="c7"/>
+        <colspec colnum="8" colname="c8"/>
+        <thead>
+          <row>
+            <entry>CYCarry flag</entry>
+            <entry>ACAuxiliary carry flag (nibble)</entry>
+            <entry>F0User flag 0</entry>
+            <entry>RS1</entry>
+            <entry>RS0</entry>
+            <entry>OVOverflow flag</entry>
+            <entry>F1User flag 1</entry>
+            <entry>ParityEven on ACC</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>7</entry>
+            <entry>6</entry>
+            <entry>5</entry>
+            <entry>4</entry>
+            <entry>3</entry>
+            <entry>2</entry>
+            <entry>1</entry>
+            <entry>0</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm232734864" fo:font-style="normal" fo:font-weight="normal">RS1 and RS0 are used to select one of the four register banks.</para>
+    <table id="import-auto-idm446438608" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>RS1</entry>
+            <entry>RS0</entry>
+            <entry>Bank</entry>
+            <entry>Addresses</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>0</entry>
+            <entry>0x00-0x07</entry>
+          </row>
+          <row>
+            <entry>0</entry>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>0x08-0x0F</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>0</entry>
+            <entry>2</entry>
+            <entry>0x10-0x17</entry>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>1</entry>
+            <entry>3</entry>
+            <entry>0x18-0x1F</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    
+    </section>
+<section id="fs-idm415911104">
+      <title>Accumulator</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm627703456" fo:font-style="normal" fo:font-weight="normal">In 80C51, arithmetic operations are done in a special register call accumulator (ACC), which is one of the SFRs and located at 0xE0. All the SFRs are one byte wide including ACC. Thus, 80C51 is an 8-bit CPU because it computes one byte data per instruction. </para>
+    
+    </section>
+<section id="fs-idm470063264">
+      <title>Stack Pointer, and Other SFRs</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm297504368" fo:font-style="normal" fo:font-weight="normal">Stack pointer (SP) in 80C51 is also one byte wide, located at 0x81 in SFR area. After reset, it is initialized to 0x07. A data pointer (DPH+DPL), located at 0x83 and 0x82, is used to access indirectly addressed RAM and Flash memory. First of all, one byte can only address to 255. Any address larger than that has to be 2 bytes in 8051, and thus give a 64k address space. Since the external RAM and program Flash are much larger than internal RAM (256 Bytes only), 8051 provides a the data pointer to access these two memory modules. The following instructions are related to manipulation on the data pointer.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm626686544" fo:font-style="normal" fo:font-weight="normal">MOV DPTR,#data16 ;Load data pointer with 16-bit constant</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm315589488" fo:font-style="normal" fo:font-weight="normal">MOVC A,@A+DPTR ;Move code byte relative DPTR to A</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm228003648" fo:font-style="normal" fo:font-weight="normal">MOVC A,@A+PC ;Move code byte relative PC to A</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm452045040" fo:font-style="normal" fo:font-weight="normal">MOVX A,@Ri ;Move external data (8-bit address) to A</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm686131376" fo:font-style="normal" fo:font-weight="normal">MOVX @Ri,A ;Move A to external data (8-bit address)</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm246048656" fo:font-style="normal" fo:font-weight="normal">MOVX A,@DPTR ;Move external data (16-bit address) to A</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm479592416" fo:font-style="normal" fo:font-weight="normal">MOVX @DPTR,A ;Move A to external data (16-bit address)</para>
+    <code id="eip-893" display="block">MOV DPTR,#data16 ;Load data pointer with 16-bit constant
+MOVC A,@A+DPTR ;Move code byte relative DPTR to A
+MOVC A,@A+PC ;Move code byte relative PC to A
+MOVX A,@Ri ;Move external data (8-bit address) to A
+MOVX @Ri,A ;Move A to external data (8-bit address)
+MOVX A,@DPTR ;Move external data (16-bit address) to A
+MOVX @DPTR,A ;Move A to external data (16-bit address)</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm484818384" fo:font-style="normal" fo:font-weight="normal">Note that the code memory is read-only. So you may not write data to it. Add statements to the tutorial program to read the code memory at location 0x0006, and put the result in the accumulator. Show your work to the instructor. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm239854608" fo:font-style="normal" fo:font-weight="normal">check</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm256993840" fo:font-style="normal" fo:font-weight="normal">Additionally, a B register located at 0xF0 serves as a second accumulator for certain arithmetic operations such as MUL and DIV. Wait! Does MSP430 provide multiplication and division instructions? Nope! Other SFRs include controls for ADC, clock, comparator, DAC, interrupt, memory, I/O, timer, bus, etc. </para>
+    
+    </section>
+<section id="fs-idm516700720">
+      <title>Program Counter</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm503004080" fo:font-style="normal" fo:font-weight="normal">PC in 8051 is not part of SFRs. It is a standalone unit in charge of giving next instruction to be executed.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm462840096" fo:font-style="normal" fo:font-weight="normal">Base on what you have learned so far and your observations, answer the following questions.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm496321392" fo:font-style="normal" fo:font-weight="normal">What is the initial value of SP?</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm613446976" fo:font-style="normal" fo:font-weight="normal">What is the starting address of the program?</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm638462944" fo:font-style="normal" fo:font-weight="normal">Does the stack grow downward or upward?</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm515946768" fo:font-style="normal" fo:font-weight="normal">What is the maximal size of the stack in your program?</para>
+</section>
+
+  </content>
+</document>

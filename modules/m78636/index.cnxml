@@ -1,0 +1,1130 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Assembly Programming - Part 1</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78636</md:content-id>
+  <md:title>Assembly Programming - Part 1</md:title>
+  <md:abstract>This chapter introduces MSP 430 assembly programming language such as instruction formats, addressing modes, subroutine call and return mechanisms (cross-reference PL/Language Translation and Execution), I/O and interrupts, and Heap vs. Static vs. Stack vs. Code segments. Explain the organization of the classical von Neumann machine and its major functional units. Describe how an instruction is executed in a classical von Neumann machine, with extensions for threads, multiprocessor synchronization, and SIMD execution. Summarize how instructions are represented at both the machine level and in the context of a symbolic assembler. Demonstrate how to map between high-level language patterns into assembly/machine language notations. Explain different instruction formats, such as addresses per instruction and variable length vs. fixed length formats. Explain how subroutine calls are handled at the assembly level. Explain the basic concepts of interrupts and I/O operations. Write simple assembly language program segments. Show how fundamental high-level programming constructs are implemented at the machine-language level.</md:abstract>
+  <md:uuid>d89bc2bf-53fd-4e1d-ba12-e98ec8a95a66</md:uuid>
+</metadata>
+
+<content>
+    
+    <section id="import-auto-idm428521824">
+      <title>MSP430 Assembly Programming</title><list id="import-auto-idm328722112" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">System Organization </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm502077824" fo:font-style="normal" fo:font-weight="normal">This section discusses the basic components in a computer system such as the CPU, memory, I/O, and the buses that connects them. Understanding of the system organization is a key to develop a high performance system.  For example, data stored in registers can be retrieved much faster than stored in memory. Therefore, put data that are frequently accessed in register in a program will run much faster than would have been stored in memory. </para>
+      
+      
+      <list id="import-auto-idm434242736" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Basic System Components</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm346623456" fo:font-style="normal" fo:font-weight="normal"> A typical computer system is composed of a CPU, memory, I/O, and bus. The bus is used to connect other components together. Most of the computations happen in the CPU. Programs and their data are stored in memory. Input/output devices are used for data communication between the computer system and the outside world, such as disk drives, keyboards, network cards, etc. Figure 1 illustrate a basic computer system. This type computer system is called Von Neumann machine and most of the computer systems nowadays follow this architecture. Note the memory is volatile, i.e., it keeps data while the power is supplied but it lost the data when the power is off. Therefore, we need to keep the information via the I/O systems such as a harddrive for data storage. </para>
+      <figure id="import-auto-idm509119040">
+        <media id="import-auto-idm498183200" alt="">
+          <image mime-type="image/png" src="../../media/officeArt object-d221.png" height="189" width="151"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm683368944">Figure 1 A Basic Computer System</para>
+      
+      
+      <list id="import-auto-idm682646768" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">System Buses (data bus, address bus, control bus)</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm416010000" fo:font-style="normal" fo:font-weight="normal">Components in the computer system are inter-connected via system buses. A bus is a set of wires that electronic signals may travel over. System buses include data bus, address bus, and control bus. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm424263456" fo:font-style="normal" fo:font-weight="normal">Data buses are used to transfer data from a component to another in a computer system. The width (number of wires, or number of bits) of the data bus varies from CPU to CPU. Typically, the wider, the higher bandwidth data may be transferred. The bus width decides the number of bits that can be transferred from one component to another in a transaction. Normally, we use the width to the data bus to classify the “size” of CPU. For example, a 16-bit CPU means its data bus width is 16 bits.  However, the actual “size” of a CPU should be defined as its processing power in terms of the size of operands in an instruction.  For example, a 16-bit CPU will add two 16-bit numbers in its ADD instruction. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm665919760" fo:font-style="normal" fo:font-weight="normal">Address bus is used to indicate a specific location in a component, e.g., memory, where the data will be accessed. The width of the address bus specifies the range of the addressing space. An 8-bit address bus will designate 256 different locations from 0 to 255 whereas a 16-bit address bus will specify a much wider range from 0 to 65535. The number of locations is limited by the width of an address bus. The memory capacity, for example, is dictated by the number of locations multiplied by the size of each location. If the size of a location is one byte, it is called byte addressable. If the size of a location is a word, assume a word is four bytes in a system, it is called word addressable. In a byte addressable memory module with an 8-bit address bus, the capacity of the memory will be 256 bytes.  In the same setting, the capacity of the memory will be 1024 bytes because each location is corresponding to one word, i.e., four bytes. Obviously, a word addressable system will specify a higher capacity memory module. In light of slow memory transaction compared to registers, a word addressable system will get four-byte data in a memory transaction, which is four times more than a transaction in a byte addressable system.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm672580640" fo:font-style="normal" fo:font-weight="normal">Control bus is in charge of sending control signals to synergize all components in computation. The source of control signals is derived from instructions. For example, a multiplexer in CPU is used to select an operand either from register or immediate value that comes with an instruction. The control signal to the multiplexer will be generated based on which instruction is in execution. If, for example, an ADD instruction is executed, the control signal will be generated to select a register operand. Should ADDI be executed, the control signal will be generated to select the immediate value from the instruction. Moreover, in write-back stage, a suitable control signal should be generated either for a write-enable to memory, or a write-enable to a register. Normally, the control signals are generated from a control unit which is composed of a decoder for instructions. The decoder will indentify instruction types, and the control unit will generate signals to control all components to perform the instruction in execution.</para>
+      
+      
+      <list id="import-auto-idm440008480" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Memory Subsystem</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm495945008" fo:font-style="normal" fo:font-weight="normal">Memory is used to keep data for a program in execution, or a process. The data include program machine code, data, heap, and stack. For a convenient management purpose, we may divide memory into segments, and one for each type of data. They are called code segment, data segment, heap segment, and stack segment. The code segment contains instructions in the program, which will be executed accordingly. The data segment contains global data which will be used by the whole program. The heap segment is an area that is dynamically allocated by the program. The stack segment contains local variables, parameters for procedures and functions, and activation records that keep track of subroutine calls. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm436387680" fo:font-style="normal" fo:font-weight="normal">There are two operations for memory which are read and write. In a read operation, CPU has to provide an address to the memory, and other control signals if any. The content of the memory at that location will be read out. Figure 2 illustrates a memory read to CPU. After the CPU provides the address, the memory will send the data at that location back to CPU. A memory read may not require extra signals other than the memory address. </para>
+      <figure id="import-auto-idm488442672">
+        <media id="import-auto-idm443332752" alt="">
+          <image mime-type="image/png" src="../../media/Image1-6a4f.png" height="165" width="291"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm487606576">Figure 2 A Memory Read from Memory to CPU</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm447475296" fo:font-style="normal" fo:font-weight="normal">Similarly, in a write operation, CPU has to provide an address, data to be written, and control signals if any, such as write enable. The provided data will be stored in the designated location of the memory. Figure 3 illustrates a typical memory write. Most of the memory systems require a write enable (WE) to trigger a memory write. The actual write occurs on a clock event, either rising edge or falling edge.</para>
+      <figure id="import-auto-idm522376272">
+        <media id="import-auto-idm433482224" alt="">
+          <image mime-type="image/png" src="../../media/Image2-5f18.png" height="162" width="276"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm475867072">Figure 3 A Memory Write from CPU</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm489898000" fo:font-style="normal" fo:font-weight="normal">The size of the data written or read depends on the memory design. In a byte addressable system, each read or write will transfer one byte data. In a word addressable system, each read or write will transfer four bytes. In a word addressable system, access to any of the bytes therein will have to be performed by other instructions. For example, a logical AND instruction will retrieve the second byte (count from zero) in a word as follows:</para>
+      <code id="eip-346" display="block">AND R1, R2, ff0000h; The second byte will be extracted
+; and all other bytes will be
+; zeroed out.</code><list id="import-auto-idm250918208" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Read-only Memory (ROM)</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm303630448" fo:font-style="normal" fo:font-weight="normal">Data stored in a code segment are typically accessed by CPU to fetch instructions for execution. In very rare cases is the program code modified. Therefore, to avoid altering the code, the memory is marked as read only. That means the data stored in read-only memory (ROM) can only be read out, and can not be changed. There are devices used to implement ROM such as erasable programmable read-only memory (EPROM) and electrically erasable programmable read-only memory (EEPROM). The initial data may be burned to an EPROM by supplying a higher voltage than normal to its inner floating gate transistors. EPROM will retain data even its power is switched off. EPROM may be re-programmed after exposing it to strong ultraviolet light. EEPROM shares the same characteristics as EPROM except EEPROM uses electricity to program and erase data in it. Flash memory such as USB memory drive is developed from EEPROM. These types of memory are used to keep static data such as device configuration information, and program code. They are non-volatile. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm253622208" fo:font-style="normal" fo:font-weight="normal">Microcontrollers such as Intel 8051 and TI MSP 430 integrate EEPROM in a single chip. Normally, the size of ROM ranges from several kilo bytes to several hundred kilo bytes. The original 8051 chip is equipped with 4 KB ROM for program memory. The MSP430F2274 comes with 32 KB ROM for program memory. In the 8051 chip, what if a program exceeds 4 KB? In that case, external memory modules will have to be added. Hopefully, there is a 16-bit address but in 8051. So it will address up to 64 KB! MSP430 has a 16-bit address bus as well. Some MPS430 extends the address bus to 20 bits and allows addition ROM space above 0x10000. </para>
+      
+      
+      
+      <list id="import-auto-idm482885280" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Random Access Memory (RAM)</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm497640208" fo:font-style="normal" fo:font-weight="normal">Random access memory (RAM) is a type of computer memory, which is used to store process data. The worse case time to arbitrarily access any data in RAM is bounded by a constant. Data store in RAM will be lost should the supplying power is switched off. By and large, there are types of RAM such as static RAM (SRAM) and dynamic RAM (DRAM). DRAM employs a capacitor to store 1-bit information. The logic high is represented by the charged capacitor whereas the logic low is represented when the capacitor is discharged. The capacitors are small and may be abundantly built in an integrated circuit. However, the charge of the capacitor leaks gradually. So DRAM has to refresh the capacitor charge periodically to keep the bit information. This is the reason why “dynamic” is used in its name. SRAM, on the other hand, stores one bit information in its bi-stable latch, which does not need to be refreshed. The latch requires more silicon space in the chip and thus the capacity of SRAM is typically smaller than that of DRAM, but SRAM is faster. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm299212000" fo:font-style="normal" fo:font-weight="normal">Modern microcontrollers have on-chip RAM, i.e., integrating RAM and CPU in a single chip. The capacity of the integrated RAM ranges from several hundred bytes to server kilo bytes. Intel 8051, for example, comes with 128 bytes RAM internally. MSP430 family has up to 8 KB of RAM. Should a program require a larger storage from RAM, external memory modules would have to be added. The width of the address bus in 8051 is 16-bit. So the maximal addressable memory space is 64 KB. The memory address bus (MAB) in MSP430 is a 16-bit wide bus. Therefore, the addressable range is the same as Intel 8051.</para>
+      
+      
+      <list id="import-auto-idm479309872" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Input/Output Subsystem </emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm482656784" fo:font-style="normal" fo:font-weight="normal">Input/Output (I/O) is one of the required components in a computer system. Its purpose is to get data to be processed in system and transmit processed data to the outside of the system. Consider this scenario: a program is asking for a choice from a menu before continue its execution. The system will first output a menu, and prompt a message say “please enter your choice.” The operator enters a key corresponding to the choice. In this scenario, the output data from the system are the menu and the prompt, and the input is the choice in terms of a key. There are input devices in a system such as keyboard, mouse, DVD ROM, microphone, webcam, etc. There are output devices such as monitor, speaker, etc. There are devices which perform both input and output functions, such as hard drive, floppy diskette, memory, network interface card, etc. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm481049408" fo:font-style="normal" fo:font-weight="normal">Like the memory subsystem, each I/O device is assigned an address, which typically is the starting address of its allocated address space. The address space may cover, e.g., control registers, data registers, status register, etc., in the I/O device. The CPU accesses I/O devices as if they were memory. There may have several address spaces in the system, one for RAM, one for ROM, one for I/O, etc. A Harvard architecture has several memory spaces, each of which starts from zero. A Non-Harvard architecture, on the other hand, has a single memory space for all the allocated address spaces. Intel 8051 follows the Harvard architecture. It has internal data memory space, program code memory space, and external data memory space. They all start from zero. MSP430 adopts the non-Harvard architecture, i.e., there is a single memory space starting from zero. The advantage of non-Harvard architecture is that each address in the system uniquely identifies a location, either a memory location or an I/O device. In a Harvard architecture, an address is not unique. Therefore, there must have a mechanism to determine which device is to be referred. In Intel 8051, the special designed instructions are used to designate a specific device. For example, the MOVX (move eXternal) is used to transfer data from external memory to CPU, whereas MOV is used to get data from the internal date memory.</para>
+      
+      
+      <list id="import-auto-idm480274800" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">System Timing</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm444145472" fo:font-style="normal" fo:font-weight="normal">CPU is complex sequential logic, which means some of its components involve registers or flip-flops. The sequential logic requires an event of a clock to perform its function. A clock is an alternate signal between 0 and 1 continuously.  There are two clock events: rising edge and falling edge. Figure 4 illustrates a clock with rising edge, falling edge, and period. The rising edge is an event when the clock changes its value from logic low to logic high. Similarly, when the clock changes its value from logic high to logic zero, it is a falling edge event. The clock period measures the time for one clock cycle. The reciprocal of the clock period is clock frequency. The higher frequency, the shorter period a clock has. A sequential logic may be designed to change its state following either event. </para>
+      <figure id="import-auto-idm424109360">
+        <media id="import-auto-idm443767296" alt="">
+          <image mime-type="image/png" src="../../media/Image3-567e.png" height="142" width="373"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm419827984">Figure 4 A Clock</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm455101184" fo:font-style="normal" fo:font-weight="normal">A CPU also has a big portion of combinational logic, such as address decoding, ALU, and the like. The combination logic does not involve clock, and it requires some time to perform its function. The time is measured by the longest propagation delay from its input to its output. The propagation delay is the accumulated gate delay in the critical path of the combinational logic circuit. There is a relation between the propagation delay and the clock frequency. A rule of thumb is that the clock period (determined by frequency) should be slightly longer than the propagation delay as depicted in the following example. Recall that in a memory write operation, the CPU has to provide three pieces of information: address, data, and WE.  Assume that the memory is designed to update its content on a rising edge. Figure 5 illustrates a timing diagram for a memory write operation. The address, data, and WE signals have to be stable by the coming rising edge, which the memory update occurs.  By stable, we mean the device that generates these signals should not be in its transit state. Otherwise, the result is non-deterministic. In other words, the longest propagation delay for generating address, data, or WE should be shorter than the clock period. Furthermore, the clock period may be determined by the longest propagation in a system.</para>
+      <figure id="import-auto-idm454561472">
+        <media id="import-auto-idm235153328" alt="">
+          <image mime-type="image/png" src="../../media/Image4-2c43.png" height="202" width="329"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm217379424">Figure 5 A Timing Example of a Memory Write Operation</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm524406480" fo:font-style="normal" fo:font-weight="normal">The higher clock frequency, the better! Therefore, a design concern is to shorten the propagation delay. However, it is inevitable to have long delay in some components such as floating point adders. A typical solution is to chop the design into several pieces in a sequential manner, and link them with registers to hold temporary results. This is called pipelining. By applying this approach, the system clock may be maximized and typically attain a better performance.</para>
+      
+      
+      <list id="import-auto-idm818505136" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Registers</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm217412096" fo:font-style="normal" fo:font-weight="normal">Registers are data storage and built inside a CPU. They are not like memory, which is typically outside the CPU chip. Registers are used to keep data for computation including operands and results. Accesses to registers are very fast and typically are within one clock cycle. They are built from flip-flops and require clocks for operations. Normally, registers are used to keep variables in a program. The instructions in the program are then executed among the variables, i.e., the registers.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm482593552" fo:font-style="normal" fo:font-weight="normal">Registers in CPU may be classified to general purpose registers (GPR) and special function registers (SFR). General purpose registers keep data for computation, and its results. Special function registers include program counter (PC), status register (SR), stack pointer (SP), and others.  PC keeps the address of next instruction to be executed. SR stores a number of flags after an instruction is executed such as carry bit (C), zero bit (Z), and others. If the result of an executed instruction is zero, the zero bit in the SR will be set. Stack pointer stores the address of the top element of the stack in a system.  </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm255310224" fo:font-style="normal" fo:font-weight="normal">In MSP430, registers include 16 SFRs, R0 (PC), R1 (SP), R2 (SR), and R3 (CG), and R4-R15 are general purpose registers. Each of these registers is 16-bit wide. R0 is the program counter, R1 is the stack pointer, R2 is the status register, and a constant generator, and R3 is a constant generator. Both R2 and R3 may be used to generate small constants such as 0, 1, 2, 4, 8, etc. All of the twelve registers form R4 to R15 can be used as data registers, address pointers, or index values and can be accessed with byte or word instructions. The 16 SFRs are allocated in the lower 16 bytes (00-0Fh) memory space. For example, I/O ports are associated with SFRs. If we want to output data via an I/O port, we may just write data to the associated SPR. Similarly, if we need to get data from outside, we may just read from the SFR associated with the input port. </para>
+      
+      
+      <list id="import-auto-idm279385728" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">MSP430 Instruction Set</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm235682000" fo:font-style="normal" fo:font-weight="normal">An instruction set of a CPU dictates what a CPU can do in a machine cycle. A program written in any program language will eventually be converted to machine code based on the instruction set.  Machine code or op code refers to the code a CPU may execute. It contains information about what operation is to be executed over what operands. In terms of architectures, basically, there are two models: CISC (complex instruction set computer) and RISC (reduced instruction set computer).  CISC implements op code with a variable length, which requires complex instruction decoding. The x86 architecture manufactured by Intel and AMD belongs to CISC. On the other hand, RISC implements fixed length instructions, and thus its instruction decoding is simple. Manufactures such as IBM, Apple, and Sun, produce RISC CPUs. The latest CPU design such as MSP430 is somewhere in-between CISC and RISC. There are only 27 instructions in MSP430, among which 12 type 1 instructions, 7 type 2 instructions, and 8 jump instructions. </para>
+      
+      
+      
+      <list id="import-auto-idm530543104" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Type 1 instructions:</emphasis>
+        </item>
+      </list>
+      <list id="eip-115"><item>MOV – move source to destination</item>
+<item>ADD – add source to destination</item>
+<item>ADDC – add source and carry to destination</item>
+<item>SUBC – subtract source from destination with carry</item>
+<item>SUB – subtract source from destination</item>
+<item>CMP – compare (pretend to subtract) source from destination</item>
+<item>DADD – decimal add to destination with carry</item>
+<item>BIT – test bits of source AND destination</item>
+<item>BIC – bit clear (destination := ~ source)</item>
+<item>BIS – bit set (logical OR)</item>
+<item>XOR – exclusive OR source with destination</item>
+<item>AND – logical AND source with destination</item></list><list id="import-auto-idm464123280" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Type 2 instructions</emphasis>
+        </item>
+      </list>
+      <list id="eip-110"><item>RRC – rotate right one bit through carry</item>
+<item>SWPB – swap bytes</item>
+<item>RRA – rotate right once bit arithmetically</item>
+<item>SXT – sign extend byte to word (2 bytes)</item>
+<item>PUSH – push value onto stack</item>
+<item>CALL – subroutine call; push PC and move source to PC</item>
+<item>RETI – return from interrupt; pop SR, then pop PC</item></list><list id="import-auto-idm255437696" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Jump instructions</emphasis>
+        </item>
+      </list>
+      <list id="eip-832"><item>JNE/JNZ – jump if not equal/zero</item>
+<item>JEQ/JZ – jump if equal/zero</item>
+<item>JNC/JLO – jump if no carry/lower</item>
+<item>JC/JHS – jump if carry/higher or same</item>
+<item>JN – jump if negative</item>
+<item>JGE – jump if greater or equal</item>
+<item>JL – jump if less</item>
+<item>JMP – unconditionally jump</item></list><list id="import-auto-idm538270176" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Instruction Encoding</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm334516832" fo:font-style="normal" fo:font-weight="normal">An instruction in MSP430 is encoded in 16 bits. The fixed instruction length facilitates instruction decoding and design. This probably is one of the reasons that MSP 430 belongs the RISC camp. Information encoded includes opcode, source register, addressing modes for source and destination operands, operand width (byte or word), and destination register. The opcode specifies what operation to perform. Both source and destination addressing modes may be specified. Figure 6 shows the instruction encoding in the MSP 430 architecture. As can be seen that the higher 4 bits are used to specify an opcode, followed by 4 bits for a source register, followed by one bit for destination addressing (da), followed by one bit for bit or word operands, followed by two bits source addressing (sa), and the lower 4 bits indicate the destination register.</para>
+      <figure id="import-auto-idm530480576">
+        <media id="import-auto-idm481562416" alt="">
+          <image mime-type="image/png" src="../../media/Image5-1423.png" height="70" width="478"/>
+        </media>
+      </figure>
+      <para id="import-auto-idm270010064">Figure 6 Instruction Encoding in MSP 430</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm537525472" fo:font-style="normal" fo:font-weight="normal">Most of the MSP 430 instructions have two versions, either working on byte operands or word operands. This operand width information is kept in the b/w bit of the instruction. In assembly programming, a postfix “.W” indicates a word operation, whereas “.B” represents a bye operation. There are two bits for source addressing bits but only one bit for destination addressing. Therefore, in this design, the source addressing is much more versatile than the destination. We will revisit addressing modes later.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm275939616" fo:font-style="normal" fo:font-weight="normal">Theoretically, any instruction encoding would work. However, to facilitate instruction decoding, a better arrangement is required. An opcode 1 indicates type 2 instructions, opcodes 2 and 3 are for jump instructions, and opcodes 4 to 15 are for type 1 instructions. Since there are 7 type 2 instructions, the actual opcodes  for them are encoded in the 7<sup>th</sup>, 8<sup>th</sup>, and 9<sup>th</sup> bits.</para>
+      
+      
+      <list id="import-auto-idm426452864" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">The MOV instructions</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm505445808" fo:font-style="normal" fo:font-weight="normal">The widely used data movement instruction is the MOV instruction. MOV does not actually move data from one place to another. Indeed, it leaves a copy of data in the source operand. The syntax of the MOV instruction in MSP430 is as follows:</para>
+      <code id="eip-385" display="block">MOV src, dst
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm255377792" fo:font-style="normal" fo:font-weight="normal">where src indicates the source operand, and the dst is the destination operand. Note that the order of the operands depends on the design of an assembler. In some assemblers, src and dst may be swapped. The following statement will move (copy) data stored in R4 to R5.</para>
+      <code id="eip-910" display="block">MOV R4, R5
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm254704576" fo:font-style="normal" fo:font-weight="normal">If R4 contains 100, R5 will have the value 100 after the statement is executed, and R4 still holds 100. The value stored in R4 is not removed after the MOV instruction is executed. The MOV instruction in MSP430 may transfer data from memory to memory, from memory to register, from register to memory, and from register to register. Since most RISC CPUs are not allowed to transfer data from memory to memory in a single instruction, MSP430 is not pure RISC in this regard. </para>
+      
+      
+      <list id="import-auto-idm440378144" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Addressing Mode</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm271547584" fo:font-style="normal" fo:font-weight="normal">Address modes are the ways CPU gets operands for an instruction. MSP 430 supports a wide range of addressing modes including index, symbolic (PC relative), absolute (&amp;), indirect register (@), indirect autoincrement (@+), and immediate (#). Theoretically, there are 8 addressing modes in MPS 430 because it uses one bit and two bits to encode addressing modes, respectively.  Bits 4 and 5 indicate source addressing, and bit 7 indicates destination addressing. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm273823312" fo:font-style="normal" fo:font-weight="normal">There are four basic addressing modes for the source operand. They are listed as follows (the leading digits are the 5 and 4 bits in an instruction):</para>
+      <list id="import-auto-idm499099376" list-type="bulleted">
+        <item>00: register direct</item>
+      </list>
+      <list id="import-auto-idm437085792" list-type="bulleted">
+        <item>01: indexed addressing</item>
+      </list>
+      <list id="import-auto-idm479561904" list-type="bulleted">
+        <item>10: register indirect</item>
+      </list>
+      <list id="import-auto-idm337950880" list-type="bulleted">
+        <item>11: indirect autoincrement</item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm464402720" fo:font-style="normal" fo:font-weight="normal">There are two addressing modes for the destination operand as listed follows (the leading 0 is the 7<sup>th</sup> bit in an instruction).</para>
+      <list id="import-auto-idm260132496" list-type="bulleted">
+        <item>0 : register direct</item>
+      </list>
+      <list id="import-auto-idm268151808" list-type="bulleted">
+        <item>1: indexed addressing</item>
+      </list>
+      
+      
+      
+      <list id="import-auto-idm453241088" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Register Direct Addressing</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm274223680" fo:font-style="normal" fo:font-weight="normal">Register direct addressing specifies operands in registers. In MSP 430, all 16 registers may be used in register direct addressing mode. Let’s use MOV instruction in MSP 430 to illustrate this addressing.</para>
+      <code id="eip-489" display="block">MOV.W R4, R5; move the value stored in R4 to R5
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm670597552" fo:font-style="normal" fo:font-weight="normal">Both the source (R4), and the destination (R5) operands are registers. Therefore, they are both register direct addressing modes. The above MOV.W instruction moves one word data stored in R4 to R5. The “.W” postfix indicates word operation. Register direction addressing mode is the basic addressing and it has been widely used in CPU design. If you are not familiar with addressing modes of a CPU, you may find register direct addressing simple and useful. Since this instruction is one word long, after its execution, PC is increased by two. In other systems, the increment of PC depends on the length of the instruction. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm424860160" fo:font-style="normal" fo:font-weight="normal">R3 in MSP 430 is a constant generator. When CPU reads R3 in register direct mode, it will get zero. So the following instruction is typically used to initialize a register.</para>
+      <code id="eip-900" display="block">MOV.W R3, R5; initialize R5 to zero
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm476051936" fo:font-style="normal" fo:font-weight="normal">The SR in MSP 430 can be either source or destination operand. If SR is the source operand, its content will be read out in register direct mode. If SR is placed in the destination, it means its content will be set to some value. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm277874768" fo:font-style="normal" fo:font-weight="normal">What if you want to move one byte data over? MSP 430 provides byte operand instructions with the postfix “.B” to the MOVE instruction. The following will move one byte data from the low byte of R4 to R5.</para>
+      <code id="eip-904" display="block">MOV.B R4, R5; move low byte of R4 to R5
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm447766112" fo:font-style="normal" fo:font-weight="normal">The byte date will be from the low byte of R4 and written to the low byte of R5. What happened to the high byte of R5? For example, we set some specific value to R4 and R5 as follows.</para>
+      <code id="eip-165" display="block">MOV 0x1234, R4; set R4 to the hex 1234
+MOV 0xabcd, R5; set R5 to the hex abcd
+MOV.B R4, R5; move low byte of R4 to R5</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm677298784" fo:font-style="normal" fo:font-weight="normal">After the above statements are executed, R4 will keep 0x1234. Will R5 keep 0xab34, 0x1234, or 0x0034. R 5 would not have 0x1234 because it only writes one byte to it. However, will R5 have the value 0xab34? The answer is no. R5 will have the value 0x0034. We know the value 34 is from R4 but why the high byte of R5 becomes 00? The reason is the register R5 is 16-bit wide and each write would have to be 16-bit data. Even though there is only one byte data from R4, that byte has to join another byte with zero and sent to R5. Therefore, R5 got 0 for the high byte at the end.</para>
+      
+      
+      
+      <list id="import-auto-idm254636432" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Index Addressing</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm537454208" fo:font-style="normal" fo:font-weight="normal">Index addressing describes an operand in memory by using a base address with a register that stores an index, which has the following format:</para>
+      <para id="import-auto-idm467004176">Base(R)</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm420521792" fo:font-style="normal" fo:font-weight="normal">　where the resultant address is calculated by . In MSP430, both source and destination operands are eligible for index addressing. The <emphasis effect="italics">Base</emphasis> is stored in the word right after the instruction. Both source and destination operands may have index addressing bases, which cause two more extra operand fetches. Therefore, by and large, index addressing is slower than register direct or register indirect addressing modes. However, it is very convenient for array accesses as is illustrated in the following example:</para>
+      <para id="import-auto-idm659572400">Table 1 An Example that Initializes an Array Using Index Addressing</para>
+      <code id="eip-819" display="block">#include "quot;msp430.h"quot; ; #define controlled include file
+NAME main ; module name
+PUBLIC main ; make the main label vissible
+; outside this module
+ORG 0FFFEh
+DC16 init ; set reset vector to 'init' label
+RSEG CSTACK ; pre-declaration of segment
+
+RSEG DATA16_N ; begin data segment
+A: DS8 20 ; reserve 20 bytes for array A
+RSEG CODE ; place program in 'CODE' segment
+init: MOV #SFE(CSTACK), SP ; set up stack
+main: NOP ; main program
+MOV.W #WDTPW+WDTHOLD,&amp;WDTCTL ; Stop watchdog timer
+
+MOV.W #20, R4 ; initialize R4 to 20
+start: TST R4 ; compare R4 to 0
+JZ done ; ends loop if R4 is 0
+MOV.B R4, A(R4) ; set A[R4] to R4
+DEC R4 ; decrease R4 by 1
+JMP start ; goto start
+done: ; end of loop
+
+JMP $amp; ; jump to current location '$amp;'
+; (endless loop)
+END</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm431475408" fo:font-style="normal" fo:font-weight="normal">Note that the MSP430 starts its data segment from the address 0x0200, and ends at 0x0BFF. The DATA16_N is defined in the linker file for a device, e.g., lnk430F2013.xcl defines all linker information for the device MSP430F2013. It starts a data segment without initialization. The upper limit depends on its SRAM size. For example, the MSP430F2013 has 128 Bytes of SRAM. Therefore, its data memory starts from 0x0200 to 0x027F. In the above example, the assembler directive DS8 is used to reserve a memory space of size 20 Bytes. Should there is another variable to be defined followed by the array A, it will start at address 0x0214. The example also demonstrates the use of a loop, a typical programming structure in any kind of programming languages. </para>
+      
+      
+      
+      <list id="import-auto-idm654250592" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Register Indirect Addressing</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm442645584" fo:font-style="normal" fo:font-weight="normal">Register indirect addressing is the first choice if the operands are coming from memory because it is much faster than index addressing. It uses the following syntax to designate a memory location for an operand.</para>
+      <code id="eip-818" display="block">@R
+</code><para id="import-auto-idm270512032">Before the register indirect addressing, an address of memory has to be stored in the register. Typical a MOV instruction will take care of it. For example, the following statement will set the memory address 0x0200 to R4, and copy the value at that location to R5:</para>
+      <code id="eip-121" display="block">MOV #200h, R4
+MOV @R4, R5</code><para id="import-auto-idm273744960">Note that the register indirect only applies to the source operand in MSP430. The destination operand may not use register indirect addressing due to its design. What if the destination operand needs register indirect addressing? A workaround is use index addressing with base set to 0 as follows:</para>
+      <para id="import-auto-idm477489888">MOV R5, 0(R4)</para>
+      <para id="import-auto-idm334105488">This will achieve the effect of register indirect on R4. However, the base 0 is still required for another operand fetch. This is the reason why index addressing is slower than register indirect addressing. The following example shows how to quickly add all elements of an array using register indirect addressing.</para>
+      <para id="import-auto-idm303946016">Table 2 Adding Elements of an Array Using Register Indirect Addressing</para>
+      <code id="eip-232" display="block">#include "quot;msp430.h"quot; ; #define controlled include file
+NAME main ; module name
+PUBLIC main ; make the main label vissible
+; outside this module
+ORG 0FFFEh
+DC16 init ; set reset vector to 'apos;init'apos; label
+RSEG CSTACK ; pre-declaration of segment
+
+RSEG DATA16_N ; begin data segment
+A: DS8 20 ; reserve 20 bytes for array A
+RSEG CODE ; place program in 'CODE' segment
+init: MOV #SFE(CSTACK), SP ; set up stack
+main: NOP ; main program
+MOV.W #WDTPW+WDTHOLD,&amp;WDTCTL ; Stop watchdog timer
+
+MOV.W R3, R5 ; initialize R5 to 0
+MOV.W #A, R4 ; initialize R4 to A's address
+start: CMP #A+20, R4 ; check if R4 reaches last element
+JZ done ; ends loop if R4 reaches last
+MOV.B @R4, R5 ; set R5 to memory[R4]
+ADD R5, R5 ; sum them together
+INC R4 ; decrease R4 by 1
+JMP start ; goto start
+done: ; end of loop
+JMP $amp; ; jump to current location 'apos;$amp;'apos;
+; (endless loop)
+END</code>
+      <para id="import-auto-idm271278112">In the above example, the beginning addressing of the array A has to be calculated and stored in the register R4. The array elements will be accessed by register indirect on R4. So R4 has to be increased by 1 for each array element. The tricky part is how the loop is terminated when the last element is read and processed. Here a comparison instruction is used to check if R4 reaches last element’s address. The address of last element is calculated by A+20. Thus, the CMP instruction is comparing #A+20 to R4. Note that the # indicates an immediate value, which is only available to the source operand. So swapping the operands of the CMP instruction is semantically correct but syntactically incorrect!</para>
+      
+      <list id="import-auto-idm303761168" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Memory Layout</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm449022848" fo:font-style="normal" fo:font-weight="normal">MSP430 adopts von Neumann architecture that employs a single memory space for both programs and data, which is different from the Harvard architecture where program memory is separated from data memory.  Since the program and data share the same bus in MSP430, instruction fetches and operand fetches may take place one at a time. All the peripherals and special function registers are mapped to the single memory space.  The memory mapped I/O allows programs to access I/O ports as if it were a register in CPU.  </para>
+      
+      
+      <list id="import-auto-idm507246416" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Programmer</emphasis>
+            <emphasis effect="italics">’</emphasis>
+            <emphasis effect="italics">s View</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm416648528" fo:font-style="normal" fo:font-weight="normal">Depends on each individual MSP430 device, the size of SRAM and the size of flash vary, and thus the memory map may slightly change. Shown below is the memory map for MSP430.</para>
+      <para id="import-auto-idm239530880">Table 3 Memory Map for MSP430</para>
+      <table id="import-auto-idm495513600" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>Address</entry>
+              <entry>Type of Devices</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>0xFFFF0xFFC0</entry>
+              <entry>Interrupt and Reset, e.g., init (0xFFFE)Vector Table</entry>
+            </row>
+            <row>
+              <entry>0xFFBF0xF800</entry>
+              <entry>Flash Code Memory (Expand downward subject to its size)</entry>
+            </row>
+            <row>
+              <entry>0xF7FF0x1100</entry>
+              <entry>Unused</entry>
+            </row>
+            <row>
+              <entry>0x10FF0x1000</entry>
+              <entry>Information Memory (Flash), e.g., IP address, chip ID</entry>
+            </row>
+            <row>
+              <entry>0x0FFF0x0C00</entry>
+              <entry>Bootstrap Loader (Not in F20xx)</entry>
+            </row>
+            <row>
+              <entry>0x0BFF0x0280</entry>
+              <entry>Unused</entry>
+            </row>
+            <row>
+              <entry>0x027F0x0200</entry>
+              <entry>SRAM (expand upward subject to its size)</entry>
+            </row>
+            <row>
+              <entry>0x01FF0x0100</entry>
+              <entry>Peripheral Registers with Word Access, e.g., WDTCTL (0x120)</entry>
+            </row>
+            <row>
+              <entry>0x00FF0x0010</entry>
+              <entry>Peripheral Registers with Byte Access, e.g., P1OUT (0x21), P1DIR (0x22)</entry>
+            </row>
+            <row>
+              <entry>0x000F0x0000</entry>
+              <entry>Special Function Registers (Byte Access), e.g., IE1, IE2, IFG1, IFG2</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      
+      
+      <list id="import-auto-idm670852784" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">General Purpose Registers</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm512266848" fo:font-style="normal" fo:font-weight="normal">There are 16 general purpose registers in MSP430. Each register may hold a word of 16 bits (2 Bytes). They are not assigned addresses in the memory map, unlike other CPU designs. The first 4 registers (R0-R3) have some dedicated uses whereas the rest (R4-R15) are for general purposes. R0 is used for program counter with the alternative name PC. R1 is used for stack pointer with the alternative name SP. R2 is used for both CPU status register (SR) and constant generator (CG1). R3 is used for constant generator (CG2). The registers may be byte operated, in which high bytes are cleared. </para>
+      
+      
+      <list id="import-auto-idm242261056" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Special Function Registers</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm277125712" fo:font-style="normal" fo:font-weight="normal">Special function registers in MSP430 are assigned memory space from 0x0000 to 0x000F. They include module enabling (ME1, ME2), interrupt enabling (IE1, IE2), and interrupt flags (IFG1, IFG2). </para>
+      
+      
+      <list id="import-auto-idm274951808" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Peripheral Registers with Byte Access</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm269781248" fo:font-style="normal" fo:font-weight="normal">Peripheral registers with Byte access are assigned memory addresses from 0x0010 to 0x00FF. They include I/O port control registers such as P1IN, P1OUT, P1DIR, P1IFG, P1IES, P1IE, P1SEL, and P1REN, and basic system clock control such as BCSCTL1, BCSCTL2, BCSCTL3, DCOCTL. Each of them is one byte wide. So the byte version of the instructions should be used. The actual address assignment for each of the above register slightly varies subject to each individual MSP430 component.</para>
+      
+      
+      <list id="import-auto-idm655651456" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Peripheral Registers with Word Access</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm658881392" fo:font-style="normal" fo:font-weight="normal">Memory space ranging from 0x0100 to 0x01FF is used for peripheral registers with word access. The registers in this memory space include watch dog timer control register WDTCTL, timer control registers such as TACTL, TACCTL0, TACCTL1, TAR, TACCR0, and TACCR1. </para>
+      
+      
+      <list id="import-auto-idm491421504" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">SRAM</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm440183760" fo:font-style="normal" fo:font-weight="normal">Starting from 0x0200 up to 0x0BFF is the memory space for SRAM. The upper bound depends on the capacity of SRAM. For example, MSP430F2013 has 128 Bytes of SRAM. Therefore, the SRAM is assigned the range 0x0200 to 0x027F. MSP430F2274 has 1024 Bytes of SRAM, and thus has a SRAM range from 0x0200 to 0x05FF.  This storage is used for program variables normally. Its content is wiped out if power is off. </para>
+      
+      
+      <list id="import-auto-idm509529152" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Bootstrap Loader</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm416551472" fo:font-style="normal" fo:font-weight="normal">The bootstrap loader is a serial communication program via the COM port of a PC to configure the flash memory in early MSP430s. Bootstrap loader is removed after F20XX for security concerns. </para>
+      
+      
+      <list id="import-auto-idm517340720" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Information Flash</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm443092736" fo:font-style="normal" fo:font-weight="normal">The memory address from 0x1000 to 0x10FF is reserved for a flash that stores non-volatile data. The stored information may include a serial number for the device, a MAC address for the network device, or the accounting information such as number of hours used. The information will remain in the flash memory even the power is off. </para>
+      
+      
+      <list id="import-auto-idm676367728" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Flash Code Memory</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm671420240" fo:font-style="normal" fo:font-weight="normal">Each time when an MSP430 is configured, the flash code memory is erased and loaded with the new program. Once the programming is done, the code of the program remains in the non-volatile flash memory. The address space for the flash code memory starts from 0xFFBF and grows downward to 0x1100 subject to the capacity of the flash in an MSP430 device. For example, the flash code memory size is 2 K Bytes in MSP430F2013. Its flash code memory is then assigned the memory space from 0xF800 to 0xFFFF (including the 64 bytes interrupt vectors). </para>
+      
+      
+      <list id="import-auto-idm284150672" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Interrupt and Reset Vectors</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm237861856" fo:font-style="normal" fo:font-weight="normal">The interrupt and reset vectors handles interrupt requires and system reset. One interrupt vector requires one word. So totally there are 32 interrupts allowed. The assigned address space is from 0xFFC0 to 0xFFFF. Each of the vectors stores the starting address of the corresponding interrupt service routine (ISR). For example, when there is an I/O interrupt request such as I/O data ready, the CPU will look for the corresponding interrupt vector and serve the I/O request by running its ISR. Interrupt provides high performance I/O, and is the fundamental mechanism for a multiprocessing system.</para>
+      
+      
+      <list id="import-auto-idm677554832" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Exercise</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm278280688" fo:font-style="normal" fo:font-weight="normal">What is the maximal size of SRAM and flash code memory based on Table 3? Note that the bootstrap loader space may not be used for either SRAM or flash.</para>
+      
+      
+    </section>
+    <section id="import-auto-idm307313344">
+      <title>Variables and Data Structures</title>
+      <list id="import-auto-idm235363760" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Overview</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm275739392" fo:font-style="normal" fo:font-weight="normal">Any program is created to process data. In this regard, a program may be thought of as a processor that receives data, processes data, and output data. A program basically is a set of instructions, which are stored in the program memory. In MSP430, the program code flash is the memory space that stores the program. Data are stored in the SRAM memory space. To process data, a program has to access the data via their addresses. However, it is tedious to use addresses to refer to the data. Instead, an alias name like x, y, or z is normally used as variables. A variable may be defined and a piece of memory in the SRAM space is associated with the variable. By using the variables, access to the data area becomes organized and straight forward. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm647867840" fo:font-style="normal" fo:font-weight="normal">Variables are referring to their associated memory. In most applications, the way the data are organized is also important. For example, if there are 10 student records to be stored, an array of 10 student records may be required. However, if the number of students is unknown, a linked list may be appropriate.  </para>
+      
+      
+      <list id="import-auto-idm276581504" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Variable Declaration</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm531596560" fo:font-style="normal" fo:font-weight="normal">Variable declarations in assembly programming concern how much space required but disregard to their types. The declaration is the same whether the variable is an integer, a Boolean, or a float. Assembly programmers will have to differentiate types of variables somehow. One of the ways to enforce a type to a variable is naming. For example, variable names start with letter “i” are integers, “f” are floats, and “b” are Booleans. The names are actual labels in assembly, and they are case sensitive by default in the IAR system. That is “ia” is different to “iA.” Also the labels are lined up in the first column of the assembly source file. Labels may be followed by an optional colon by convention. The following example defines three variables, ix, iy, and iz, each of which is one byte. </para>
+      <para id="import-auto-idm269977984">Table 4 Variable Declaration and Initialization</para>
+      <code id="eip-590" display="block">#include "msp430.h" ; #define controlled include file
+NAME main ; module name
+PUBLIC main ; make the main label visible
+; outside this module
+ORG 0FFFEh
+DC16 init ; set reset vector to 'apos;init'apos; label
+RSEG CSTACK ; pre-declaration of segment
+RSEG DATA16_N ; start uninitialized data segment
+ix DB 0 ; define variable ix and set to 0
+iy: DB 0 ; define variable iy and set to 0
+iz DB 0 ; define variable iz and set to 0
+RSEG CODE ; place program in 'CODE' segment
+init: MOV #SFE(CSTACK), SP ; set up stack
+main: NOP ; main program
+MOV.W #WDTPW+WDTHOLD,&amp;WDTCTL ; Stop watchdog timer
+
+MOV.B #12h, ix ; set ix to 12h
+MOV.B #21h, iy ; set iy to 21h
+ADD.B ix, iz ; ix+iz -&gt; iz
+ADD.B iy, iz ; iy+iz -&gt; iz
+
+JMP $amp; ; jump to current location 'apos;$amp;'apos;
+; (endless loop)
+END</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm431391200" fo:font-style="normal" fo:font-weight="normal">The most common way to define variables in assembly programs is using the assembly directive DB, meaning define byte. Assembly directives are not machine instructions, but they notify assemblers to do something. The DB directive notifies the assembler to reserve one byte space. The label associated with the space is simply just another way to represent address at the memory location. </para>
+      
+      
+      <list id="import-auto-idm667157520" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Variable Initialization</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm239118816" fo:font-style="normal" fo:font-weight="normal">After a variable is defined, it must be initialized to some known value. Otherwise, the computation involves it may not be predictable! The DB directive is followed by an initial value. In the above example, all three variables are declared and initialized to zero. </para>
+      <code id="eip-439" display="block">ix DB 0 ; define variable ix and set to 0
+iy: DB 0 ; define variable iy and set to 0
+iz DB 0 ; define variable iz and set to 0
+Note that the DS8 (allocate space for integer) in Table 1 is followed by the number of bytes requested.
+In the example shown in Table 4, the variable ix, and iy are set to known values as follows:
+MOV.B #12h, ix ; set ix to 12h
+MOV.B #21h, iy ; set iy to 21h</code><list id="import-auto-idm676791632" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Access Scalar Variables</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm471896192" fo:font-style="normal" fo:font-weight="normal">When variables are defined, each of them is associated with a label (address). This label is used for the assembly statement to reference to a designated variable. A variable keeps only one value is called a scalar variable. A scalable variable may require several bytes subject to the size of a variable. For example, an integer in C is normally 4 bytes whereas a short is only 2 bytes. A double in the IEEE 754 standard requires 8 bytes. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm436253792" fo:font-style="normal" fo:font-weight="normal">In MSP430, a variable may be referenced in absolute addressing or symbolic addressing. The absolute is actually indexed on SR, which always gives zero in the format <emphasis effect="italics">absolute_address(SR)</emphasis>. An ampersand (&amp;) is prefixed to a label in assembly to indicate absolute addressing. The following statement references variable <emphasis effect="italics">ix</emphasis> in absolute addressing mode.</para>
+      <code id="eip-700" display="block">MOV.B #12h, &amp;ix ; set ix to 12h
+</code>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm446606416" fo:font-style="normal" fo:font-weight="normal">The symbolic address is actually indexed on PC, and therefore, it is PC relative addressing. It has to the format, <emphasis effect="italics">offset(PC)</emphasis>, where <emphasis effect="italics">offset </emphasis> is the displacement between the current PC and the address of a variable. The following statement references variable <emphasis effect="italics">ix</emphasis> in symbolic addressing mode.</para>
+      <code id="eip-574" display="block">MOV.B  #12h, ix  ; set ix to 12h</code><para id="import-auto-idm657186192">From the programming perspective, the two addressing will yield the same result but there exist potential issues. First, the symbolic addressing will allow code to be loaded at any location of the memory because the variable address is relative to PC. The absolute addressing code has to be loaded at some certain location. Second, in some CPU, the absolute addressing would require a fetch for an address word whereas the offset in the symbolic address is small relatively and may be squeezed into an instruction. This means symbolic addressing may be better in performance. However, this is not the case in MSP430 because both symbolic addressing and absolute addressing require a fetch for the address (offset) for the reason that they are indexed addressing in nature. </para>
+      
+      
+      <list id="import-auto-idm286070720" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Data Types</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm250964624" fo:font-style="normal" fo:font-weight="normal">IAR supports constants for integers, characters, and floating points. This would ease constant definitions for the three data types. It is worth mentioning that the actual arithmetic operating upon each of the three data types will have to be designed accordingly. </para>
+      
+      
+      
+      <list id="import-auto-idm428328528" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Integer</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm426696656" fo:font-style="normal" fo:font-weight="normal">Integers in most programming languages are 4 bytes in length. In 32-bit CPUs, the ADD instruction will add two integers together. However, in CPUs with less than 32-bit operands, adding two 4-byte integers will require an algorithm implemented in a subroutine or a macro. For example, adding two integers (4 bytes) cannot be done by the ADD instruction in MSP430 because the word size is 2 bytes, and doing so would just add half of them! IAR implements 4-byte two’s complement integers. If the there is not enough space, only the low bytes are used. Negative numbers are designated by a leading mius (-) sign. The leading or trailing data representation code may be either uppercase or lowercase. </para>
+      <para id="import-auto-idm240152160">Table 5 Integer Constants</para>
+      <table id="import-auto-idm428655904" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>Binary </entry>
+              <entry>1010b , b'1010'</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Octal </entry>
+              <entry>1234q , q'1234'</entry>
+            </row>
+            <row>
+              <entry>Decimal </entry>
+              <entry>1234, -1, d'1234'</entry>
+            </row>
+            <row>
+              <entry>Hexadecimal</entry>
+              <entry>0xFFFF, 0FFFFh, h'FFFF'</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm235877312">
+      <title/><para id="eip-683">The following example defines three 4-byte integers and an integer addition for summing two integers. The integers are defined as 32-bit constants using hexadecimal notations. The values (0x12335678 and 0x8765B321) are selected to ease verification. Note that there is a carry for the low word addition, which has to be added to the high word addition. The subroutine (ADDI) is defined with the assumption that R13, R14, and R15 holds the addresses for the first integer, the second integer, and the result, respectively. Note also that the pond (#) sign in front of the variable labels in the MOV instruction designates the address. A missing pond sign in these statements will assign the corresponding register the value stored in the variable.  </para><para id="import-auto-idm466521088">Table 6 An Example that Defines 4-byte Integers and Their Addition</para>
+      <code id="eip-80" display="block">#include "msp430.h" ; #define controlled include file
+NAME main ; module name
+PUBLIC main ; make the main label visible
+; outside this module
+ORG 0FFFEh
+DC16 init ; set reset vector to 'init' label
+RSEG CSTACK ; pre-declaration of segment
+RSEG DATA16_N ; start uninitialized data segment
+ix DC32 0x12335678 ; int ix := 0x12335678
+iy: DC32 0x8765B321 ; int iy := 0x8765B321
+iz DC32 0 ; int iz := 0
+RSEG CODE ; place program in 'CODE' segment
+init: MOV #SFE(CSTACK), SP ; set up stack
+main: NOP ; main program
+MOV.W #WDTPW+WDTHOLD,&amp;WDTCTL ; Stop watchdog timer
+MOV #ix, R13 ; store ix's address in R13
+MOV #iy, R14 ; store iy's address in R14
+MOV #iz, R15 ; store iz's address in R15
+CALL #ADDI ; call subroutine ADDI for integer addition
+
+JMP $amp; ; jump to current location 'apos;$amp;'apos;
+; (endless loop)
+ADDI: ; integer addition @R13+@R14 -&gt; @R15
+ADD 0(R13), 0(R15) ; put @R13's low word @R15
+ADD 0(R14), 0(R15) ; add low words
+ADDC 2(R13), 2(R15) ; add @R13's high word with carry
+ADD 2(R14), 2(R15) ; add high words
+RET
+END</code><para id="import-auto-idm302796640">Integers of a variety of lengths may be defined using the following assembly directives. The DC’s will define an integer with an initial value whereas DS’s will just reserve spaces without initial values.</para>
+      <para id="import-auto-idm242142384">Table 7 Assembly Directives for Integer Definitions</para>
+      <table id="import-auto-idm442072000" summary="">
+        <tgroup cols="3">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>Size of Integers</entry>
+              <entry>Definition with Initial Values</entry>
+              <entry>Definition without Initial Values</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>8-bit </entry>
+              <entry>DC8/ DB</entry>
+              <entry>DS8/ DS</entry>
+            </row>
+            <row>
+              <entry>16-bit </entry>
+              <entry>DC16/ DW</entry>
+              <entry>DS16/ DS 2</entry>
+            </row>
+            <row>
+              <entry>32-bit </entry>
+              <entry>DC32/ DL</entry>
+              <entry>DS32/ DS 4</entry>
+            </row>
+            <row>
+              <entry>64-bit </entry>
+              <entry>DC64</entry>
+              <entry>DS64/ DS 8</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      
+      
+      <list id="import-auto-idm531475888" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Characters</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm841481568" fo:font-style="normal" fo:font-weight="normal">Characters form strings and messages that may be displayed on an output device such as an LCD panel. For example, if the machine is waiting for user’s inputs, a prompt such as “Please input your choice:” should be displayed. An error message such as “not enough deposit” should be displayed in a vending machine that requires more coins to release a cereal bar. Without those messages, it would be really hard to know what’s next in operating a machine. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm646608336" fo:font-style="normal" fo:font-weight="normal">By and large, DC8/DB is used to define a string constant. The good thing about it is that there is no size argument. The assembler will automatically calculate the size of a string and allocate space for it. The following statements define the aforementioned strings.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm244229008" fo:font-style="normal" fo:font-weight="normal">PromptDB“Please input your choice:”</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm306255472" fo:font-style="normal" fo:font-weight="normal">ErrMsgDC8‘Not enough deposit!’ </para>
+      <code id="eip-11" display="block">PromptDB“Please input your choice:”
+ErrMsgDC8‘Not enough deposit!'</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm446469120" fo:font-style="normal" fo:font-weight="normal">The use of DB and DC8 is identical. In the first statement, a pair of double quotes is used for the string “Please input your choice:” The assembler will allocated one byte for each character in the string, plus one extra byte for the null character at the end. Overall, the allocated space will be the string length plus one. This is called null-terminated string. Most of languages such as C implemented null-terminated strings. The second statement above uses a pair of single quotes for the string, which results in an exact number of bytes as the characters. There is no null character at the end. Non-null-terminated strings will have to have their sizes kept somewhere to be correctly operated.  In some situation, all non-null-terminated strings are designed to have the same length. Thus, the size information will not waste too much space. </para>
+      <para id="import-auto-idm680881344">Table 8 Examples of Character String Definitions</para>
+      <table id="import-auto-idm538239696" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>'ABCD' </entry>
+              <entry>ABCD (four characters).</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>"ABCD" </entry>
+              <entry>ABCD'\0' (five characters the last ASCII null).</entry>
+            </row>
+            <row>
+              <entry>'A''B' </entry>
+              <entry>A'B</entry>
+            </row>
+            <row>
+              <entry>'A''' </entry>
+              <entry>A'</entry>
+            </row>
+            <row>
+              <entry>'''' (4 quotes)</entry>
+              <entry>'</entry>
+            </row>
+            <row>
+              <entry>'' (2 quotes) </entry>
+              <entry>Empty string (no value).</entry>
+            </row>
+            <row>
+              <entry>"" (2 double quotes) </entry>
+              <entry>Empty string (an ASCII null character).</entry>
+            </row>
+            <row>
+              <entry>\' </entry>
+              <entry>', for quote within a string, as in ’I\’d love to’</entry>
+            </row>
+            <row>
+              <entry>\\ </entry>
+              <entry>\, for \ within a string</entry>
+            </row>
+            <row>
+              <entry>\" </entry>
+              <entry>", for double quote within a string</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm474281280" fo:font-style="normal" fo:font-weight="normal">Table 8 lists some string definitions. Two single quotes within a string are used to represent one single quote, which is part of the string.  Double quote itself in a string is represented by a forward slash followed by a double quote. The forward slashes are used to indicate a forward slash in a string. Note that an empty string (nothing) is represented by a pair of single quotes. A pair of double quotes with nothing in-between indicates a null-terminated string, which contains just the null character. </para>
+      
+      
+      
+      <list id="import-auto-idm467404608" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Floating Points</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm301472880" fo:font-style="normal" fo:font-weight="normal">Applications that work with floating points create a need for floating point declarations. IAR provides two assembly directives for floating point definitions such as DF32 (DF) and DF64. DF32 defines a single precision floating point whereas DF64 defines a double precision floating point.  A single precision floating point occupies 4 bytes in memory, and a double precision floating point occupies 8 bytes in memory. The syntax for a floating point number is as follows:</para>
+      <code id="eip-448" display="block">[+|-][digits][.digits][{E|e}[+|-]digits]
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm284516048" fo:font-style="normal" fo:font-weight="normal">The square brackets mean optional and the vertical bar is used to separate options. Curley braces are used for a set of options. Based on the above floating point syntax, the following are legal floating points.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm467040176" fo:font-style="normal" fo:font-weight="normal">3.14</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm547093792" fo:font-style="normal" fo:font-weight="normal">6.02E+23</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm514164224" fo:font-style="normal" fo:font-weight="normal">-1.602176565e-19</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm661679632" fo:font-style="normal" fo:font-weight="normal">.1234</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm476646896" fo:font-style="normal" fo:font-weight="normal">The above numbers are interpreted as decimal numbers, meaning that the base of the exponent is 10. So the number 6.02E+23 is . The assembler will convert them to IEEE 754 floating point formats, and allocate 8 bytes for double precision and 4 bytes for single precision. The following statement defines a single precision floating point value 8.0.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm491646656" fo:font-style="normal" fo:font-weight="normal">fDF328.0</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm460583568" fo:font-style="normal" fo:font-weight="normal">Since this is a single precision floating number, the assembler converts 8.0 to 0x41000000, and stores it in memory.  The following shows the IEEE 754 single precision floating point format.</para>
+      <para id="import-auto-idm514894976">Table 9 IEEE 754 Single Precision Representation for the Number 8.0</para>
+      <table id="import-auto-idm472920528" summary="">
+        <tgroup cols="32">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <colspec colnum="7" colname="c7"/>
+          <colspec colnum="8" colname="c8"/>
+          <colspec colnum="9" colname="c9"/>
+          <colspec colnum="10" colname="c10"/>
+          <colspec colnum="11" colname="c11"/>
+          <colspec colnum="12" colname="c12"/>
+          <colspec colnum="13" colname="c13"/>
+          <colspec colnum="14" colname="c14"/>
+          <colspec colnum="15" colname="c15"/>
+          <colspec colnum="16" colname="c16"/>
+          <colspec colnum="17" colname="c17"/>
+          <colspec colnum="18" colname="c18"/>
+          <colspec colnum="19" colname="c19"/>
+          <colspec colnum="20" colname="c20"/>
+          <colspec colnum="21" colname="c21"/>
+          <colspec colnum="22" colname="c22"/>
+          <colspec colnum="23" colname="c23"/>
+          <colspec colnum="24" colname="c24"/>
+          <colspec colnum="25" colname="c25"/>
+          <colspec colnum="26" colname="c26"/>
+          <colspec colnum="27" colname="c27"/>
+          <colspec colnum="28" colname="c28"/>
+          <colspec colnum="29" colname="c29"/>
+          <colspec colnum="30" colname="c30"/>
+          <colspec colnum="31" colname="c31"/>
+          <colspec colnum="32" colname="c32"/>
+          <thead>
+            <row>
+              <entry>Sign</entry>
+              <entry namest="c2" nameend="c9">Exponent (excess-127)</entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry namest="c10" nameend="c32">Mantissa</entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+              <entry>
+                
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>31</entry>
+              <entry>30</entry>
+              <entry>29</entry>
+              <entry>28</entry>
+              <entry>27</entry>
+              <entry>26</entry>
+              <entry>25</entry>
+              <entry>24</entry>
+              <entry>23</entry>
+              <entry>22</entry>
+              <entry>21</entry>
+              <entry>20</entry>
+              <entry>19</entry>
+              <entry>18</entry>
+              <entry>17</entry>
+              <entry>16</entry>
+              <entry>15</entry>
+              <entry>14</entry>
+              <entry>13</entry>
+              <entry>12</entry>
+              <entry>11</entry>
+              <entry>10</entry>
+              <entry>9</entry>
+              <entry>8</entry>
+              <entry>7</entry>
+              <entry>6</entry>
+              <entry>5</entry>
+              <entry>4</entry>
+              <entry>3</entry>
+              <entry>2</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm499384832" fo:font-style="normal" fo:font-weight="normal">In Table 9, the exponent is , and the mantissa is 0, meaning the fraction of the normalized number is 0. With the leading 1, the number is .</para>
+      
+      
+      <list id="import-auto-idm506171328" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">User-Defined Data Types </emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm490852976" fo:font-style="normal" fo:font-weight="normal">Most assemblers only support a handful number of types such as integers, characters, and floating points in IAR. By “support” it does not mean the CPU actually supports arithmetic directly on those data types. In IAR, the supported data types give the assembly programmers the ability to define variables with initial values of those data types. The programmers will have to design algorithms in assembly to operate upon those data. Similarly, programmers may define variables of virtually any data type, say, an array of 10 words. Basically, the programmers only need to let the assembler know the size of the variable (or object). The assembler will reserve the amount of space for the variable. As to the operation of the variable, like the supported data types, it is the discretion of the programmers who have to design suitable algorithms for it.  </para>
+      
+      
+      
+      <list id="import-auto-idm515407200" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Pointer Data Type</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm681124896" fo:font-style="normal" fo:font-weight="normal">Pointers are basically variables that keep address, instead of values. The job of variables is like temporary storages that keep goods. If we need something, get it out form the storage. If we’ve done using it, we may put it back to the storage. The storage may keep actual items, or some note that tells the user where to get the item. Likewise, if a variable keeps the place where the actual value is stored, this variable is of pointer data type. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm451212688" fo:font-style="normal" fo:font-weight="normal">Pointer data type is a need to implement data structures such as linked list, tree, etc.  Data structures that have a dynamic characteristic require pointers. The dynamic characteristic allows an efficient memory use in the system. For example, in situations where the number of student records is unknown before a program starts, the linked list data structure is more suitable than array, which is static. In embedded system where memory is considered a precious resource, creating a big array upfront is not feasible. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm450628336" fo:font-style="normal" fo:font-weight="normal">Table 10 lists source code for a simple dynamic memory management system that implements a first-fit algorithm using linked list data structure. The dynamic memory (a.k.a. heap) and the stack share the same memory space. The stack grows downward whereas dynamic memory grows upward.  We use a variable called <emphasis effect="italics">brk </emphasis>that keeps the watermark of the heap, i.e., the highest address in the memory that has been used for the heap. The program also keeps a variable for the beginning of the heap, named <emphasis effect="italics">bgn</emphasis>. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm835947696" fo:font-style="normal" fo:font-weight="normal">The heap for this application is divided into two-word objects for linked list nodes. Each node has two fields: data and next, each of which is one word in length. The data field stores a value. The next field is a pointer keeping the address of the next node in the linked list.  </para>
+      <para id="import-auto-idm470230048">Table 10 A Simple First-Fit Dynamic Memory Management System Using a Linked List Data Structure</para>
+      <code id="eip-32" display="block">#include "msp430.h" ; #define controlled include file
+NAME main ; module name
+PUBLIC main ; make the main label visible
+; outside this module
+ORG 0FFFEh
+DC16 init ; set reset vector to 'init' label
+RSEG CSTACK ; pre-declaration of segment
+
+RSEG DATA16_N
+bgn DW $+4 ; keep heap start address
+brk DW $+2 ; keep heap watermark
+
+RSEG CODE ; place program in 'CODE' segment
+init: MOV #SFE(CSTACK), SP ; set up stack
+main: NOP ; main program
+MOV.W #WDTPW+WDTHOLD,&amp;WDTCTL ; Stop watchdog timer
+
+CALL #alloc ; create a head node, 3
+MOV R15, R4 ; set R4 to address
+MOV #3, R5 ; set R5 to value
+CALL #setNode ; setNode sets fields
+MOV R4, R6 ; R6 keeps the head
+
+CALL #alloc ; create a node, 5
+MOV R15, 2(R4) ; link to head
+MOV R15, R4 ; set R4 to address
+MOV #5, R5 ; set R5 to value
+CALL #setNode ; setNode sets fields
+
+CALL #alloc ; create a node, 7
+MOV R15, 2(R4) ; link to previous node
+MOV R15, R4 ; set R4 to address
+MOV #7, R5 ; set R5 to value
+CALL #setNode ; setNode sets fields
+
+JMP $ ; jump to current location $apos;$amp;'
+; (endless loop)
+setNode: ; subroutine to set linked list node
+; (data, next)
+PUSH R4 ; R4 keeps address
+MOV R5, 0(R4) ; set data file in the node
+ADD @R3, R4 ; R4 + 2 -&gt; R4 (next)
+MOV R3, 0(R4) ; void next field
+POP R4 ; Restore R4
+RET
+alloc: ; first-fit returns free node at R15
+PUSH R12 ; temp register
+PUSH R13 ; temp reigster
+PUSH R14 ; temp register
+MOV bgn, R13 ; R13 keeps start address of R13
+MOV brk, R14 ; R14 keeps heap watermark
+L1:
+CMP R14, R13 ; check if watermark raises
+JZ L2 ; jump to raise watermark
+ADD @R3, R13 ; R13 + 2 -&gt; R13
+MOV @R13+, R12 ; get the pointer of this node
+AND 0(R3), R12 ; R12 &amp; 1, free node has zeroth bit
+; set in pointer
+JZ L1 ; non-free node must not have zeroth
+; bit set!
+ADD #-4, R13 ; back to node address
+JMP L3 ; found free node
+L2: ADD @SR, brk ; brk + 4-&gt; brk
+L3: MOV R13, R15 ; set free address at R15
+POP R14 ; restore R14
+POP R13 ; restore R13
+POP R12 ; restore R12
+RET
+END</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm443087376" fo:font-style="normal" fo:font-weight="normal">Two subroutines are implemented: setNode and alloc. Set Node receives two arguments, the node address and the value for the data, in R4 and R5, respectively. It first back up R4 in stack because R4 will be modified in the subroutine. The caller may need R4 later. So the best way is to put it in stack and restore it before returning back to caller. This is a typical technique to reuse register in subroutines. The setNode subroutine will set and initialize fields in the node accordingly. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm433831568" fo:font-style="normal" fo:font-weight="normal">The alloc subroutine implements a first-fit algorithm that searches the first free space starting from the beginning address to the watermark of the heap. Since the size of the linked list node is two words, i.e., 4 bytes, the zeroth bit and the first bit of the node addresses will always be zero. Therefore, they may be used for memory status bits. In this program, we assume the zeroth bit indicates if the node is free or occupied. A free node will have the zeroth bit set in its next field. The alloc subroutine reads the next field and checks if its zeroth bit got set. If yes, the free node is found and its address is adjusted for return. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm680189728" fo:font-style="normal" fo:font-weight="normal">In case of nodes that are all occupied, the watermark (brk) will have to be raised, i.e., the heap grows. Practically, the heap may grow or shrink. The former will accommodate more object allocations, and the latter would give more space to the stack. For the complexity of the program, the heap shrinking is not implemented. However, the readers should be able to modify the program for heap shrinking. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm337279584" fo:font-style="normal" fo:font-weight="normal">For complexity concern, the free subroutine is not shown in this source code list. However, it can be really simple and should be done in no time. Freeing an object is simply set the zeroth bit of the next field in a node. However, practically, a variable that keeps the size of the total free space is helpful. For example, the alloc subroutine would not be necessary to go over a packed heap and finally raise the watermark. Instead, if the total free space is less than the amount requested, the search will be bypassed and the watermark is raised directly. This will greatly increase the alloc performance. </para>
+      
+      
+      
+      <list id="import-auto-idm457103360" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Array Data Types</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm307139088" fo:font-style="normal" fo:font-weight="normal">An array is a group of items of the same size. Access to a particular element can be made by calculating its displacement plus the beginning address of the array. Thus, the array data structure is considered as a fast access mechanism for storing data with equal-sized records such as matrices. For example, if we store 10 numbers in an array of 10 words (two bytes each), the address of an element <emphasis effect="italics">i</emphasis> is calculated as follows:</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm728281520" fo:font-style="normal" fo:font-weight="normal">The array indices start from 0 to 9, which is . In CPUs like MSP430, multiplication may not be implemented. The multiplication in the address calculation may be implemented by left shift by one bit, which is arithmetically the same of 2 times. </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm509184880" fo:font-style="normal" fo:font-weight="normal">The array shown in the above example is one-dimensional. However, it is quite often that a multi-dimensional array is required in situations like a two-dimensional matrix multiplication. Because the memory is always organized in one dimension, a two-dimensional array will have to be organized in one dimension memory. The section followed will discuss two approaches in organizing two-dimensional arrays to one-dimensional memory.</para>
+      
+      
+      
+      <list id="import-auto-idm471655104" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Row-Major Order versus Column-Major Order</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm517386352" fo:font-style="normal" fo:font-weight="normal">Arrays with more than one dimension are called multi-dimensional arrays. To store multi-dimensional arrays in memory, a mapping from multi-dimension to one dimension has to be in place. Basically, we want to store multi-dimensional array elements in a linear address space. The first approach, called row-major, stores each row of an array in sequence. For example, a two-dimensional array a[3][4] has the following mapping in row-major order.</para>
+      <para id="import-auto-idm526590304">Assume each element in the array is of two bytes in length. The twelve elements of the two-dimensional array are mapped to a one-dimensional array from a[0] to a[11]. What we want now is to compute the address of a given array element . Since the mapping is quite regular, the address calculation is as follows.</para>
+      <para id="import-auto-idm235264048">The calculation is based on number of rows ahead of this element plus the displacement of the  element from the beginning of the row. The number 4 is the column dimension.  In a three-dimensional array, the address calculation in row-major is as follows.</para>
+      <para id="import-auto-idm520362080">The  is number of elements in the  dimension, where  starts from 0. For example, an array  has  </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm484084640" fo:font-style="normal" fo:font-weight="normal">Column-major on the other hand organizes array elements in columns by columns. The following shows the column-major organization for the array . </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm417053024" fo:font-style="normal" fo:font-weight="normal">In column-major ordering,  is mapped to  where it is mapped to  in row-major ordering. Obvious, the address mapping is related to the row dimension, i.e., the number of elements in a column. In the two-dimensional case, the row and column indices are swapped in the address calculation.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm482423008" fo:font-style="normal" fo:font-weight="normal">The number 3 in the above address calculation is the row dimension. In a three-dimensional array, the address calculation in column-major is as follows.</para>
+    </section>
+  </content>
+</document>

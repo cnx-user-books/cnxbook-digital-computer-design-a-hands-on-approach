@@ -1,0 +1,865 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Instruction Set Architecture (ISA)</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78593</md:content-id>
+  <md:title>Instruction Set Architecture (ISA)</md:title>
+  <md:abstract>This chapter introduces instruction sets including components of an instruction set, and understanding instruction sets from an implementation perspective. Basic organization of the von Neumann machine. Control unit; instruction fetch, decode, and execution. Instruction sets and types. Assembly/machine language programming. Instruction formats. Addressing modes.</md:abstract>
+  <md:uuid>f011d7f0-e9e0-45e3-9a9e-e862f45dd6a3</md:uuid>
+</metadata>
+
+<content>
+    <section id="import-auto-idm426349632">
+      <title>Instruction Set Architecture</title>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <para id="import-auto-idm600152672"/></section>
+    <section id="import-auto-idm548352672">
+      <title>Introduction</title>
+      <para id="import-auto-idm551922224">An instruction set architecture (ISA) defines a set of native instructions to be executed directly by hardware. It specifies native data types, instructions, registers, addressing modes, memory architecture, interrupts, and external I/O. An ISA may be implemented in different microarchitectures, e.g., Intel Pentium and AMD Athlon implement the x86 instruction set, but their microarchitectures may be essentially different. A native instruction is executed directly by a CPU and is composed of an operator (opcode) and operands.  A collection of instructions is called machine code to fulfill some function. Based on the design strategy, basically there are two models: complex instruction set computer (CISC) and reduced instruction set computer (RISC). In CISC, the length of the instruction is variable and thus the instruction encoding is quite complex, whereas in RISC, the length of the instruction is fixed, and therefore, the instruction encoding is simple. Generally, there are more instructions in CISC than in RISC. Companies making CISC processors include Intel and AMD, whereas those making RISC processors contain IBM, Apple, and Sun microsystems. </para>
+    </section>
+    <section id="import-auto-idm339822272">
+      <title> Native Instruction</title>
+      <para id="import-auto-idm657371968">Native instructions are executed by a CPU directly. A native instruction contains information about what to do (opcode), and what data to be processed (operands). There is only one opcode and there may have more than one operand in an instruction<footnote id="import-auto-footnote-1"> Instruction will be used in lieu of native instruction throughout the book should the “native” concept is not critical in the context. </footnote>.  illustrates the MPS430 instruction format.</para>
+      <para id="import-auto-idm752590976">Table  MSP430 Instruction Format</para>
+      <table id="import-auto-idm645372192" summary="">
+        <tgroup cols="6">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <thead>
+            <row>
+              <entry>15  12</entry>
+              <entry>11  8</entry>
+              <entry>7</entry>
+              <entry>6</entry>
+              <entry>5  4</entry>
+              <entry>3  0</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Opcode</entry>
+              <entry>Src</entry>
+              <entry>Ad</entry>
+              <entry>B/W</entry>
+              <entry>As</entry>
+              <entry>Dst</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm346678144">The first 4 bits (from bit 12 to bit 15) designate an opcode. Therefore, there are 16 different opcodes defined in MSP430. Three types of instructions are defined based on the value of opcode: single operand arithmetic (0001), conditional jump (0010, 0011), and two operand arithmetic (0100 – 1111). Not all fields are used in an instruction. We classify instructions into type 1 for two operand arithmetic, type 2 for single operand arithmetic, and jumps.</para>
+      <para id="import-auto-idm610526576">There are 16 registers in MSP430. So they can be indexed by 4 bits source (Src) and 4-bit destination (Dst) fields. The operands are specified by these two fields. Once an instruction is executed, the CPU will look for the operands based on the values set in the Src and Dst fields.</para>
+      <para id="import-auto-idm392496576">Other fields such as Ad, B/W, and As are modifiers an instruction. The one-bit Ad field designates the addressing for the destination operand. Because of one bit, there are two possible destination addressing modes. The one-bit B/W field tells if the instruction will be operating upon one byte operand or one word (two bytes in MSP430) operand. Thus, each instruction in MSP430 can have to versions typically. The two-bit As field defines the addressing modes for the source operand. So there are 4 possible addressing modes for the source. </para>
+    </section>
+    <section id="import-auto-idm633170528">
+      <title>Type I Instructions</title>
+      <para id="import-auto-idm457773216">The two operand arithmetic instructions used all the fields shown in . There are 12 instructions defined in Type I as tabularized in . It seems odd that there are two required operands for an instruction in this category but only one source field is reserved. In fact, both the source and destination fields are used to specify the operands, and the result will be placed back to the destination. For example, the instruction  “ADD src, dst” will be executed like “dst += src” in C language, i.e., the sum of src and dst will be stored back to dst. </para>
+      <para id="import-auto-idm392453824">Table  Type I MSP430 Instructions</para>
+      <table id="import-auto-idm610050352" summary="">
+        <tgroup cols="3">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>Opcode</entry>
+              <entry>Mnemonics</entry>
+              <entry>Two operand arithmetic</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>0100</entry>
+              <entry>MOV</entry>
+              <entry>Move source to destination</entry>
+            </row>
+            <row>
+              <entry>0101</entry>
+              <entry>ADD</entry>
+              <entry>Add source to destination</entry>
+            </row>
+            <row>
+              <entry>0110</entry>
+              <entry>ADDC</entry>
+              <entry>Add source and carry to destination</entry>
+            </row>
+            <row>
+              <entry>0111</entry>
+              <entry>SUBC</entry>
+              <entry>Subtract source from destination (with carry)</entry>
+            </row>
+            <row>
+              <entry>1000</entry>
+              <entry>SUB</entry>
+              <entry>Subtract source from destination</entry>
+            </row>
+            <row>
+              <entry>1001</entry>
+              <entry>CMP</entry>
+              <entry>Compare (pretend to subtract) source from destination</entry>
+            </row>
+            <row>
+              <entry>1010</entry>
+              <entry>DADD</entry>
+              <entry>Decimal add source to destination (with carry)</entry>
+            </row>
+            <row>
+              <entry>1011</entry>
+              <entry>BIT</entry>
+              <entry>Test bits of source AND destination</entry>
+            </row>
+            <row>
+              <entry>1100</entry>
+              <entry>BIC</entry>
+              <entry>Bit clear (Dst &amp;= ~Src)</entry>
+            </row>
+            <row>
+              <entry>1101</entry>
+              <entry>BIS</entry>
+              <entry>Bit set (logical OR)</entry>
+            </row>
+            <row>
+              <entry>1110</entry>
+              <entry>XOR</entry>
+              <entry>Exclusive or source with destination</entry>
+            </row>
+            <row>
+              <entry>1111</entry>
+              <entry>AND</entry>
+              <entry>Logical AND source with destination (Dst &amp;= Src)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm455953792">
+      <title>Type II Instructions</title>
+      <para id="import-auto-idm620893984">Type II instructions are single operand arithmetic. Since there is only one operand needed, the source field and the Ad field are used for opcode (bit 7 to bit 15). The original opcode (bit 12 to bit 15) is always “0001.” There are 7 instructions defined in this category as listed in . The first 6 bits are ID code, which is always set to “000100” for Type II instructions. The RRC instruction right rotates the destination register with the carry bit. Its byte version instruction will operate on the low byte of the target. The SWPB instruction swaps the high byte and the low byte of the destination. Since it operates on a word only, the B/W bit is always set to 0. The RRA instruction will perform arithmetic right rotation. The difference between RRC and RRA is that the carry goes to MSB in RRC but the MSB is duplicated in RRA to keep the sign bit. In either cases, the carry receives LSB after the rotations. The SXT instruction fills in the high byte with the sign bit (bit 7) for sign extension. The result is a word. So the B/W for SXT is always 0. The PUSH instruction will store the source in the stack. It first decrements the stack pointer by 2 and then pushes the source into the stack. Each item in the MSP430 stack occupies one word (2 bytes). Thus, the stack pointer is decremented by 2. The stack grows downward in MSP430. The CALL instruction performs a subroutine. It first pushes next instruction address (next to this call instruction)  into stack, and set the source (starting address of the subroutine) in program counter (PC). PC is always points to the next instruction to be executed. The instruction RETI should be placed at the end of an interrupt service routine. It restores status register (SR) and recovers return address (PC) before the interrupt. When interrupt occurs, the MSP430 will push PC to stack, and then push SR. So the control will be given back to the interrupted routine after the interrupt service routine is done.  </para>
+      <para id="import-auto-idm613508192">Table  Type II Instruction Format in MSP430</para>
+      <table id="import-auto-idm615409248" summary="">
+        <tgroup cols="6">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <thead>
+            <row>
+              <entry>15  10 </entry>
+              <entry>9  7</entry>
+              <entry>6</entry>
+              <entry>5  4</entry>
+              <entry>3  0</entry>
+              <entry/>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>ID Code</entry>
+              <entry>Opcode</entry>
+              <entry>B/W</entry>
+              <entry>As</entry>
+              <entry>Dst</entry>
+              <entry>Operations</entry>
+            </row>
+            <row>
+              <entry>000100</entry>
+              <entry>000</entry>
+              <entry>B/W </entry>
+              <entry>As</entry>
+              <entry>Register</entry>
+              <entry>RRC Rotate right (1 bit) through carry</entry>
+            </row>
+            <row>
+              <entry>000100</entry>
+              <entry>001</entry>
+              <entry>0</entry>
+              <entry>As</entry>
+              <entry>Register</entry>
+              <entry>SWPB Swap bytes</entry>
+            </row>
+            <row>
+              <entry>000100</entry>
+              <entry>010</entry>
+              <entry>B/W </entry>
+              <entry>As</entry>
+              <entry>Register</entry>
+              <entry>RRA Rotate right (1 bit) arithmetic</entry>
+            </row>
+            <row>
+              <entry>000100</entry>
+              <entry>011</entry>
+              <entry>0</entry>
+              <entry>As</entry>
+              <entry>Register</entry>
+              <entry>SXT Sign extend byte to word</entry>
+            </row>
+            <row>
+              <entry>000100</entry>
+              <entry>100</entry>
+              <entry>B/W </entry>
+              <entry>As</entry>
+              <entry>Register</entry>
+              <entry>PUSH Push value onto stack</entry>
+            </row>
+            <row>
+              <entry>000100</entry>
+              <entry>101</entry>
+              <entry>0</entry>
+              <entry>As</entry>
+              <entry>Register</entry>
+              <entry>CALL Subroutine call; push PC and move source to PC</entry>
+            </row>
+            <row>
+              <entry>000100</entry>
+              <entry>110</entry>
+              <entry>0</entry>
+              <entry>00</entry>
+              <entry>0000</entry>
+              <entry>RETI Return from interrupt; pop SR then pop PC</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm564776832">
+      <title>Conditional Jumps</title>
+      <para id="import-auto-idm650893360">Conditional jumps are the fundamentals to program flow control, such as if-then-else or loop structures. Since they will alter PC if a specific condition meets, most of the instruction bits are used for the target address. Their formats are illustrated in . There are 8 conditional jump instructions implemented in MSP430. There is no field to specify the actual “condition” itself. Actually, before the conditional jumps are executed, the CPU should have set some flags in the status register (SR) according to the previous instruction. The status register contains 4 arithmetic status bits, a global interrupt enable, and 4 bits that disable various clocks to enter low-power mode.   illustrates the function of each individual bit in the MSP430 status register.</para>
+      <para id="import-auto-idm426568768">Table  Conditional Jump Instructions</para>
+      <table id="import-auto-idm423625680" summary="">
+        <tgroup cols="4">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <thead>
+            <row>
+              <entry>15  13</entry>
+              <entry>12  10</entry>
+              <entry>9  0</entry>
+              <entry/>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>ID Code</entry>
+              <entry>Condition</entry>
+              <entry>10 Bits Signed Offset</entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mrow>
+                        <m:mi mathvariant="italic">PC</m:mi>
+                        <m:mo stretchy="false">=</m:mo>
+                        <m:mrow>
+                          <m:mi mathvariant="italic">PC</m:mi>
+                          <m:mo stretchy="false">+</m:mo>
+                          <m:mn>2</m:mn>
+                        </m:mrow>
+                      </m:mrow>
+                      <m:mi>×</m:mi>
+                      <m:mi mathvariant="italic">Offset</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">PC=PC+2×Offset</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>000</entry>
+              <entry>Offset</entry>
+              <entry>JNE/JNZ Jump if not equal/zero</entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>001</entry>
+              <entry>Offset</entry>
+              <entry>JEQ/JZ Jump if equal/zero</entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>010</entry>
+              <entry>Offset</entry>
+              <entry>JNC/JLO Jump if no carry/lower</entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>011</entry>
+              <entry>Offset</entry>
+              <entry>JC/JHS Jump if carry/higher or same</entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>100</entry>
+              <entry>Offset</entry>
+              <entry>JN Jump if negative</entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>101</entry>
+              <entry>Offset</entry>
+              <entry>JGE Jump if greater or equal</entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>110</entry>
+              <entry>Offset</entry>
+              <entry>JL Jump if less</entry>
+            </row>
+            <row>
+              <entry>001</entry>
+              <entry>111</entry>
+              <entry>Offset</entry>
+              <entry>JMP Jump (unconditionally)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm456822992">Most of the instructions will affect the C, Z, N, and V bits after being executed by the ALU of MSP430. The carry bit C flags the result of an arithmetic operation that causes an overflow.  For example, the sum of 0xFFFF and 0x0001 should be 0x10000, but the register can only hold two bytes of data. Therefore, the carry bit will be set to flag this overflow. In rotation instructions, the carry takes part in the shifts. It receives data from the bit 0 of a register for right rotations. </para>
+      <para id="import-auto-idm381159568">Table  Bits in the MSP430 Status Register</para>
+      <table id="import-auto-idm416208992" summary="">
+        <tgroup cols="10">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <colspec colnum="7" colname="c7"/>
+          <colspec colnum="8" colname="c8"/>
+          <colspec colnum="9" colname="c9"/>
+          <colspec colnum="10" colname="c10"/>
+          <thead>
+            <row>
+              <entry>15  9</entry>
+              <entry>8</entry>
+              <entry>7</entry>
+              <entry>6</entry>
+              <entry>5</entry>
+              <entry>4</entry>
+              <entry>3</entry>
+              <entry>2</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Reserved</entry>
+              <entry>V</entry>
+              <entry>SCG1</entry>
+              <entry>SCG0</entry>
+              <entry>OSC OFF</entry>
+              <entry>CPU OFF</entry>
+              <entry>GIE</entry>
+              <entry>N</entry>
+              <entry>Z</entry>
+              <entry>C</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm643336880">The zero flag Z is set whenever the result is zero after executing an instruction. A common use of this Z flag is to test if two operands are equal using a subtraction instruction.  The combination of SUB and JNZ/JNE will implement the if-then structure.</para>
+      <para id="import-auto-idm623508720">The negative flag N is set when the result is negative after executing an instruction. It is set to the MSB of the result. Like the Z flag, the N flag can be used to test the ordering of two operands. For example, if we want to execute an instruction based on the condition <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>a</m:mi><m:mi>≥</m:mi><m:mi>b</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">a≥b</m:annotation></m:semantics></m:math>, we would first perform a subtraction <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>a</m:mi><m:mo stretchy="false">−</m:mo><m:mi>b</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">a-b</m:annotation></m:semantics></m:math>, followed by a JN instruction. Note that we need to negate the condition as the jump instruction will skip the instruction we want to be executed.</para>
+      <para id="import-auto-idm599772112">The signed overflow flag V is set when an overflow occurs in signed operations. For example, the sum of two positive numbers 0x7FFF and 0x0001 is 0x8000. This operation will not cause a carry overflow if they are unsigned. Thus, the C flag is not set. However, if the two operands are considered as signed numerals, the result is negative, which is not right. Thus, the V flag is set for this situation.</para>
+      <para id="import-auto-idm1056256704">The global interrupt enable flag (GIE) controls the maskable interrupts. A two levels mechanism interrupt control is implemented in MSP430. Each maskable interrupt can be enabled or disabled, and controlled individually. For a particular interrupt, e.g., timer interrupt, to be enabled, both its individual control and GIE have to be enabled. There are non-maskable interrupts, which may not be masked by GIE, will be described later.</para>
+      <para id="import-auto-idm609562896">The bits 4 (CPU OFF), 5 (OSC OFF), 6 (SCG0), and 7 (SCG1) are used for low power control. Setting these bits will put the CPU to low power modes. The default is the full functional mode by clearing those bits. More discussion about low power modes will be provided later. </para>
+    </section>
+    <section id="import-auto-idm436970112">
+      <title>Example of an Instruction</title>
+      <para id="import-auto-idm458108480">An instruction is composed of opcode, operands, and other modifiers. The opcode designates what operation is, and the operands specify what data to be operated upon. For example, move data from R5 to R6 will yield an instruction depicted in . The instruction is represented by “MOV.W R5, R6,” a mnemonic notation. This notation is invented for human beings to ease programming and understanding code. Without it, it would be hard to read a bunch of 0’s and 1’s everywhere, like this one “0100010100000110.” The opcode for MOV is 0100, the Src register is 0101 (R5), the destination addressing mode Ad is 0, the “.W” is represented by setting bit 6 to 0 (B/W), the source addressing mode (As) is 00, and the destination register is 0110 (R6).  </para>
+      <para id="import-auto-idm557367712"> Table  The Instruction MOV.W R5, R6</para>
+      <table id="import-auto-idm379318032" summary="">
+        <tgroup cols="6">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <thead>
+            <row>
+              <entry>15  12</entry>
+              <entry>11  8</entry>
+              <entry>7</entry>
+              <entry>6</entry>
+              <entry>5  4</entry>
+              <entry>3  0</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Opcode</entry>
+              <entry>Src</entry>
+              <entry>Ad</entry>
+              <entry>B/W</entry>
+              <entry>As</entry>
+              <entry>Dst</entry>
+            </row>
+            <row>
+              <entry>0100</entry>
+              <entry>0101</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>00</entry>
+              <entry>0110</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm334020112">We sometimes refer “0100010100000110” a machine instruction and “MOV.W R5, R6” assembly instruction. A machine code is composed of a sequence of machine instructions, each of which is being executed in sequence. It is not difficult to see there is a one to one correspondence between assembly instruction and machine instruction.  The translation from assembly instructions to machine instructions is done by an assembler. </para>
+    </section>
+    <section id="import-auto-idm326472288">
+      <title>Emulated Instructions</title>
+      <para id="import-auto-idm448465776">There are 12 type I instructions, 7 type II instructions, and 8 conditional jump instructions in MSP430. So there are totally 27 native instructions. To ease programming, a set of emulated instructions is defined. For example, the emulated instruction EINT enables global interrupt. To do that, we may set the GIE bit in the SR register. So it essentially perform “BIS #8, SR” instruction. Since we may need enable or disable (DINT) global interrupt quite often when implementing critical sections, these emulated instructions make programming neat and simple. Moreover, in a loop implantation, increment loop variable by one or two may use the emulated instructions “INC dst” or “INCD dst,” which greatly improve the program readability. Therefore, the emulated instruction is closer to an alias of a native instruction with some designated operands. Functionality-wise, it is similar to macro in C language. In some text they also are called pseudo instructions. There are 23 emulated instructions defined in MSP430 as listed in . These instructions are classified as follows:</para>
+      <list id="import-auto-idm342614416" list-type="bulleted">
+        <item>SR manipulations: CLR C, CLR N, CLR Z, SET C, SET N, SET Z, DINT, EINT</item>
+        <item>Increment/Decrement by one or two: INC, INCD, DEC, DECD</item>
+        <item>PC control: BR, RET</item>
+        <item>Stack manipulations: POP</item>
+        <item>Left shifters: RLA, RLC</item>
+        <item>Others: ADC, DADC, INV, NOP, SBC, TST</item>
+      </list>
+      <para id="import-auto-idm326763920">Table  Emulated Instructions Defined in MSP430</para>
+      <table id="import-auto-idm359837264" summary="">
+        <tgroup cols="3">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>Emulated </entry>
+              <entry>Actual </entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>ADC.x dst </entry>
+              <entry>ADDC.x #0,dst </entry>
+              <entry>Add carry to destination</entry>
+            </row>
+            <row>
+              <entry>BR dst </entry>
+              <entry>MOV dst,PC </entry>
+              <entry>Branch to destination</entry>
+            </row>
+            <row>
+              <entry>CLRC </entry>
+              <entry>BIC #1,SR </entry>
+              <entry>Clear carry bit</entry>
+            </row>
+            <row>
+              <entry>CLRN </entry>
+              <entry>BIC #4,SR </entry>
+              <entry>Clear negative bit</entry>
+            </row>
+            <row>
+              <entry>CLRZ </entry>
+              <entry>BIC #2,SR </entry>
+              <entry>Clear zero bit</entry>
+            </row>
+            <row>
+              <entry>DADC.x dst </entry>
+              <entry>DADD.x #0,dst </entry>
+              <entry>Decimal add carry to destination</entry>
+            </row>
+            <row>
+              <entry>DEC.x dst </entry>
+              <entry>SUB.x #1,dst </entry>
+              <entry>Decrement</entry>
+            </row>
+            <row>
+              <entry>DECD.x dst </entry>
+              <entry>SUB.x #2,dst </entry>
+              <entry>Double decrement</entry>
+            </row>
+            <row>
+              <entry>DINT </entry>
+              <entry>BIC #8,SR </entry>
+              <entry>Disable interrupts</entry>
+            </row>
+            <row>
+              <entry>EINT </entry>
+              <entry>BIS #8,SR </entry>
+              <entry>Enable interrupts</entry>
+            </row>
+            <row>
+              <entry>INC.x dst </entry>
+              <entry>ADD.x #1,dst </entry>
+              <entry>Increment</entry>
+            </row>
+            <row>
+              <entry>INCD.x dst </entry>
+              <entry>ADD.x #2,dst </entry>
+              <entry>Double increment</entry>
+            </row>
+            <row>
+              <entry>INV.x dst </entry>
+              <entry>XOR.x #-1,dst </entry>
+              <entry>Invert</entry>
+            </row>
+            <row>
+              <entry>NOP </entry>
+              <entry>MOV #0,R3 </entry>
+              <entry>No operation</entry>
+            </row>
+            <row>
+              <entry>POP dst </entry>
+              <entry>MOV @SP+,dst </entry>
+              <entry>Pop from stack</entry>
+            </row>
+            <row>
+              <entry>RET </entry>
+              <entry>MOV @SP+,PC </entry>
+              <entry>Return from subroutine</entry>
+            </row>
+            <row>
+              <entry>RLA.x dst </entry>
+              <entry>ADD.x dst,dst </entry>
+              <entry>Rotate left arithmetic (shift left 1 bit)</entry>
+            </row>
+            <row>
+              <entry>RLC.x dst </entry>
+              <entry>ADDC.x dst,dst </entry>
+              <entry>Rotate left through carry</entry>
+            </row>
+            <row>
+              <entry>SBC.x dst </entry>
+              <entry>SUBC.x #0,dst </entry>
+              <entry>Subtract borrow (1-carry) from destination</entry>
+            </row>
+            <row>
+              <entry>SETC </entry>
+              <entry>BIS #1,SR </entry>
+              <entry>Set carry bit</entry>
+            </row>
+            <row>
+              <entry>SETN </entry>
+              <entry>BIS #4,SR </entry>
+              <entry>Set negative bit</entry>
+            </row>
+            <row>
+              <entry>SETZ </entry>
+              <entry>BIS #2,SR </entry>
+              <entry>Set zero bit</entry>
+            </row>
+            <row>
+              <entry>TST.x dst </entry>
+              <entry>CMP.x #0,dst </entry>
+              <entry>Test destination</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm598599744">
+      <title>Functionality of Instructions</title>
+      <para id="import-auto-idm332496688">Instructions may be classified by their functionality. Generally, they can be categorized into data movements, dyadic (binary) operations, monadic (unary) operations, and flow controls. Data can be moved from a register to another register, from a register to a memory location, from a memory location to a register. Dyadic instructions operate upon two operands. Thus, they are called also called binary operations, such as arithmetic, logical, floating point instructions. Monadic instructions operate on single operand, such as shift, rotation, logical NOT instructions. Flow control instructions alter the program execution flows such as subroutines, interrupts, branches, unconditional/conditional jumps.</para>
+    </section>
+    <section id="import-auto-idm549266896">
+      <title>Data Movement Operations</title>
+      <para id="import-auto-idm393687024">Data movement instructions are in charge of moving data between memory and register, between register and register, or between memory and memory. Most RISC architectures require instructions to load data from memory to register, and to store data from register to memory, as their instructions are designed to operate upon registers. Stack manipulations such as push and pop belong to the data movement category because the stack is allocated in memory and the data to be stored or retrieved is in register. A typical assembly instruction for data movement will have the following format:</para>
+      <para id="import-auto-idm653400320">Table  Move Instruction Format</para>
+      <code id="eip-20" display="block">MOV src, dst ;move data from src to dst
+</code><para id="import-auto-idm621608336">In some assembly languages, the source and the destination may be swapped. So be careful about the operand order when working with this move instruction. The default operation of the move instruction is to move one word from the source to the destination. Therefore, it is important to make sure the width of the operands is a word. The default instruction can also be written as MOV.W to explicitly designate the operand width. If you just need to move one byte over, the operand width may be specified by the instruction such as MOV.B. Applying MOV.B on word size operands will move the low byte, but applying MOV.W on byte operands will cause errors as there is not enough data to be operated upon (data width mismatched). </para>
+    </section>
+    <section id="import-auto-idm624678048">
+      <title>Move Data from Register to Register</title>
+      <para id="import-auto-idm612827824">Almost all architectures provide instructions for moving data from a register to another. If a register, say R4, stores a temporary result, but we need to use R4 for something else. The value stored in R4 will have to be moved to somewhere else. Otherwise, the temporary result will be erased should R4 is used for other computations. In this situation, for example, a move instruction as shown in   will store R4’s value in R15. After that statement, R4 is released and may be used for other computations.</para>
+      <para id="import-auto-idm634210240">Table  Move Data from Register to Register</para>
+      <code id="eip-183" display="block">MOV R4, R15 ; store R4 in R15
+</code>
+    </section>
+    <section id="import-auto-idm562468224">
+      <title>Set Values in Registers</title>
+      <para id="import-auto-idm651270288">In some scenarios, we may need to initialize a register with some value to start with. A typical way of doing this will be set a register a value using the move instruction. The value is specified by a pond sign (#) followed by a number. The number may be attached with a radix notation. In the IAR system, the binary, the octal, the decimal and the hexadecimal are designated by b, o (or q), d, and h. For example,  shows ways of setting a register a value.</para>
+      <para id="import-auto-idm570980496">Table  Setting a Register a Value</para>
+      <code id="eip-203" display="block">MOV #00010010b, R4 ; set R4 to binary 00010010
+MOV #1234o, R4 ; set R4 to octal 1234
+MOV #1234d, R4 ; set R4 to decimal 1234
+MOV #1234h, R4 ; set R4 to hexadecimal 1234</code><para id="import-auto-idm422826304"> To set a register some common value such as -1, 0, 1, 2, 4, and 8, may used a special register R3, called constant generator in MSP430. This will be discussed in a later section.</para>
+    </section>
+    <section id="import-auto-idm568335568">
+      <title>Stack Operation</title>
+      <para id="import-auto-idm640381088">Stack is an important data structure in computer systems, and its operations follow the first-in-last-out pattern. A stack pointer, a special register in CPU, holds the address of the top element in the stack. Therefore, the push and pop instructions will not be supplied with the address of a particular element in the stack. </para>
+      <para id="import-auto-idm573407584">Table  Stack Operations</para>
+      <code id="eip-864" display="block">PUSH dst ;push data onto stack
+POP dst ;pop from stack
+; MOV @SP+, dst</code><para id="import-auto-idm396672192">Assembly instructions to operation stack are illustrated in . The push instruction will place the data in the stack at the slot pointed by the stack pointer (SP), and adjust the stack pointer to the next available slot. The reverse operation will retrieve the top entry in the stack and adjust the stack pointer accordingly. Note that in MSP430, the pop instruction is emulated by the move instruction.  </para>
+    </section>
+    <section id="import-auto-idm448417968">
+      <title>Direct Memory Access</title>
+      <para id="import-auto-idm439176832">Since memory access time is about a magnitude slower than that of registers, it is sometimes a need to move multiple words at a time. In order to release CPU from waiting for the long memory accesses, a direct memory access (DMA) mechanism is designed to move data on a side. This requires a DMA controller in charge of the data movement without intervening the CPU. So the CPU may still perform its computations.  To begin with DMA process, we have to provide information about the data such as where to begin, the number of words (bytes), etc. Once started, DMA will move the data accordingly until finish the task. DMA will notify CPU with an interrupt to report the data movement status. The use of DMA will improve system performance, and save power consumption in low power design. For example, moving data from ADC12 to RAM with DMA will allow CPU to remain in sleep mode in MSP430. </para>
+      <para id="import-auto-idm599711808">Most instructions will modify the status register, but the movement instructions will not affect it. </para>
+    </section>
+    <section id="import-auto-idm332117600">
+      <title>Move Data from Memory to Memory</title>
+      <para id="import-auto-idm350249440">Some CPU does not provide direct memory copy from one location to another. In MSP430, indexed addressing on both source and destination operands allows moving data from memory from one location to another.  illustrates how to move data from memory to memory in MSP430. The source address stored in R4 is the location in memory that contains data to be copied to the location stored in R5. </para>
+      <para id="import-auto-idm371412576">Table  Move Data from Memory to Memory</para>
+      <code id="eip-524" display="block">MOV 0(R4), 0(R5)
+</code>
+    </section>
+    <section id="import-auto-idm621568320">
+      <title>Move Data between Memory and Registers</title>
+      <para id="import-auto-idm606321264">Most CPU provides instructions to move data from memory to register, or vice versa. Typical mnemonics used are load and store. In MSP430, this data movement is done by index addressing on one of the operands. The index addressing provides a mechanism to indicate an address in the memory. For example,  shows move data in-between memory and register.</para>
+      <para id="import-auto-idm439154320">Table  Data Movement Between Memory and Register</para>
+      <code id="eip-159" display="block">MOV R4, 0(R5) ; move data from R4 to memory
+; address stored in R5
+MOV 0(R4), R5 ; move data from memory
+;address stored in R4 to R5</code>
+    </section>
+    <section id="import-auto-idm448352080">
+      <title>Dyadic Arithmetic Operations</title>
+      <para id="import-auto-idm586795184">An instruction operates on two operands are called dyadic or binary operations. Dyadic operations include arithmetic, logic, and floating point instructions.   lists dyadic arithmetic instruction in MSP430. Note that an asterisk prefixed to an instruction indicates an emulated instruction. </para>
+      <para id="import-auto-idm658446048">Table  Dyadic Arithmetic Operations</para>
+      <table id="import-auto-idm453662128" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>add.w src, dst</entry>
+              <entry>addition,  dst += src </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>addc.w src, dst</entry>
+              <entry>add with carry, dst += (src + c)</entry>
+            </row>
+            <row>
+              <entry>*adc.w dst </entry>
+              <entry>add carry, dst += c</entry>
+            </row>
+            <row>
+              <entry>sub.w src, dst</entry>
+              <entry>subtraction, dst -= src </entry>
+            </row>
+            <row>
+              <entry>subc.w src, dst</entry>
+              <entry>sub with borrow, dst -= (src + ~c)</entry>
+            </row>
+            <row>
+              <entry>*sbc.w dst</entry>
+              <entry>sub borrow bit, dst -= ~c</entry>
+            </row>
+            <row>
+              <entry>cmp.w src, dst</entry>
+              <entry>compare, set flags (dst – src) </entry>
+            </row>
+            <row>
+              <entry>add.w src, dst</entry>
+              <entry>addition,  dst += src </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm393093824">
+      <title>Dyadic Logical Instructions</title>
+      <para id="import-auto-idm561495760">Logical AND and XOR instructions are provided in MSP430. There is no explicit OR and NOT instructions.  The logical OR operation can be done using the bit set “bis” instruction but it does not affect the SR register. Other than that the bis instruction may be a substitute for logical OR. The NOT operations may be implemented by XOR’ing 0xFFFF with a destination.  For example, the statement  XOR #0FFFFh, dst will negate each bit in the dst. In fact, the emulated INV.W is performing the above XOR instruction for logical NOT operation.  lists the dyadic logical instructions in MSP430. Note again the bis and bic instructions do not affect the SR registers.  </para>
+      <para id="import-auto-idm623766144">Table  Dyadic Logical Instructions</para>
+      <table id="import-auto-idm564699792" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>and.w src, dst</entry>
+              <entry>bitwise and, dst &amp;= src </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>xor.w src, dst</entry>
+              <entry>bitwise xor, dst ^= src </entry>
+            </row>
+            <row>
+              <entry>bit.w src, dst</entry>
+              <entry>bitwise test, (dst &amp;src)</entry>
+            </row>
+            <row>
+              <entry>bis.w src, dst</entry>
+              <entry>bit set, dst |= src </entry>
+            </row>
+            <row>
+              <entry>bic.w src, dst</entry>
+              <entry>bit clear, dst &amp;= ~dst </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm392721280">The first three instructions in  affect the SR register in a normal way. The Z bit is set if the result is zero. In MSP430, the carry bit is set to the negation of the Z bit for these instructions. The following examples show how the SR is changed for these operations. In (a), the Z flag is set because the result is zero after INV (XOR) instruction is executed. The V flag is also set because the value store in R4 is changed from -1 (0xFFFF) to 0. Since 0 is considered as positive, the sign of the value is changed. Another example shown in (b) depicts the flags V and C are set after the execution of the INV instruction. In this case, the sign of the values stored in R4 is changed as well. Since the result (0x00FF) is not zero, the Z flag is not set. So the carry is set due to C=~Z for the logical instructions. Here the meaning of the carry bit is not its usual one. Instead, it simply indicates the result is not zero.</para>
+      <para id="import-auto-idm581157840">Table  Examples for the SR Change for Logical Instructions</para>
+      <para id="import-auto-idm396826096">(a)</para>
+      <code id="eip-889" display="block">mov.w #0xffff, R4; set R4 to 0xffff, SR = 0inv.w R4; R4 is 0, SR=0x0102 (VZ); V: signed overflow
+</code><para id="import-auto-idm548082080">(b)</para>
+      <code id="eip-160" display="block">mov.w #0xff00, R4; set R4 to 0xff00, SR = 0inv.w R4; R4 is 0x00ff, SR=0x0101 (VC); C=~Z
+</code>
+    </section>
+    <section id="import-auto-idm334289184">
+      <title>Monadic Operations</title>
+      <para id="import-auto-idm412246400">Operations that require only one operand are called monadic or unary operations. Typical instructions include shift and rotate instructions.  tabularizes unary instructions in MSP430. Note that the instruction test.w is a special case of the instruction cmp. </para>
+      <para id="import-auto-idm414543328">Table  Unary Instructions in MSP430</para>
+      <table id="import-auto-idm641765632" summary="">
+        <tgroup cols="3">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>*clr.w dst</entry>
+              <entry>clear</entry>
+              <entry>dst = 0</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>*dec.w dst</entry>
+              <entry>decrement</entry>
+              <entry>dst—</entry>
+            </row>
+            <row>
+              <entry>*decd.w dst</entry>
+              <entry>double decrement</entry>
+              <entry>dst-=2</entry>
+            </row>
+            <row>
+              <entry>*inc.w dst</entry>
+              <entry>increment</entry>
+              <entry>dst++</entry>
+            </row>
+            <row>
+              <entry>*incd.w dst</entry>
+              <entry>double increment</entry>
+              <entry>dst+=2</entry>
+            </row>
+            <row>
+              <entry>*tst.w dst</entry>
+              <entry>test with 0</entry>
+              <entry>(dst – 0)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm615259696">
+      <title>Decimal Operations</title>
+      <para id="import-auto-idm555947120">MPS430 provides one native instruction to handle binary-coded decimal (BCD) operands. For example, the operation <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mn>9</m:mn><m:mo stretchy="false">+</m:mo><m:mn>1</m:mn></m:mrow><m:mo stretchy="false">=</m:mo><m:mn>10</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">9+1=10</m:annotation></m:semantics></m:math> can be computed as depicted in . Note that the sum is encoded to 0x10 not the hexadecimal 0xA. </para>
+      <para id="import-auto-idm404821744">Table  BCD Additions</para>
+      <code id="eip-842" display="block">mov.w #0x9, R4 ;R4 keeps 0x9daddw #0x1, R4 ;R4 now becomes 0x10 not 0xA
+</code><para id="import-auto-idm441634048">There is an emulated instruction that adds the carry to a BCD number.  shows the two BCD instructions.</para>
+      <para id="import-auto-idm449636160">Table  BCD Instructins in MSP430</para>
+      <table id="import-auto-idm397862208" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>dadd.w src, dst</entry>
+              <entry>decimal add with carry, dst+=src+c</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>*dadc.w dst</entry>
+              <entry>decimal add carry, dst += c</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm612012736">
+      <title>Byte Manipulations</title>
+      <para id="import-auto-idm346828368">Most instructions in MSP430 have byte versions. For example, instead of moving a word (two bytes) to destination, “MOV.B” will just move the low byte over.  Additionally, there are two instructions designed to manipulate bytes in a word.  lists the byte manipulating instructions.  The instruction swpb will exchange the lower bytes and the upper byte of the operand. The instruction sxt will perform sign extension.  </para>
+      <para id="import-auto-idm652926432">Table  Byte Manipulation Instructions</para>
+      <para id="import-auto-idm410703808">swpb src; swap upper and lower bytessxt src; extend sign of lower byte</para>
+      <para id="import-auto-idm434999136">Examples of byte manipulating instructions are illustrated in . The swpb instruction is straightforward, and it simply swap the lower byte and the upper byte of the register R4 as shown in (a). The sign extension is needed to promote a byte data to a word. In the example depicted in (b), the bit 7 of R4 is 1, which indicates the lower byte is a negative value. The sxt instruction will fill in the upper byte of R4 with one’s to preserve the sign after promotion. In this example, the upper byte will be overwritten with the value 0xFF. </para>
+      <para id="import-auto-idm645067216">Table  Examples of Swap and Sign Extension Instructions</para>
+      <para id="import-auto-idm455668352">(a)</para>
+      <code id="eip-929" display="block">mov.w #0xabcd, R4; R4 is 0xabcdswpb R4; R4 is now 0xcdab
+</code><para id="import-auto-idm563055328">(b)</para>
+      <code id="eip-834" display="block">mov.w #0xab8d, R4; R4 is 0xab8dsxt R4; R4 is now 0xff8d
+</code>
+    </section>
+    <section id="import-auto-idm350544960">
+      <title>Bit Operations on SR</title>
+      <para id="import-auto-idm457649456">The instructions that operate upon each individual bit of the SR register are listed in . Since there is no native bit manipulating instructions, these are all emulated instructions using logical instructions. The carry bit may be involved in operations such as adc, addc, sbc, subc, dadc, dadd, rlc, and rrc instructions. Therefore, the clrc and setc instructions will normally operate along with those instructions. For example, to right shit one bit for an operand, a clrc is used to clear the carry bit, followed by a rrl instruction. If the carry bit is not cleared, it goes to the MSB of the operand, which may result in an unwanted outcome</para>
+      <para id="import-auto-idm327688000">Table  Bit Operations on SR</para>
+      <table id="import-auto-idm441021136" summary="">
+        <tgroup cols="2">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>*clrc</entry>
+              <entry> clear carry bit, C=0</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>*clrz</entry>
+              <entry> clear zero bit, Z=0</entry>
+            </row>
+            <row>
+              <entry>*clrn</entry>
+              <entry> clear negative bit, N=0</entry>
+            </row>
+            <row>
+              <entry>*dint</entry>
+              <entry> disable general interrupt, GIE=0</entry>
+            </row>
+            <row>
+              <entry>*setc</entry>
+              <entry> set carry bit, C=1</entry>
+            </row>
+            <row>
+              <entry>*setz</entry>
+              <entry> set zero bit, Z=1</entry>
+            </row>
+            <row>
+              <entry>*setn</entry>
+              <entry> set negative bit, N=1</entry>
+            </row>
+            <row>
+              <entry>*eint</entry>
+              <entry> enable general interrupt, GIE=1</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+    <section id="import-auto-idm598762864">
+      <title>Flow of Control</title>
+      <para id="import-auto-idm549683856">Subroutines, interrupts, branches, jumps instructions alter program flow of execution. In the CPU level, the program counter (PC) keeps the address of next instruction to be executed. Therefore, a change in the PC will actually alter what instruction is being executed. The subroutine calls, branches, and jumps instructions essentially modify the content of PC accordingly. </para>
+    </section>
+  </content>
+</document>

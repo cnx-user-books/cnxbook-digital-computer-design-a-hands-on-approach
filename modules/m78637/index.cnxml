@@ -1,0 +1,684 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Memory Systems - Part 2</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78637</md:content-id>
+  <md:title>Memory Systems - Part 2</md:title>
+  <md:abstract/>
+  <md:uuid>9f852544-4574-4886-a973-87b40f0c57d4</md:uuid>
+</metadata>
+
+<content>
+    <para id="import-auto-idm475319360">Table 1 Capacities of Common Compact Discs</para>
+    <table id="import-auto-idm420481360" summary="">
+      <tgroup cols="5">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <colspec colnum="5" colname="c5"/>
+        <thead>
+          <row>
+            <entry>Type</entry>
+            <entry>Sectors</entry>
+            <entry>Data Size (MB)</entry>
+            <entry>Audio Size (MB)</entry>
+            <entry>Time (m)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>8 cm</entry>
+            <entry>94,500</entry>
+            <entry>185 </entry>
+            <entry>222</entry>
+            <entry>21</entry>
+          </row>
+          <row>
+            <entry>650 MB</entry>
+            <entry>333,000</entry>
+            <entry>650</entry>
+            <entry>783</entry>
+            <entry>74</entry>
+          </row>
+          <row>
+            <entry>700 MB</entry>
+            <entry>360,000</entry>
+            <entry>703</entry>
+            <entry>847</entry>
+            <entry>80</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+   <section id="fs-idm1150794096">
+<title>DVD</title>
+
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm405709616" fo:font-style="normal" fo:font-weight="normal">DVD, developed by Philip, Sony, Toshiba, and Panasonic in 1992, is a higher capacity optical storage format than CD. DVD-ROM is a pre-recorded using a molding machine that physically stamps data onto DVD. Like CD-ROM, DVD-ROM is read-only and not writable. Its size is either 8 cm or 12 cm in diameter. One-time writable DVDs include DVD-R, and DVD+R. Multiple time re-writable DVDs include DVD-RW, DVD+RW, and DVD-RAM. The emergence of DVDs is mainly to storage large movie files. Prior to DVDs, Video CD (VCD) was the first digitally encoded films stored in a 120 mm optical discs in 1993. Though VCD is low cost and successful in the market for a couple of years, there is no means to prevent it from unauthorized copies. Plus, a typical movie would require 2 discs. DVD with a copy protection mechanism and a higher capacity was developed in 1995. DVDs are manufactured with single sided (SD), double sided (DS), single layer (SL), and dual layer (DL).  Table 2 lists capacities of DVDs.</para>
+    <para id="import-auto-idm441752560">Table 2 Capacities of DVDs</para>
+    <table id="import-auto-idm646647952" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>Type</entry>
+            <entry>Sides/Layers</entry>
+            <entry>Size (cm)</entry>
+            <entry>Capacity (GB)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>DVD-1</entry>
+            <entry>SS DL</entry>
+            <entry>8</entry>
+            <entry>1.36</entry>
+          </row>
+          <row>
+            <entry>DVD-2</entry>
+            <entry>SS DL</entry>
+            <entry>8</entry>
+            <entry>2.47</entry>
+          </row>
+          <row>
+            <entry>DVD-3</entry>
+            <entry>DS SL</entry>
+            <entry>8</entry>
+            <entry>2.72</entry>
+          </row>
+          <row>
+            <entry>DVD-4</entry>
+            <entry>DS DL</entry>
+            <entry>8</entry>
+            <entry>4.95</entry>
+          </row>
+          <row>
+            <entry>DVD-5</entry>
+            <entry>SS SL</entry>
+            <entry>12</entry>
+            <entry>4.37</entry>
+          </row>
+          <row>
+            <entry>DVD-9</entry>
+            <entry>SS DL</entry>
+            <entry>12</entry>
+            <entry>7.95</entry>
+          </row>
+          <row>
+            <entry>DVD-10</entry>
+            <entry>DS SL</entry>
+            <entry>12</entry>
+            <entry>8.75</entry>
+          </row>
+          <row>
+            <entry>DVD-14</entry>
+            <entry>DS SL+DL</entry>
+            <entry>12</entry>
+            <entry>12.33</entry>
+          </row>
+          <row>
+            <entry>DVD-18</entry>
+            <entry>DS DL</entry>
+            <entry>12</entry>
+            <entry>15.90</entry>
+          </row>
+          <row>
+            <entry>DVD-R </entry>
+            <entry>SS SL (1.0) </entry>
+            <entry>12</entry>
+            <entry>3.68</entry>
+          </row>
+          <row>
+            <entry>DVD-R </entry>
+            <entry>SS SL (2.0) </entry>
+            <entry>12</entry>
+            <entry>4.37</entry>
+          </row>
+          <row>
+            <entry>DVD-RW </entry>
+            <entry>SS SL </entry>
+            <entry>12</entry>
+            <entry>4.37</entry>
+          </row>
+          <row>
+            <entry>DVD+R </entry>
+            <entry>SS SL </entry>
+            <entry>12</entry>
+            <entry>4.37</entry>
+          </row>
+          <row>
+            <entry>DVD+RW </entry>
+            <entry>SS SL </entry>
+            <entry>12</entry>
+            <entry>4.37</entry>
+          </row>
+          <row>
+            <entry>DVD-R </entry>
+            <entry>DS SL </entry>
+            <entry>12</entry>
+            <entry>8.75</entry>
+          </row>
+          <row>
+            <entry>DVD-RW </entry>
+            <entry>DS SL </entry>
+            <entry>12</entry>
+            <entry>8.75</entry>
+          </row>
+          <row>
+            <entry>DVD+R </entry>
+            <entry>DS SL </entry>
+            <entry>12</entry>
+            <entry>8.75</entry>
+          </row>
+          <row>
+            <entry>DVD+RW </entry>
+            <entry>DS SL </entry>
+            <entry>12</entry>
+            <entry>8.75</entry>
+          </row>
+          <row>
+            <entry>DVD-RAM </entry>
+            <entry>SS SL </entry>
+            <entry>8</entry>
+            <entry>1.36</entry>
+          </row>
+          <row>
+            <entry>DVD-RAM </entry>
+            <entry>DS SL </entry>
+            <entry>8</entry>
+            <entry>2.47</entry>
+          </row>
+          <row>
+            <entry>DVD-RAM </entry>
+            <entry>SS SL (1.0) </entry>
+            <entry>12</entry>
+            <entry>2.4</entry>
+          </row>
+          <row>
+            <entry>DVD-RAM </entry>
+            <entry>SS SL (2.0) </entry>
+            <entry>12</entry>
+            <entry>4.37</entry>
+          </row>
+          <row>
+            <entry>DVD-RAM </entry>
+            <entry>DS SL (1.0) </entry>
+            <entry>12</entry>
+            <entry>4.8</entry>
+          </row>
+          <row>
+            <entry>DVD-RAM </entry>
+            <entry>DS SL (2.0) </entry>
+            <entry>12</entry>
+            <entry>8.75</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm523532288" fo:font-style="normal" fo:font-weight="normal">The recording times of DVDs depend on drive speed, and data transfer time. With an 18x DVD-ROM drive, it takes 3 minutes to burn a 4.37 GB DVD disc. Note that the actual recording time is subject to a computer system configuration such as size of the main memory, performance of hard disk drives, etc.</para>
+    <para id="import-auto-idm775975712">Table 3 Drive Speed, Data Transfer Rate, and Recoding Time for a 4.37 GB Single Layer DVD Disc</para>
+    <table id="import-auto-idm263700368" summary="">
+      <tgroup cols="3">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Drive Speed</entry>
+            <entry>Data Rate (MB)</entry>
+            <entry>Recording Time (Minute)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>1× </entry>
+            <entry>1.39</entry>
+            <entry>57</entry>
+          </row>
+          <row>
+            <entry>2× </entry>
+            <entry>2.77</entry>
+            <entry>28</entry>
+          </row>
+          <row>
+            <entry>2.4× </entry>
+            <entry>3.32</entry>
+            <entry>24</entry>
+          </row>
+          <row>
+            <entry>2.6× </entry>
+            <entry>3.6</entry>
+            <entry>22</entry>
+          </row>
+          <row>
+            <entry>4× </entry>
+            <entry>5.54</entry>
+            <entry>14</entry>
+          </row>
+          <row>
+            <entry>6× </entry>
+            <entry>8.31</entry>
+            <entry>9</entry>
+          </row>
+          <row>
+            <entry>8× </entry>
+            <entry>11.08</entry>
+            <entry>7</entry>
+          </row>
+          <row>
+            <entry>10× </entry>
+            <entry>13.85</entry>
+            <entry>6</entry>
+          </row>
+          <row>
+            <entry>12× </entry>
+            <entry>16.62</entry>
+            <entry>5</entry>
+          </row>
+          <row>
+            <entry>16× </entry>
+            <entry>22.16</entry>
+            <entry>4</entry>
+          </row>
+          <row>
+            <entry>18× </entry>
+            <entry>24.93</entry>
+            <entry>3</entry>
+          </row>
+          <row>
+            <entry>20× </entry>
+            <entry>27.7</entry>
+            <entry>3</entry>
+          </row>
+          <row>
+            <entry>22× </entry>
+            <entry>30.47</entry>
+            <entry>3</entry>
+          </row>
+          <row>
+            <entry>24× </entry>
+            <entry>33.24</entry>
+            <entry>2</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    </section>
+
+   <section id="fs-idm276970400">
+<title>Peripheral Interfaces</title>
+    
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm759758896" fo:font-style="normal" fo:font-weight="normal">Interface standards for storage devices include SCSI (Small Computer System Interface), IDE (Integrated Drive Electronics), and SATA (Serial advanced technology attachment). SCSI, developed in 1978, is a set of a set of standards for physically connecting and transferring data between computers and peripheral devices, especially hard disk drives and CD ROMs. Up to 16 SCSI devices can be connected on a single bus. It is popular in mainframe computers but not in desktop or laptop computers. IDE was developed by Western Digital mainly for IBM PC/ATs. This standard is also known as ATA, IBM PC/AT attachment because it was designed to directly connect to PC/AT via the 16-bit ISA bus. The first IDE hard disk drive appeared in Compaq PCs in 1986. SATA is a serial bus used for mass storage devices such as hard disk drives or optical devices (DVD, and Blu-Ray) in replacing the IDE standard. Most of the PCs sold after 2011 are equipped with hard disk drives and DVD ROMs with the SATA interface. The transfer rates of SCSI, IDE/ATA, and SATA are subject to difference revisions as follows:</para>
+    <para id="import-auto-idm426322576">Table 4 Data Transfer Rates in different Peripheral Device Standards</para>
+    <table id="import-auto-idm1565312720" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>Standards</entry>
+            <entry>Transfer Rates (Per Second)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>SATA 1.0</entry>
+            <entry>150 MB</entry>
+          </row>
+          <row>
+            <entry>SATA 2.0</entry>
+            <entry>300 MB</entry>
+          </row>
+          <row>
+            <entry>SATA 3.0</entry>
+            <entry>600 MB</entry>
+          </row>
+          <row>
+            <entry>IDE</entry>
+            <entry>3.3 MB</entry>
+          </row>
+          <row>
+            <entry>ATA-1 (ATA/IDE)</entry>
+            <entry>8.3 MB</entry>
+          </row>
+          <row>
+            <entry>ATA-2 (EIDE, Fast IDE, Ultra ATA)</entry>
+            <entry>16.7 MB</entry>
+          </row>
+          <row>
+            <entry>ATA-3 (EIDE)</entry>
+            <entry>16.7 MB</entry>
+          </row>
+          <row>
+            <entry>ATA/ATAPI-4 (ATA-4)</entry>
+            <entry>33.3 MB</entry>
+          </row>
+          <row>
+            <entry>ATA/ATAPI-5~8</entry>
+            <entry>44.4 ~ 167 MB</entry>
+          </row>
+          <row>
+            <entry>SCSI</entry>
+            <entry>5 MB</entry>
+          </row>
+          <row>
+            <entry>SCSI-II (16-bit)</entry>
+            <entry>20 MB</entry>
+          </row>
+          <row>
+            <entry>SCSI-III (16-bit)</entry>
+            <entry>40 MB</entry>
+          </row>
+          <row>
+            <entry>SCSI-III Ultra 1~3</entry>
+            <entry>20 ~ 160 MB</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+     </section>
+   <section id="fs-idm1339716912">
+<title>Blu-Ray</title>
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm666587280" fo:font-style="normal" fo:font-weight="normal">Blu-Ray disc (BD) is developed to replace the DVD format. Its size is the same as CD or DVD. They all have either 8 cm (Mini-BD) or 12 cm in diameter. Each Blu-Ray disc may have single layer, dual layers, triple layers, or quadruple layers. Instead of a 650 nm red laser used in DVD, employed in Blu-Ray is a 405 nm blue laser (shorter wave length), which allows information to be retrieved and stored in higher density than DVD<footnote id="import-auto-footnote-1"> CDs use 780 nm near-infrared lasers. </footnote>. The capacities of Blu-Ray range from 7.8 to 128 GB. By and large, the higher capacity of Blu-Ray allows it to store high definition of motion pictures than DVD. The first Blu-Ray disc was unveiled in 2000 by Sony, and the first player prototype was introduced in Japan in 2003. In 2006, the Blu-Ray was officially announced. A statistics shows that there were 2,500 BD titles in Australia and United Kingdom, 3,500 in United States and Canada, and 3,300 in Japan in 2011.  Due to its success, Toshiba was forced to abandon its HD DVD, and produced its Blu-Ray player in 2009.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm208301152" fo:font-style="normal" fo:font-weight="normal">Blu-Ray recording time is subject to a data transfer rate (drive speed). For a single layer (25 GB), the recording time will be about 90 minutes at a data transfer rate of 4.5 MB. Table 5 lists the data rates and recording times for difference Blu-Ray drive speeds. Currently (2012), the internal BD-ROM drive costs $50 for 12x, and $70 for 14x. With these drive speeds, it takes about 7 minutes to make a BD-ROM copy for a single layer 25 GB BD disc.</para>
+    <para id="import-auto-idm416904688">Table 5 Blu-Ray Data Rates and Recording Times for Single Layer (25 GB) Discs</para>
+    <table id="import-auto-idm257992496" summary="">
+      <tgroup cols="3">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Drive Speed</entry>
+            <entry>Data Rate (MB)</entry>
+            <entry>Recording Time (minute)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>1× </entry>
+            <entry>4.5</entry>
+            <entry>90</entry>
+          </row>
+          <row>
+            <entry>2× </entry>
+            <entry>9</entry>
+            <entry>45</entry>
+          </row>
+          <row>
+            <entry>4× </entry>
+            <entry>18</entry>
+            <entry>22.5</entry>
+          </row>
+          <row>
+            <entry>6× </entry>
+            <entry>27</entry>
+            <entry>15</entry>
+          </row>
+          <row>
+            <entry>8× </entry>
+            <entry>36</entry>
+            <entry>11.25</entry>
+          </row>
+          <row>
+            <entry>10× </entry>
+            <entry>45</entry>
+            <entry>9</entry>
+          </row>
+          <row>
+            <entry>12× </entry>
+            <entry>54</entry>
+            <entry>7.5</entry>
+          </row>
+          <row>
+            <entry>14×</entry>
+            <entry>63</entry>
+            <entry>6.4</entry>
+          </row>
+          <row>
+            <entry>16×</entry>
+            <entry>72</entry>
+            <entry>5.6</entry>
+          </row>
+          <row>
+            <entry>18×</entry>
+            <entry>81</entry>
+            <entry>5</entry>
+          </row>
+          <row>
+            <entry>20×</entry>
+            <entry>90</entry>
+            <entry>4.5</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm535480480" fo:font-style="normal" fo:font-weight="normal"> High-definition videos may be stored on BD-ROMs with up to 1920 by 1080 pixel resolution at 29.97 frames per second. Audio in BD players is required to support Dolby Digital (AC3), DTS, and linear PCM. The maximal data transfer rate, the maximal audio and video bitrate, and the maximal video bitrate for BD films are 54 Mb/s, 48 Mb/s, and 40 Mb/s, respectively, which are much higher than HD DVD movies. </para>
+    
+     </section>
+   <section id="fs-idm252173664">
+<title>Data Transfer Rates</title>
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm476404032" fo:font-style="normal" fo:font-weight="normal">One of the performance metrics of storage devices is data transfer rate. The higher data rate, the shorter the data access time. Data transfer rates for commonly used storage devices are listed Table 6. </para>
+    <para id="import-auto-idm524292704">Table 6 Data Transfer Rates for Removable Optical Storage Devices</para>
+    <table id="import-auto-idm638862992" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>Type</entry>
+            <entry>Transfer Rate (MB)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>CD 1x ~ 72x</entry>
+            <entry>0.15 ~ 11.06</entry>
+          </row>
+          <row>
+            <entry>DVD 1x ~ 24x</entry>
+            <entry>1.39 ~ 33.24 </entry>
+          </row>
+          <row>
+            <entry>Blu-Ray 1x ~ 20x</entry>
+            <entry>4.5 ~ 90</entry>
+          </row>
+          <row>
+            <entry>Hard Disk Drive</entry>
+            <entry>~ 300</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    
+     </section>
+   <section id="fs-idm1076178560">
+<title>Media Capacities</title>
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm224982656" fo:font-style="normal" fo:font-weight="normal">A comparison on capacity for different storage media is listed in Table 7. Although hard disk drives have the highest capacity among others, they are expensive and prone to damage due to their electrical characteristics. Anyhow, data stored in hard disk drives have to be stored (backup) on removable media. In this regard, Blu-Ray provides higher capacity with a reasonable cost.  </para>
+    <para id="import-auto-idm406907152">Table 7 Capacity of Storage Media</para>
+    <table id="import-auto-idm250794560" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>Media Type</entry>
+            <entry>Capacity</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Hard Disk Drive</entry>
+            <entry>~ 4 TB</entry>
+          </row>
+          <row>
+            <entry>CD</entry>
+            <entry>185/650/703 MB</entry>
+          </row>
+          <row>
+            <entry>DVD </entry>
+            <entry>1.36~15.9 GB</entry>
+          </row>
+          <row>
+            <entry>Blu-Ray </entry>
+            <entry>7.8 ~ 128 GB</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+     </section>
+   <section id="fs-idm282843152">
+<title>Memory Hierarchy</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm213440000" fo:font-style="normal" fo:font-weight="normal">Memory or storage devices are used to store data to be processed by computers. In general, memory components share some common characteristics, which are fast access, expensive, but low capacity, or slow access, cheap, but high capacity. It would be great to exclusively having the former type of memory components for a computer system. However, that will be extremely expensive and near impossible to produce the computer. Due to locality (both temporal and spatial) of references for a running program, it is typical that a small portion of code is needed to be stored in fast memory. In order to balance performance and cost, memory components (Registers, SRAM, DRAM, hard disk drives, removable media) are organized in a hierarchical manner that high performance expensive components are sitting on top of the hierarchy whereas less expensive components form high capacity storage on the base. Figure 4 illustrates the memory hierarchy in computer systems. In general, data movement occurs when a piece of data is required for CPU computation. The requested data not existing in a level will have to be moved from lower levels. Eventually, the data will be stored in the highest level, i.e., registers, and ready for computation. Most of the components in the memory hierarchy have been discussed in the early sections expect cache, which will be studied in a later section.</para>
+    <para id="import-auto-idm208514608">Figure 4 Memory Hierarchy for Computer Systems</para>
+     </section>
+   <section id="fs-idm1024554304">
+<title>Cache</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm253776096" fo:font-style="normal" fo:font-weight="normal">Cache is a high speed, expensive, volatile memory component that stores frequently used data for CPU. The existence of cache greatly improves a computer system performance because it serves as a buffer in-between the main memory (RAM) and the registers. There is only a handful of registers, and thus they may not accommodate frequently used data. As a result, the CPU will have to retrieve the frequently used data from the main memory (much slower than cache) should there were no cache. Because of locality of references, the small cache keeps frequently used data for CPU with very low latency (almost as fast as registers). It turns out that CPU would not get the data from the cache and the long main memory latency will be avoided.</para>
+    
+     </section>
+   <section id="fs-idm1176257440">
+<title>Principle of Locality</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm652890160" fo:font-style="normal" fo:font-weight="normal">The principal of locality involves two dimensions: temporal and spatial. A running program typically access a small portion of their address space at any time. A typically program is composed of loops, sequential statements, decisions, etc. Among the statements, those that reside in a loop will be executed frequently and iteratively. A recently executed statement in a loop will be likely executed again soon. This refers to temporal locality such as statements and induction variables in a loop. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm509382176" fo:font-style="normal" fo:font-weight="normal">Data structures such as arrays that pack data together to be processed by a program create a spatial relation among data. A data item in the neighborhood of a recently accessed datum will likely be retrieved soon. This refers spatial locality. For example, a bubble sort algorithm working on an array will access the datum in the array sequentially. Therefore, the data items in the array share the spatial locality. Additionally, statements in a program are access sequentially when running the program. The next instruction will be fetched after the current instruction finished its execution.</para>
+     </section>
+   <section id="fs-idm1075687616">
+<title>Taking Advantage of Locality</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1520111248" fo:font-style="normal" fo:font-weight="normal">Memory hierarchy is developed according to the principle of locality. Basically, information is stored in hard disks. When program is in execution, recently accessed or nearby data are copied from hard disks to main memory (DRAM). The more recently accessed or nearby data are then copied from the main memory to smaller SRAM (cache). The requested data are then copied to from cache to registers. </para>
+    
+     </section>
+   <section id="fs-idm279731344">
+<title>Operating Principles</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm533994736" fo:font-style="normal" fo:font-weight="normal">Data are decomposed into blocks (a.k.a. lines), each of which is the basic copying unit of multiple words. If the requested block is present in a level in the memory hierarchy, a data hit occurs (the data request satisfies). The hit ration is calculated by the number of hits divided by the total number of accessed. A typical hit ratio is above 90% in all levels. If a requested block is not present in a level, a data miss occurs (the requested block may reside in lower levels). The time required to bring the requested block from lower levels to the current level is called miss penalty. It is worth mentioning that a chain of data misses may happen if a requested block is not stored in the level that is immediately below. The miss ration is calculated by the total number of misses divided by the total number of accesses. The relation of hit ration and miss ration is as follows:</para>
+    <para id="import-auto-idm443619456">Normally, O.S. will bring the requested block to the current level after a data miss occurs. Once the requested block is in place, the operation that caused the miss resumes. In the cache memory, for example, if there are 4 blocks with 3 blocks currently occupied, a newly requested block (not present), say block 5, will be copied to the empty slot as depicted in Figure 5.</para>
+    <figure id="import-auto-idm641039248">
+      <media id="import-auto-idm205389232" alt="">
+        <image mime-type="image/png" src="../../media/officeArt object-a3a6.png" height="251" width="317"/>
+      </media>
+    </figure>
+    <para id="import-auto-idm1597820816">Figure 5 An Example of Requesting Blocks in a Four Block Cache</para>
+    <para id="import-auto-idm253031056">This operation seems simple but involves things to ponder. First, how do we know if a requested block is present or absent? Second, once the cache is full, i.e., all blocks are occupied, which block should be evicted? How do we handle the evicted block? We will discuss these questions in the following sections.</para>
+    
+     </section>
+   <section id="fs-idm242624608">
+<title>Direct Mapped Cache</title>
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm266435440" fo:font-style="normal" fo:font-weight="normal">The cache is always smaller than the memory. If we divide cache and memory into blocks, obviously we can only keep a small number of blocks in cache. The majority of blocks are still in memory. Each memory block is copied to a cache block whenever necessary. Thus, it is inevitable to share a cache block for many memory blocks, meaning that one of the many memory blocks will used the cache block at any moment.  For example, if there are 16 memory blocks, and there are 4 cache blocks, we can assign memory blocks 0, 4, 8, and 12 to cache block 0, blocks 1, 5, 9, and 13 to cache block 1, and the like. So the cache block number is calculated by . The mapping is called direct mapped cache, and depicted in Figure 6.</para>
+    <para id="import-auto-idm213366416">Figure 6 A Direct Mapped Cache with 4 Cache blocks for a 16-block Memory</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm437379952" fo:font-style="normal" fo:font-weight="normal">Since many memory blocks share the same cache block, how do we know which particular memory block is stored in a cache block? Initially, if no blocks reside in cache, we need to differentiate empty cache blocks from non-empty ones. The high bits from the memory block addresses may be used to identify a particular memory block. In Figure 6, the memory block address contains 4 bits (0000, 0001, 0010, …, 1111). The two low bits are actually block address (why?), and the high two bits are all different for all memory blocks that go to the same cache block. For example, the memory blocks at addresses 0011, 0111, 1011, and 1111 all go to the cache block 3 (. Their high bits, 00, 01, 10, and 11, are all different. These high bits used to identify memory block are stored in cache and called tags. In addition to tags, we may use one extra bit to indicate if a cache block is empty or not. This bit is called valid bit. Initially, the valid bit is 0. Once a memory block is brought in, the valid bit is set to one. These are data structures required to maintain a cache, and are considered as overhead. </para>
+     </section>
+   <section id="fs-idm252422368">
+<title>Address Translation</title>
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm766883280" fo:font-style="normal" fo:font-weight="normal">Normally, the size of a block is two to the powers, i.e., 2, 4, 8, 16, 32, etc. Consider a 16-byte block, and there are 32 cache blocks. Given a memory address, the first 4 bits will be the offsets of the bytes in the block, the following 5 bits will be the block address, and the rest will be the tag.  The number of bits for the offset is the logarithm of the block size, and the number of bits for the block address is calculated by the logarithm of the number of the total cache blocks. It turns out that the mod operation for finding block address is actually just an aggregated signal from the address bus.</para>
+    <figure id="import-auto-idm258291152">
+      <media id="import-auto-idm1495007632" alt="">
+        <image mime-type="image/png" src="../../media/Image1-5bae.png" height="52" width="521"/>
+      </media>
+    </figure>
+    <para id="import-auto-idm485480896">Figure 7 Address Decomposition for a Direct Mapped Cache</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm256923472" fo:font-style="normal" fo:font-weight="normal">Beside space for tags and status bits (valid and dirty), there are one comparator and one AND gate to quickly determine if a requesting block is in cache (hit). Figure 8 illustrates a hardware design for quickly determination of a cache hit. First, the block address is used to index a potential cache block. Second, the cache entry (data, tags, and status bits) are read from the cache. Third, the tags are compared by a hardware comparator. If the tags are identical, the output from the comparator is AND’d with the valid bit. If the output of the AND gate is high, a cache hit is determined. Otherwise, a cache miss occurs. </para>
+    <para id="import-auto-idm426456208">Figure 8 Hardware Circuit for Cache Hit</para>
+     </section>
+   <section id="fs-idm1028511792">
+<title>Cache Size and Overhead for Direct Mapped Cache Organization</title>
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm646175312" fo:font-style="normal" fo:font-weight="normal">In general, the cache also includes tags, valid bit, dirty bit, and the actual space for storing data. Assume that there are <emphasis effect="italics">a</emphasis> bits for an address, <emphasis effect="italics">b</emphasis> bytes for a block, <emphasis effect="italics">c</emphasis> cache blocks, one valid bit, and one dirty bit. In direct mapped cache organization, the total cache size (bytes) is calculated as follows:</para>
+    <para id="import-auto-idm243859344">For example, in a 32-bit address system, 128 cache blocks, and 16-byte block, the total cache space is computed as follows: </para>
+    <para id="import-auto-idm797305760"> Bytes</para>
+    <para id="import-auto-idm265933472">In the direct mapped cache organization, the space overhead, i.e., the percentage of the total cache bits used for data structure maintenance other than the actual storage for data, is computed as follows:</para>
+    <para id="import-auto-idm471705040">In the previous example with , the space overhead is 15.23%. In 48-bit address CPU, the overhead is illustrated in Figure 7. Obviously, the larger block size, the less overhead would be. However, large blocks may not always be good as the content tends to be polluted. Thus, the cache miss penalty will overturn the small overhead benefit.  </para>
+    <para id="import-auto-idm664936816">Figure 9 Overhead of Direct Mapped Cache in a 48-Bit Address CPU with Different Block Sizes</para>
+    <para id="import-auto-idm253665216">Another interested design tradeoff is what the best block size will be if a piece of memory is given for cache. The following formula shows the relation between memory size and other parameters:</para>
+    <para id="import-auto-idm264007712">By and large, the block size is one less power of two because of the overhead. For example, given 64 KB memory with 48-bit addressing, if the number of cache blocks is 1024, then the block size should be 32. Because , so . The block size will be =32. If we want 512 cache blocks, , so  The block size will be . We may also use this relation to find the number of cache blocks if the block size is fixed. </para>
+     </section>
+   <section id="fs-idm1293113648">
+<title>Block Size Consideration</title>
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm760268816" fo:font-style="normal" fo:font-weight="normal">Larger blocks should reduce miss rates due to spatial locality. However, in a cache of fixed size, larger blocks also mean fewer of them are available. Therefore, it increases competition resulting in higher miss rates. The other concern about large blocks is data pollution, i.e., data in a block is modified. If a cache block is not modified at all, the system will not necessarily copy it back to the main memory should it were selected for eviction. Larger blocks have higher chances to be modified than small blocks. Thereby, the system may end up with longer miss penalty as the whole evicted block has to be copied to memory. The larger miss penalty may override the benefit of reduced miss rates.</para>
+     </section>
+   <section id="fs-idm1143414992">
+<title>Cache Miss</title>
+    
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm436398176" fo:font-style="normal" fo:font-weight="normal">On cache hits, CPU proceeds normally. On a cache miss, CPU pipelines stall. The requested block is fetched from the next level in the memory hierarchy.  In a Harvard architecture with physically separate storage for instruction and data, after an instruction cache miss, the instruction will be re-fetched again. After a data miss, a complete data access resumes.</para>
+     </section>
+   <section id="fs-idm247968336">
+<title>Write Through of Write Back</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm253080720" fo:font-style="normal" fo:font-weight="normal">On a data write hit, if the cache block is modified but the memory block is left intact. It creates inconsistency between cache and memory. The “write-through” strategy also updates the corresponding memory block. However, doing so would increase the time for write instructions. For example, if the base CPI (cycle per instruction) is one, 10% of the instructions are write, and memory access takes 100 cycles, the effective CPU becomes 11 as is calculated in the following:</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm265399248" fo:font-style="normal" fo:font-weight="normal">One solution for this increased CPU is write buffer, which accumulates data awaiting to be written to memory. CPU continues its execution until the memory buffer is full. At that time, the memory buffer is flushed to the memory. A benefit from the write through is that the evicted cache blocks may simply be dropped with copying back to the memory.  </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm450165968" fo:font-style="normal" fo:font-weight="normal">Another solution is “write back” strategy. On a data write hit, only the cache block is updated. A dirty bit is set for the cache block, indicating that the cache block has been modified. When a dirty cache block is evicted, the whole block is written back to the memory. </para>
+    
+     </section>
+   <section id="fs-idm1305433616">
+<title>Set Associative Cache</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm636926208" fo:font-style="normal" fo:font-weight="normal">One of the problems in direct mapped cache is that the block address is uniquely determined, i.e., each memory block goes to one and only one location in cache. Consider the case that CPU references to memory blocks that go to the same cache block. For example, for 4 cache blocks, CPU references memory blocks of addresses that are multiple of 4, say 0, 8, 0, 8, 0. In this scenario, even though there are 4 cache blocks, there is always a cache miss because each memory blocks go to cache block 0 if loaded. Therefore, we may create some freedom for each memory block. A set of cache blocks is created for holding memory blocks which have the same set address. In the previous example, if we divide 4 cache blocks into 2 sets, and each set contains two slots for blocks, the access pattern with block address 0, 8, 0, 8, 0, would result in less number of cache misses. Figure 10 illustrates a two-way set associative cache performance for the above access pattern. The number of ways is determined by the number of blocks in a set.</para>
+    <para id="import-auto-idm636082896">Figure 10 Cache Miss Analysis for a Two-Way Set Associative Cache</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm640604080" fo:font-style="normal" fo:font-weight="normal">The set address is calculated by the block address modulo the number of sets. So the address decomposition becomes the following:</para>
+    <figure id="import-auto-idm250438048">
+      <media id="import-auto-idm252746672" alt="">
+        <image mime-type="image/png" src="../../media/Image2-8559.png" height="52" width="521"/>
+      </media>
+    </figure>
+    <para id="import-auto-idm250424912">Figure 11 Address Decomposition in an n-Way Set Associative Cache</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm253767776" fo:font-style="normal" fo:font-weight="normal">The number of bits in the offset field is equal to . The number of bits in the set address field is calculated by . The rest of the address bits will belong to the tags. Since a memory block may go any place in a set, the hardware is complex as the tags in a set have to be compared against a given tag in parallel without performance loss. Figure 12 depicts a hardware design for a two-way set associative cache with 8 sets. Note that the control input for the multiplexer are from each way. There may need an encoder the convert the signals suitable for the multiplexer. In this case, there is a 2x1 encoder (omitted in the diagram) for the 2-way set associated cache.</para>
+    <para id="import-auto-idm795598064">Figure 12 A Hardware Design for Two-Way Set Associative Cache with 8 Sets</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm263707424" fo:font-style="normal" fo:font-weight="normal">We may develop 2-way, 4-way, 8-way, or n-way set associative cache following the above design to provide more slots for a memory block could go. However, increased associativity decreases miss rate but the hardware cost would be extremely high. Simulation results shows that the performance is getting saturated after 2-way. Practically, 4-way is a common denominator.</para>
+     </section>
+   <section id="fs-idm1301508064">
+<title>Fully Associative Cache</title>
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm236692272" fo:font-style="normal" fo:font-weight="normal">If we push to the limit, there is only one set and a memory block may go anywhere. This is called fully associative cache organization. Consider that there are 16 cache blocks. We may have eight 2-way sets, four 4-way sets, two 8-way sets, or one 16-way set. In this case, the 16-way set associative cache is fully associative. Since a memory may go anywhere in the set, the fully associative cache relies on expensive hardware to compare the tags in parallel. Due to its high cost, and practically 4-way would be the best cost/performance, the fully set associative cache is hardly realized commercially.  </para>
+    
+     </section>
+   <section id="fs-idm1041352192">
+<title>Replacement Policies</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm446213744" fo:font-style="normal" fo:font-weight="normal">In any cache organization (direct mapped, set associative, or fully associative), when there is no room for a newly requested memory block, a cache block will have to be evicted according some replacement policy. In this section, we introduce three replacement policies: Random, First-in First-out (FIFO), Least Recently Used (LRU), and Most Recently Used (MRU). The random replacement policy selects a victim block randomly. It is normally implemented on a simple hardware circuit that generates a random number as an index to the victim block.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm800760720" fo:font-style="normal" fo:font-weight="normal">The FIFO policy keeps blocks based on their ages. The older blocks, those loaded early, will be evicted first. The policy is designed according to the way a sequential program is executed. Consider a loop structure that exactly fits in the cache. The ones evicted should be anything before entering the loop because they are older. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm450498688" fo:font-style="normal" fo:font-weight="normal">The LRU policy keeps track of reference records for each block in the cache. Basically, if a block is referenced, it is the latest use, and will not be replaced. A typical implement will be a list that records the reference pattern. If a block is referenced, it is brought to the head of the list. The block in the tail of the list is the least recently used block, and will be evicted if a new block is find a room. Each block will stay in the list at least as long as the length of the list, i.e., a block will stay in the list for the “length” time units if it is only referenced once.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm263238976" fo:font-style="normal" fo:font-weight="normal">The MRU policy states that the evicted block will be the block which has recently referenced. The MRU is the opposite of the LRU. In cases that a loop is followed by some sequential statements and the loop will be executed again, the MRU will perform better. The implementation of the MRU is identical to the LRU except the evicted block will be chosen from the head of the list.</para>
+     </section>
+   <section id="fs-idm1027882832">
+<title>Multilevel Cache</title>
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm262718896" fo:font-style="normal" fo:font-weight="normal">Larger caches have a better hit rate but longer latency. To remedy this issue, many </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm512005584" fo:font-style="normal" fo:font-weight="normal">CPU designs apply multiple level of caches in which larger slower caches are used to back up smaller faster caches. Multilevel caches are performed by checking the first level (L1). If the requested block is found in L1, the CPU continues execution. If L1 cache misses occur, the second level (L2) cache is checked. If found, the requested block will be copied from L2 to L1. This process continues until the requested block is checked from the external memory.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm433804464" fo:font-style="normal" fo:font-weight="normal">Multilevel caches may be implemented in off-chip or on-die within CPU. For example, IBM Power4 has 96 KB L1 cache (64 KB for instruction cache, and 32 KB for data cache), 1.41 MB L2 cache, and 32 MB off-chip cache per processor. The Intel Itanium 2 has 32 KB L1 cache (16 KB for instruction cache, and 16K for data cache), 256 KB L2 cache, and up to 24 MB L3 on-die cache. In the Intel Xeon MP, two processors share a 16 MB L3 on-die cache. The AMD Phenom II has 6 MB on-die L3 cache. The Intel Core i7 has an 8 MB on-die L3 cache shared among all cores.</para>
+    
+     </section>
+   <section id="fs-idm1293424704">
+<title>Cache Coherency</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm766446928" fo:font-style="normal" fo:font-weight="normal">In CPUs with multilevel of caches, typically caches with higher levels are shared among cores, each of which has a local cache. Therefore, a block in a higher level cache may have several copies sitting in local caches of cores. This replication reduces both latency of access to higher level caches and contention for reading a shared data item. Updates on a local copy have to be made on other copies. Otherwise, computations depend on the updates may fail. Cache coherency is a subject that ensures modified operands are prorogated to other local copies in a timely manner. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm442425200" fo:font-style="normal" fo:font-weight="normal">A cache coherency protocol is developed to maintain cache consistency among all caches in a system with shared caches. The MESI (a.k.a. Illinois) is a widely used cache coherence protocol that supports write-back cache. It has been extensively used in Intel processors such as Pentium. Each cache block is additionally marked with 2 status bits for the following states.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm419349536" fo:font-style="normal" fo:font-weight="normal">Modified: The cache block is present only in the current cache, and is dirty. Some of the values stored in the cache block have been modified. So, the cache block is required to be written back to main memory at some time in the future, before permitting any other read of the (no longer valid) main memory state. The write-back changes the block to the Exclusive state.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm499289248" fo:font-style="normal" fo:font-weight="normal"> Exclusive: The cache block is present only in the current cache, but is <emphasis effect="italics">clean</emphasis>. None of the values in the cache block have been modified. It is identical to the copy in the main memory. It may be changed to the Shared state at any time, in response to a read request. Alternatively, it may be changed to the Modified state when writing to it.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm797520976" fo:font-style="normal" fo:font-weight="normal">Shared: Indicates that this cache block may be stored in other caches of the machine and is clean.  The cache block has not been modified and is identical to the copy in the main memory. The block may be discarded, i.e., changed to the Invalid state, at any time.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm440701072" fo:font-style="normal" fo:font-weight="normal">Invalid: Indicates that this cache block is invalid.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm780875840" fo:font-style="normal" fo:font-weight="normal">The purpose of caches is to minimize main memory access. A cache may satisfy a read from any state except invalid. An invalid block must be fetched to satisfy a read. A write may only be performed if the cache block is in the modified or the exclusive state. If it is in shared state, all other caches copies must be invalided first. This is done by a broadcast operation called Request for Ownership (RFO). A non-modified block may be invalided and discarded at any time. A modified block must be written back first. If a cache that holds a modified block has to snoop any attempt to read its memory copy. If found, write back the cache block to memory, and set it to the shared state. A cache that holds a shared block must listen for invalidate or RFO broadcasts, and discard it. A cache that hold an exclusive block must snoop read operations from other caches, and change it to the shared state if found. Since cache blocks are discarded without broadcasting a message to other caches. It is possible to have a cache shared block that is only used by one processor. </para>
+ </section>
+   
+  </content>
+</document>

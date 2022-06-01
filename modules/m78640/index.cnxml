@@ -1,0 +1,552 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Floating Points</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78640</md:content-id>
+  <md:title>Floating Points</md:title>
+  <md:abstract>This chapter explains how data is represented in a machine. Compare representations of integers to floating point numbers. Describe underflow, overflow, round off, and truncation errors in data representations. IEEE 754 standard for floating point numbers including NaN and denormal numbers is introduced. Floating-point arithmetic and floating-point hardware design.</md:abstract>
+  <md:uuid>4245e121-061d-46de-bedb-6751c383492b</md:uuid>
+</metadata>
+
+<content>
+
+<section id="fs-idm186248736">
+      <title>Floating Point Numbers</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1098140672" fo:font-style="normal" fo:font-weight="normal">Computer programs such as scientific applications often involve numbers of very large, e.g., the number of atoms a molecule in Chemistry, or very small number close to zero, e.g., the charge of an electron in Electronics. For very large numbers, they may not be represented by a 32-bit unsigned number, which represents numbers up to  (about 10 decimal digits).  Even with a 64-bit unsigned integer, it can represent numbers up to about 20 decimal digits. On the other hand, small numbers with a large number of fractional digits (those to the right of the decimal point) may not fit into the fixed amount of digits in integer representation.</para>
+    </section>
+<section id="fs-idm298200448">
+      <title>The need for representing big and small real numbers</title>
+ 
+   <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm349627088" fo:font-style="normal" fo:font-weight="normal">It is not uncommon for computers to handle very big or very small numbers. For example, in Chemistry, the number of atoms in a molecule is approximately . In Electronics, the charge of an electron is . Obviously, these numbers may not be represented in integer format. In order for computers to perform computations over these numbers, another approach to store these numbers in memory is needed.</para>
+    </section>
+<section id="fs-idm488280944">
+      <title>Scientific Notation</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1171842064" fo:font-style="normal" fo:font-weight="normal">Scientists have discovered the representation problem for very large and very small numbers. Therefore, a succinct notation is developed to denote these numbers. If we write out the number , it will be , which has 24 decimal digits. The representation of the number  is a scientific notation, which has the following format:</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1148753856" fo:font-style="normal" fo:font-weight="normal"> ( times  to the power of ) where  is a real number called the significand or mantissa, and the exponent  is an integer. A negative number will have a negative mantissa, whereas a negative exponent indicates a number close to zero. For example, , , and . It can be seen that digits to the left are more significant than others. For example,  is not a big difference compared to  but the difference between  and  is 10 times more than that of the former two numbers. The same scenario applies to the negative exponent case.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm319941952" fo:font-style="normal" fo:font-weight="normal"> Though the scientific notation is terse, the arithmetic would have to be developed to correctly perform their operations. Addition or subtraction of two numbers in scientific notations requires the same exponent. If the exponents are not the same, one of the two numbers has to be adjusted. So their exponents are identical. Given two numbers , and in scientific notations, the following shows addition and subtraction of the two.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1284234512" fo:font-style="normal" fo:font-weight="normal">Multiplication and division of two numbers in scientific notations will not require the same exponent. They can be operated directly on mantissas and exponents. Given two numbers , and in scientific notations, the following shows addition and subtraction of the two.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm340803200" fo:font-style="normal" fo:font-weight="normal">For multiplication, the mantissa of the product is the multiplication of those of the multiplicand and the multiplier; the exponent of the product is the sum of those of the multiplicand and the multiplier. As to division, the mantissa of the quotient is equal to the mantissa of the dividend divided by the mantissa of the divisor; the exponent of the quotient is equal to the subtraction of those of the dividend and the divisor. </para>
+    </section>
+<section id="fs-idm463242464">
+      <title>Normalization</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm366698624" fo:font-style="normal" fo:font-weight="normal">It is obvious that any number can be written in many scientific representations. For example,  may be written as , or , or many others. In normalized scientific notation, the absolute value of the mantissa is limited to be at least 1 and less than 10 such that </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm362002000" fo:font-style="normal" fo:font-weight="normal"> where  .</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1099247888" fo:font-style="normal" fo:font-weight="normal">Therefore, the above number in normalized scientific notation is  not  or . Normalization provides an easier way of comparing two numbers of the same sign as the exponent  indicates the order of magnitude. In normalized scientific notation, if the exponent is negative, the absolute value of the number is between 0 and 1 as the following equations suggest.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm330669168" fo:font-style="normal" fo:font-weight="normal">For example,  is  and its absolute value in between 0 and 1. Note that 0 can be written as  where  can be any arbitrary integer such as , , , etc. However, they may not be normalized as the mantissa has to be 0, which violates the normalization definition that .</para>
+    </section>
+<section id="fs-idm190048256">
+      <title>IEEE Standards for Floating Point Numbers</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1294617520" fo:font-style="normal" fo:font-weight="normal">Based on the scientific notation, numbers stored in computers can employ the same format. In early computer design, the floating point format varies from manufacturer to manufacturer. This may cause incompatibility should data were to be exchanged. The Institute of Electrical and Electronic Engineers (IEEE) published the IEEE standard for floating-point arithmetic (IEEE 754) in 1985 and 2008. The IEEE 754 has been used to deign CPU and FPU in almost all computers. Many software systems implement some or all arithmetic using the IEEE 754. The standard defines arithmetic formats, interchange formats, rounding algorithms, operations, and exception handling. In the arithmetic formats, the IEEE 754 defines floating point formats, which consist of finite numbers, infinities, and “not a number” values (NaNs).</para>
+    
+    
+    <list id="import-auto-idm342373088" list-type="enumerated" number-style="arabic">
+      <item>
+        
+        <emphasis effect="bold">Binary32 Single Precision Format</emphasis>
+      </item>
+    </list>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1146082240" fo:font-style="normal" fo:font-weight="normal">There are five basic formats defined in the IEEE 754 standard. We will discuss two of them that are frequently used in computer systems, named the binary32 (single precision) format and the binary64 (double precision) format. The binary32 format uses 32 binary bits to represent a floating point number whereas the 64binary used 64 bits.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm325715520" fo:font-style="normal" fo:font-weight="normal">Since scientific representation for numbers is not unique, the IEEE 754 standard defines the normalized binary numbers. Like the scientific notation, the normalized binary number has the following form:</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1280895056" fo:font-style="normal" fo:font-weight="normal">where . Thus, the absolute value of  is something like  where  could be either 0 or 1. Table 1 illustrates the IEEE 754 standard for the binary32 single precision format. The single precision format defines 1 bit (MSB) for sign, followed by 8 bits for exponent, and followed by 23 bits for mantissa or fraction. Totally there are 32 bits in the single precision floating format. A <emphasis effect="italics">float </emphasis>keyword is used to specify a single precision number in most languages like Java or C.</para>
+    <para id="import-auto-idm1112055280">Table 1 The Binary32 Single Precision Floating Point Format in the IEEE 754 Standard</para>
+    <table id="eip-974" summary="k">
+<tgroup cols="3"><tbody>
+  <row>
+    <entry>1 bit</entry>
+    <entry>8 bit</entry>
+    <entry>23 bit</entry>
+  </row>
+  <row>
+    <entry>S</entry>
+    <entry>Exponent</entry>
+    <entry>Fraction</entry>
+  </row>
+</tbody>
+
+</tgroup>
+</table><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm312399472" fo:font-style="normal" fo:font-weight="normal"> A sign bit 1 indicates the number is negative whereas a sign bit 0 denotes a positive number. Since the significand is normalized, and it always starts with an 1, the leading one is not necessary to take a space in the representation. Thus, there is an one in  when restoring the number. The 8 bits in the exponent field may represent unsigned values from 0 to 255. However, in order to represent negative exponents, a bias is defined as 127. So a number with an exponent 1 in the IEEE 754 single precision format will have an actual exponent . Exponents with all zero’s and all one’s are reserved for special purposes. Therefore, the exponents range from  to .</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1074700608" fo:font-style="normal" fo:font-weight="normal">For example, the decimal  can be written to a binary scientific notation as . In the normalized form, the sign bit is 1, the fraction is 1, and the exponent is . Because of the bias, we will have to add 127 to the exponent, i.e., the exponent shown in the format should 126. Table 2 shows the IEEE 754 single precision representation for the decimal number .</para>
+    <para id="import-auto-idm1143768336">Table 2 The IEEE 754 Single Precision Representation for -0.75</para>
+    <table id="eip-302" summary="f">
+<tgroup cols="4"><tbody>
+  <row>
+    <entry>bits</entry>
+    <entry>1</entry>
+    <entry>8</entry>
+    <entry>23</entry>
+  </row>
+  <row>
+    <entry/>
+    <entry>S</entry>
+    <entry>Exponent</entry>
+    <entry>Fraction</entry>
+  </row>
+  <row>
+    <entry>values</entry>
+    <entry>1</entry>
+    <entry>0111 1110</entry>
+    <entry>100 0000 0000 0000 0000 0000</entry>
+  </row>
+</tbody>
+</tgroup>
+</table><list id="import-auto-idm1295929024" list-type="enumerated" number-style="arabic">
+      <item>
+        
+        <emphasis effect="bold">Single Precision Range</emphasis>
+      </item>
+    </list>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1264317760" fo:font-style="normal" fo:font-weight="normal">With the space of 32 bits, due to the fixed precision arithmetic, there is a range of numbers that can be represented by the IEEE 754 single precision format. Let’s first consider the small possible number that the format can represent. In order to make a represented number smaller, the fraction should be all zero’s, the exponent should be the smallest possible negative number, and the sign has to be negative.  The smallest exponent is  as mentioned early. The number is shown in Table 3. The smallest number is , which is about .</para>
+    <para id="import-auto-idm1294149136">Table 3 The Smallest Number Represented by the IEEE 754 Single Precision Format</para>
+    <table id="import-auto-idm1093253632" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>8 </entry>
+            <entry>23</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry>values</entry>
+            <entry>1</entry>
+            <entry>0000 0001</entry>
+            <entry>000 0000 0000 0000 0000 0000</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4">The number represented is .</entry>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1424531712" fo:font-style="normal" fo:font-weight="normal">On the other hand, the largest number that the IEEE 754 single precision format represents will have the following constraints:</para>
+    <list id="import-auto-idm352556912" list-type="enumerated" number-style="lower-alpha">
+      <item>The sign is positive, i.e., the sign bit is 0,</item>
+      <item>The exponent is maximum, i.e., 127, and</item>
+      <item>The fraction bits are all one’s. </item>
+    </list>
+    <para id="import-auto-idm1089227344">Table 4 illustrates the maximal number represented by the IEEE 754 single precision standard. The number represented is about , which is about .</para>
+    <para id="import-auto-idm1262964992">Table 4 The Maximal Number Represented by the IEEE 754 Single Precision Format</para>
+    <table id="import-auto-idm1425185184" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>8 </entry>
+            <entry>23</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry>values</entry>
+            <entry>0</entry>
+            <entry>1111 1110</entry>
+            <entry>111 1111 1111 1111 1111 1111</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4">The number represented is .</entry>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para id="import-auto-idm1135691216">Thus, the range of single precision numbers in the IEEE 754 standard is . Numbers outside the single precision range may not be represented using the IEEE 754 single precision standard. It is worth mentioning that numbers with more than 23 fraction bits may not be represented in this single precision format. Instead, a higher precision format such as the IEEE 754 double precision format is needed.</para>
+    
+    </section>
+<section id="fs-idm505160416">
+      <title>Binary64 Double Precision Format</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm337163600" fo:font-style="normal" fo:font-weight="normal">When numbers outside the single precision range are needed for computation, more space is required to store them in computer systems. The IEEE 754 standard defines a binary64 double precision format that requires double the size of that used in the single prevision format. The 64 bits are allocated for the sign bit, the exponent, and the fraction as depicted in Table 5.</para>
+    <para id="import-auto-idm350429328">Table 5 The Binary64 Double Precision Format in The IEEE 754 Standard</para>
+    <table id="import-auto-idm1051459360" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>11 </entry>
+            <entry>52</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4"> where </entry>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm358071344" fo:font-style="normal" fo:font-weight="normal">Like in its single precision version, the exponent in the IEEE 754 double prevision standard reserves all zero’s and all one’s for special purposes. Therefore, the smallest exponent in the format is  and the largest is . With the bias , the IEEE double precision standard can represent numbers with an exponent ranging from .</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1113419872" fo:font-style="normal" fo:font-weight="normal">For example, the decimal  is translated to  in binary. After normalization, it is . Therefore, the sign bit is one, the faction is , and the exponent is . Note that we add the bias to the exponent when a number is translated to the IEEE double precision format. Table 6 shows the IEEE double prevision representation for the number .</para>
+    <para id="import-auto-idm1300521712">Table 6 The Number -12.625 Represented in the IEEE Double Prevision Format</para>
+    <table id="import-auto-idm1067719616" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>11 </entry>
+            <entry>52</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry>values</entry>
+            <entry>1</entry>
+            <entry>100 0000 0010</entry>
+            <entry>1001 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4"/>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm354443296" fo:font-style="normal" fo:font-weight="normal">It is convenient and readable to group the digits in four with a separated space as there are lots of zeros. There are 13 groups of 4 in the fraction part. The fraction digits are filled from the left to the right. This way, some errors may be avoided. Also, when hexadecimal is needed, they are readily to be converted to hexadecimal.</para>
+    </section>
+<section id="fs-idm229549760">
+      <title>Double Prevision Range</title>
+ 
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1094856704" fo:font-style="normal" fo:font-weight="normal">Even with 64 bits, there is a limit for the IEEE 754 double prevision format. The smallest number that can be represented in this standard is as follows:</para>
+    <list id="import-auto-idm315342016" list-type="enumerated" number-style="lower-alpha">
+      <item>The sign is negative, i.e., the sign bit is 1,</item>
+      <item>The exponent is the smallest, i.e., , and</item>
+      <item>The fraction bits are all zero’s.</item>
+    </list>
+    <para id="import-auto-idm1147186304">Therefore, the smallest number is , which is about . Table 7 illustrates the smallest number in the IEEE 754 double precision standard.</para>
+    <para id="import-auto-idm1135731168">Table 7 The Smallest Number that May be Represented by the IEEE 754 Double Precision Standard</para>
+    <table id="import-auto-idm1285884112" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>11 </entry>
+            <entry>52</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry>values</entry>
+            <entry>1</entry>
+            <entry>000 0000 0001</entry>
+            <entry>0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4">The number represented is .</entry>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para id="import-auto-idm1104631584">On the other hand, the largest number that may be represented by the IEEE 754 double precision standard is as follows:</para>
+    <list id="import-auto-idm1075986272" list-type="enumerated" number-style="lower-alpha">
+      <item>The sign is positive, i.e., the sign bit is 0,</item>
+      <item>The exponent is the largest, i.e., , and</item>
+      <item>The fraction bits are all one’s.</item>
+    </list>
+    <para id="import-auto-idm1074425984">The largest number is about , which is about  as shown in Table 8.</para>
+    <para id="import-auto-idm1154334832">Table 8 The largest Number Represented by the IEEE 754 Double Precision Standard</para>
+    <table id="import-auto-idm1275871072" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>11 </entry>
+            <entry>52</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry>values</entry>
+            <entry>1</entry>
+            <entry>111 1111 1110</entry>
+            <entry>1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4">The number represented is .</entry>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para id="import-auto-idm1103865696">Therefore, the IEEE 754 double precision standard will represent numbers ranging from  to .</para>
+    </section>
+<section id="fs-idm235868544">
+      <title>Floating Point Precision</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1103978992" fo:font-style="normal" fo:font-weight="normal">The fraction bits in the IEEE 754 standard are significant. Therefore, The single precision format will have approximately , about  decimal digits of precision. The double precision format will have approximately , about  decimal digits of precision. Note that a number falls in the range of a format but may not be accurately represented due to the precision limit. For example, the number , when converted to the IEEE 754 single precision format will actually have a value of 999,999,936. So there is a precision error of 63 during the conversion. The tolerance of the precision error depends on applications. Some applications may lead to disasters in case of failure such as nuclear reaction. Those critical applications may have to be designed to include concerns of the precision errors.</para>
+    <table id="import-auto-idm1172174128" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>8 </entry>
+            <entry>23</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry>values</entry>
+            <entry>0</entry>
+            <entry>1001 1100</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4"> The last 6 one’s of the significand may not be stored in the fraction field due to the precision limit.</entry>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    </section>
+<section id="fs-idm584317856">
+      <title>Special Values</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1139734176" fo:font-style="normal" fo:font-weight="normal">In Mathematics, a nonzero number divided by zero is infinite. A typical computer design will raise a “divide-by-zero” error flag, and let software system to handle the exception. A feather in the IEEE 754 standard allows representations for the unusual events. Recall that the exponent in both the single precision and double precision formats reserves all zero’s and all one’s. The exponent with all one’s is reserved to represent the special values. Table 9 lists the special values defined in the IEEE 754 standard.</para>
+    <para id="import-auto-idm319300704">Table 9 Special Values Defined in the IEEE 754 Standard</para>
+    <table id="import-auto-idm1140680112" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>Sign</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+            <entry>Object Represented</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>0</entry>
+            <entry>All zero’s</entry>
+            <entry>All zero’s</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>All zero’s</entry>
+            <entry>All zero’s</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>0</entry>
+            <entry>All one’s</entry>
+            <entry>All zero’s</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>1</entry>
+            <entry>All one’s</entry>
+            <entry>All zero’s</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>-</entry>
+            <entry>All one’s</entry>
+            <entry>Nonzero</entry>
+            <entry>NaN (Not a Number)</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1268984160" fo:font-style="normal" fo:font-weight="normal">Zero is considered as a special value because it may not be represented in the normalized scientific notation. So when both the exponent and the faction are all zero’s, it represents zero as shown in Table 9. However, the sign bit could be positive or negative, which leads to a drawback in the floating point representation that there are positive zero and negative zero. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1091231232" fo:font-style="normal" fo:font-weight="normal">Invalid operations, such as  , square root of a negative number, or , may produce a result that is not a number (NaN). In the IEEE 754 standard, NaN is represented with all one’s in the exponent and nonzero in the fraction. The sign bit is ignored in a NaN representation. </para>
+    </section>
+<section id="fs-idm217951904">
+      <title>Denormal Numbers</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1285448560" fo:font-style="normal" fo:font-weight="normal">The normalization limits the significand to be at least 1. Thus, the smallest absolute value of numbers that can be presented in the IEEE single precision is . There is a gap between 0 and . Denormal numbers (denormalized numbers or subnormal numbers) fill the gap. In IEEE 754 standard, the denormal numbers are represented as all zero’s in the exponent but nonzero in the fraction. The smallest positive denormal number in the IEEE 754 single precision is illustrated in Table 10 . The value of the number is , which is equal to . The largest negative number (closest to zero) in this format is .  </para>
+    <para id="import-auto-idm348451072">Table 10 The Smallest Positive Denormal Number in the IEEE Single Precision Representation</para>
+    <table id="import-auto-idm1061519664" summary="">
+      <tgroup cols="4">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <colspec colnum="4" colname="c4"/>
+        <thead>
+          <row>
+            <entry>bits</entry>
+            <entry>1 </entry>
+            <entry>8 </entry>
+            <entry>23</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry/>
+            <entry>S</entry>
+            <entry>Exponent</entry>
+            <entry>Fraction</entry>
+          </row>
+          <row>
+            <entry>values</entry>
+            <entry>0</entry>
+            <entry>0000 0000</entry>
+            <entry>000 0000 0000 0000 0000 0001</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry namest="c2" nameend="c4">The number represented is .</entry>
+            <entry>
+              
+            </entry>
+            <entry>
+              
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm313898240" fo:font-style="normal" fo:font-weight="normal">For the double precision, the smallest positive denormal number is , and the largest negative number (closest to zero) is .</para>
+    </section>
+<section id="fs-idm596620080">
+      <title>Exercise</title>
+ 
+    
+    <list id="import-auto-idm1067393712" list-type="enumerated" number-style="arabic">
+      <item>Compute the following floating point addition, normalize the result, and write the fraction as a finite precision number with six decimal digits of precision, <emphasis effect="italics">i.e. </emphasis>six digits to the right of the decimal point. Explain why you got the result you did. What observation can you make about addition and subtraction of floating-point numbers?</item>
+    </list>
+    <list id="import-auto-idm1284252240" list-type="enumerated" number-style="arabic">
+      <item>Convert  to an IEEE 754 single precision floating point number. Show the sign bit, the exponent, and the fraction.</item>
+      <item>Convert  to an IEEE 754 double precision floating point number. Show the sign bit, the exponent, and the fraction.</item>
+      <item>What is underflow<emphasis effect="italics"/>and overflow?</item>
+      <item>What is the essential idea behind scientific notation and floating-point numbers?</item>
+    </list>
+</section>
+
+ 
+  </content>
+</document>

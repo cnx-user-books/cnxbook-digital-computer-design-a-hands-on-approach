@@ -1,0 +1,183 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Combinational Logic Design</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78591</md:content-id>
+  <md:title>Combinational Logic Design</md:title>
+  <md:abstract>In this chapter, we will introduce the basics of combinational logic design. One good example of the design is Algorithmic Logic Unit (ALU) in each kernel of the CPUs. Students will understand the principles and methodology of digital logic design at the gate and switch level. Gain experience developing a relatively large and complex digital system using breadboard prototyping. Gain experience with modern computer-aided design tools for digital logic design. Appreciate methods for specifying digital logic, as well as the process by which a high-level specification of a circuit is synthesized into logic networks. Appreciate the tradeoffs between hardware and software implementations of a given function. Appreciate the uses and capabilities of a modern FPGA platform.</md:abstract>
+  <md:uuid>4080a358-7cf7-49c1-b556-ea84a3467923</md:uuid>
+</metadata>
+
+<content>
+    <section id="import-auto-idm459618192">
+      <title>Combination Logic Design</title>
+      <para id="import-auto-idm496889488">Combination logic is a hardware component that is composed of basic logical gates such as <emphasis effect="bold">AND</emphasis>, <emphasis effect="bold">OR</emphasis>, and <emphasis effect="bold">NOT </emphasis>without any clock involved. Its output is fully dependent on the inputs only. Whenever the inputs are provided, the output is ready after a propagation delay. This delay is the time the signal travels from the inputs to the outputs. There may have several paths from inputs to outputs and the longest one will be the critical path and its time is the propagation delay. Normally, the shorter the delay, the better in terms of performance. However, in order to achieve a shorter delay, more resource may be needed. There is always a trade of between speed and space. Combination logic is no exception.</para>
+    </section>
+    <section id="import-auto-idm518204272">
+      <title>Sum of Product</title>
+      <para id="import-auto-idm663898272">When designing a combination logic, we are given the relation between inputs and outputs.  If the input/output relation is not given explicitly, it will be derived from the problem statement. The relation is then tabularized in a table, which can be used to elicit a Boolean expression of the “sum of product” form. For example, a half adder will add two bits (A, B) and output their sum (S). </para>
+      <table id="import-auto-idm530434912" summary="Figure 1"><title>Figure 1</title>
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>A</entry>
+              <entry>B</entry>
+              <entry>S</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>1</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm216552720">
+        <emphasis effect="bold">Figure  The Truth Table of the Half Adder</emphasis>
+      </para>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm297165952">The left hand side of the vertical line in Table 1 lists the input signals (A, and B) whereas the right hand side lists the output (S). From the table, based on the second and the third rows, it simply says that S is true in two cases: A is false and B is true, or A is true and B is false. In Boolean expression, the above statement is equivalent to <m:math display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>B</m:mi><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} B+A acute {B}</m:annotation></m:semantics></m:math>. Therefore, we can derive <m:math display="block"><m:semantics><m:mrow><m:mrow><m:mi>S</m:mi><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mrow><m:mi>B</m:mi><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">S= acute {A} B+A acute {B}</m:annotation></m:semantics></m:math>.</para><para id="import-auto-idm313053152">Once the Boolean expression is obtained, building the circuit involves the following steps: </para>
+      <list id="import-auto-idm531884128" list-type="enumerated" number-style="arabic">
+        <item>Lay each input variable with a NOT gate for negation</item>
+        <item>Draw each product term using an AND gate with corresponding negated inputs</item>
+        <item>Add an OR gate for all the product terms as the output</item>
+      </list>
+      <para id="eip-164">The resultant schematic diagram for the half adder is illustrated in figure 2.</para><media id="import-auto-idm511336000" alt=""><image mime-type="image/jpg" src="../../media/Picture 1.jpg" height="227" width="491"/></media>
+<para id="import-auto-idm292735552">
+        <emphasis effect="bold">Figure  The Half Adder Combination Circuit Using Sum of Product Approach</emphasis>
+      </para>
+      <para id="import-auto-idm267361120">In general, a combination logic with any number of variables can be solved using the sum of product approach. However, the derived Boolean expression may not necessarily be the simplified one, i.e., the number of gates may not be minimized. For example, the Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi mathvariant="italic">ΔE</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCD</m:mi></m:mrow><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCDE</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">AB acute {C} DE+AB acute {C} D acute {E} +ABCD acute {E} +ABCDE</m:annotation></m:semantics></m:math> can be simplified as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi mathvariant="italic">ABD</m:mi><m:annotation encoding="StarMath 5.0">ABD</m:annotation></m:semantics></m:math>. That will reduce the number of gates to just 2.</para>
+    </section>
+    <section id="import-auto-idm320211296">
+      <title>Product of Sum</title>
+      <para id="import-auto-idm457134368">If we consider the false cases in the truth table, a product-of-sum can be derived. The idea is that the output may not be any of those false cases. This statement is translated to a product of negated terms. The negated terms are applied with De Morgan’s law, which results in “sum” terms. In the half adder example, the corresponding product-of-sum form is derived as follows:</para>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1731166304"><m:math display="block"><m:semantics><m:mrow><m:mrow><m:mi>S</m:mi><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mrow><m:mover accent="true"><m:mi mathvariant="italic">AB</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow></m:mrow><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">S= acute {acute {A} acute {B}}   acute {AB} = left (A+B right ) ( acute {A} + acute {B} )</m:annotation></m:semantics></m:math></para><para id="import-auto-idm268017184">The circuit is illustrated in figure 3.</para><media id="a" alt=""><image mime-type="image/jpg" src="../../media/Picture 7.jpg" height="227" width="491"/></media>
+<para id="import-auto-idm525390672">
+        <emphasis effect="bold">Figure  The Half Adder Combination Circuit Using Product of Sum Approach</emphasis>
+      </para>
+      <para id="import-auto-idm535717888">When mapping to combination logic, the product of sum in the half adder example uses the exact number as that in the sum of product approach. However, the number of gates of different types used is different. Although the two forms are logical equivalent, practically, one is preferred due to space consideration (some gate occupies more space than others), time consideration (some gate is faster than others in terms of propagation delay), or simply running out of a specific type of gates in some chip. </para>
+    </section>
+    <section id="import-auto-idm648609248">
+      <title>A Three-Way Switch Example</title>
+      <para id="import-auto-idm1744412656">Three-way switches have been used almost in every home to control light bulbs in situations where they can be turned on or off using either switch at two locations, such as stairs that connect two floors. It involves two single pole, double throw (SPDT) switches, each of which has four connectors including ground. This type of switch is different single pole switch, which only has three connectors including ground. Figure 4 shows typical wiring for a three-way switch control.</para>
+<media id="e" alt=""><image mime-type="image/jpg" src="../../media/Picture 2.jpg" height="227" width="491"/></media>
+<para id="import-auto-idm543773232"/>
+      <para id="import-auto-idm273138432">Each of the switches in figure 4 will either connect to the upper point or the lower point. Assume sw1 is turned up, sw2 is turned up to make a continuity loop for the current, or break the loop by turning sw2 down. Similarly, if sw1 is turned down, sw2 is turned down to make a continuity loop for the current, or beak the loop by turning sw2 up. The cases for controlling the lamp using sw1 are symmetry.  </para><para id="import-auto-idm264136880">The circuit is simple but it requires three-conductor electrical cable for wiring. For a regular switch, only two-conductor electrical cable is enough. Beside, both switches have to be the SPDT type. Thus, the cost is higher. It would be good if regular SPST switches, and a regular two-conductor electrical cable were used in this type of application. First of all, you don’t need to get extra special SPDT switches and three-conductor cables. Second, the wiring will be simplified because only one type of cable is used. After framing is done in home construction, an electrician will simply lay cables from any switch box location to the lamp. Third, in remodeling old house, or adding extra lamp control, the two-conductor cable can be reused. Lastly, the overall cost will be reduced because all the material is generics.  To gain these benefits, a simple digital circuit will be designed.</para><para id="import-auto-idm333929568">Design a three-way switch logic to control a light bulb using two SPST switches according to the following rule. If the light is on, switch any of the two switches will turn off the light. If the light is off, switch any of the two switches will turn it back on. At a first glance, it seems that the two switches can be used to turn on or off the light bulb according to their previous positions. In fact, we can choose a state to start with, say, all switches are off and the lamp is off. A truth table is then derived from there.   tabularizes the truth table of the three-way switch control. When both switches are off (case 0), turning on either switch will turn on the lamp (cases 1 and 2). While in case 1, turn on sw1 will turn off the light (case 3). Similarly, while in case 2, turn on sw2 will turn off the lamp (case 3). It is worth mentioning that the lamp changes its state (from on to off, or from off to on) only when one of the switches changes its position. For example, from case 0 to case 1, only sw2 changes its position, and sw1 remains its position. On the other hand, should both switches change their positions, the lamp will not change its state. For example, the lamp remains on from case 0 to case 3, or the lamp stays off from case 1 to case 2. </para>
+      <para id="import-auto-idm641994416">Table  The Truth Table for the Three-Way Switch Control</para>
+      <table id="import-auto-idm1412969104" summary="">
+        <tgroup cols="4">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <thead>
+            <row>
+              <entry>Case</entry>
+              <entry>Sw1</entry>
+              <entry>Sw2</entry>
+              <entry>Lamp</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>Off</entry>
+              <entry>Off</entry>
+              <entry>Off</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>Off</entry>
+              <entry>On</entry>
+              <entry>On</entry>
+            </row>
+            <row>
+              <entry>2</entry>
+              <entry>On</entry>
+              <entry>Off</entry>
+              <entry>On</entry>
+            </row>
+            <row>
+              <entry>3</entry>
+              <entry>On</entry>
+              <entry>On</entry>
+              <entry>Off</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm642922768">A closer look at the truth table in  will find that it is identical to an exclusive OR function.  Therefore, we can derive the following Boolean functions:</para>
+      <para id="import-auto-idm265151344"><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi mathvariant="italic">Lamp</m:mi><m:mo stretchy="false">=</m:mo><m:mi mathvariant="italic">sw</m:mi></m:mrow><m:mn>1</m:mn><m:mi>⊕</m:mi><m:mi mathvariant="italic">sw</m:mi><m:mn>2</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Lamp=sw1⊕sw2</m:annotation></m:semantics></m:math>, or <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi mathvariant="italic">Lamp</m:mi><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mrow><m:mi mathvariant="italic">sw</m:mi><m:mn>1</m:mn></m:mrow><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi mathvariant="italic">sw</m:mi><m:mrow><m:mn>2</m:mn><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">sw</m:mi></m:mrow><m:mn>1</m:mn><m:mover accent="true"><m:mrow><m:mi mathvariant="italic">sw</m:mi><m:mn>2</m:mn></m:mrow><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">Lamp= acute {sw1} sw2+sw1 acute {sw2}</m:annotation></m:semantics></m:math></para>
+      <para id="import-auto-idm531901456">The digital circuit is depicted in figure 5.</para></section>
+<media id="ff" alt=""><image mime-type="image/jpg" src="../../media/Picture 3.jpg" height="227" width="491"/></media>
+    <section id="import-auto-idm657627600">
+      <title>Logic Gate Equivalence</title>
+      <para id="import-auto-idm433156448">In some chips like 7400 where only <emphasis effect="bold">NAND</emphasis> (not-and) gates are provided, it is practically a need to use the <emphasis effect="bold">NAND</emphasis> gates to build other logic elements. Hopefully, this is feasible. First, let’s examine its truth table as shown in Figure 4 .
+
+ </para><table id="eip-346" summary="Figure 6"><title>Figure 6</title>
+<tgroup cols="2"><tbody>
+  <row>
+    <entry>inputs</entry>
+    <entry>outputs</entry>
+  </row>
+  <row>
+    <entry>00</entry>
+    <entry>1</entry>
+  </row>
+  <row>
+    <entry>01</entry>
+    <entry>1</entry>
+  </row>
+  <row>
+    <entry>10</entry>
+    <entry>1</entry>
+  </row>
+  <row>
+    <entry>11</entry>
+    <entry>0</entry>
+  </row>
+</tbody>
+
+</tgroup>
+</table><para id="import-auto-idm304816128">
+        <emphasis effect="bold">Figure  The Truth Table of The NAND Gate</emphasis>
+      </para>
+      <para id="import-auto-idm464837664">By carefully examining the first row and the last row of the truth table, a <emphasis effect="bold">NOT</emphasis> gate can be derived by wiring the two inputs together to force the two inputs of the <emphasis effect="bold">NAND </emphasis>gate have the same value, either 0 or 1. When the two inputs are 0’s, the output is 1, and vice versa. This exactly simulates a <emphasis effect="bold">NOT </emphasis>gate. Figure 5 illustrate the <emphasis effect="bold">NOT</emphasis> gate created from the <emphasis effect="bold">NAND</emphasis> gate. </para>
+<media id="d" alt=""><image mime-type="image/jpg" src="../../media/Picture 4.jpg" height="227" width="491"/></media>
+<para id="import-auto-idm286220944">Once we can build a <emphasis effect="bold">NOT </emphasis>gate from the <emphasis effect="bold">NAND </emphasis>gate, the <emphasis effect="bold">AND </emphasis>gate is straightforward as it will be a <emphasis effect="bold">NOT </emphasis>gate right after a <emphasis effect="bold">NAND </emphasis>gate. The diagram is shown in Figure 6.</para><media id="c" alt=""><image mime-type="image/jpg" src="../../media/Picture 5.jpg" height="227" width="491"/></media>
+<para id="import-auto-idm266481392">To build an <emphasis effect="bold">OR</emphasis> gate by using <emphasis effect="bold">NAND</emphasis> gates, we can apply De Morgan’s law as follows:</para>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm317383488"><m:math display="block"><m:semantics><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">A+B=  acute {A+B} = acute {acute {A} acute {B}}</m:annotation></m:semantics></m:math> which requires three <emphasis effect="bold">NAND </emphasis> gates as shown in Figure 7.</para><media id="b" alt=""><image mime-type="image/jpg" src="../../media/Picture 6.jpg" height="227" width="491"/></media>
+      <para id="import-auto-idm476298336">Therefore, the basic logic gates (<emphasis effect="bold">AND, OR, NOT)</emphasis> are built from <emphasis effect="bold">NAND</emphasis> gates successfully. Other logic blocks can be constructed from <emphasis effect="bold">NAND </emphasis>gates only. </para>
+    </section>
+    <section id="import-auto-idm539999232">
+      <title>Exercise</title>
+      <list id="import-auto-idm293428352" list-type="enumerated" number-style="arabic">
+        <item>Using only the component NOR (not-or), create a circuit that is equivalent to the logic of an AND gate, a NOT gate, and an OR gate.</item>
+        <item>Build three-input AND, and OR gates from two-input AND and OR gates plus NOT gates.</item>
+        <item>Create a two-input adder with two outputs: sum and carry. Carry outputs one when both inputs are 1’s. </item>
+        <item>A robot will be designed to move toward a light source. There are three photo sensors S<sub>L</sub>, S<sub>C</sub>, and S<sub>R</sub> mounted on the robot. S<sub>L</sub> is located at the left of the robot and in charge of sensing left light; S<sub>C</sub> at the front is sensing the front light; S<sub>R</sub> at the right is sensing the right light. The two wheels of the robot are powered (P<sub>L</sub> and P<sub>R</sub>) individually according to the sensors. Assume the sensor outputs and wheel power are either on or off, i.e., binary. If only S<sub>L</sub> detects light, the robot should turn left, i.e., the right wheel must be powered up (P<sub>R</sub>). Similarly, if only S<sub>R</sub> senses light, right wheel must be powered up (P<sub>L</sub>). If only the forward-pointing sensor S<sub>C</sub> detects light, both P<sub>L</sub> and P<sub>R</sub> should be on to drive the robot forward. Design a simple logic used to actuate the wheels under each sensor condition. Modify such logic by using NAND gates only, and minimize the number of gates.  </item>
+        <item>Design a four-way switch logic to control a light bulb using three on-off switches according to the following rule. If the light is on, switch any of the three switches will turn off the light. If the light is off, switch any of the three switches will turn it back on. Note that the circuit is normally found in controlling a light bulb for stairs in-between floors. For example, you turn on the light using a switch in the first floor and you go upstairs where you can turn it off using the other switches. Should there is another person entering the stairs, the light will be turned on using the switch in the first floor again. The three switches can be used to turn on or off the light bulb without regard to their previous positions.  </item>
+        <item>Produce a five-way switch logic to control a light bulb using four on-off switches according to the following rule. If the light is on, switch any of the four switches will turn off the light. If the light is off, switch any of the four switches will turn it back on.</item>
+        <item>An equivalent circuit for an AND gate is shown below:</item>
+      </list>
+
+    </section>
+    </content>
+</document>

@@ -1,0 +1,672 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Introduction to Computer Programming</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78639</md:content-id>
+  <md:title>Introduction to Computer Programming</md:title>
+  <md:abstract>This chapter gives a high level overview of computer programming. A variety of assembly programs are introduced. Assembly programing is a efficient way to under how hardware works.</md:abstract>
+  <md:uuid>f6737c14-fca8-4932-9a7c-2434fa78d2e5</md:uuid>
+</metadata>
+
+<content>
+
+<section id="fs-idm234341408">
+      <title>Introduction to Computer Programs</title>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1200060528" fo:font-style="normal" fo:font-weight="normal">A computer program is a set of instructions that solves a problem. There are 4 levels: 1) high-level programs such as Java, Basic, C#, Perl; 2) mid level programs such as C language; 3) low level programs such as assembly languages; and 4) machine level programs such as binary machine code. The higher level the programs are, the easier for human beings to write. Under very few occasion do we write a program in binary machine code manually. The process of translation programs from high-level to low level is called compilation, and it is typically done by a compiler.</para>
+   </section>
+<section id="fs-idm438155776">
+      <title>Programming Languages</title>
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1410483536" fo:font-style="normal" fo:font-weight="normal">In order to handle machine code, each instruction is associated with a mnemonic name, e.g., ADD is associated with the addition instruction. An assembly language is written using the mnemonics and some labels to represent addresses. These mnemonics are sometimes called symbolic coded instruction. They are basically machine instructions and referenced by their mnemonics for being easily remembered by human beings. Since an assembly language is bound to its underlying hardware, it is dependent to a specific architecture. Thereby, each processor has its own assembly language. A program written in one assembly language is hard to be ported to another processor. Nevertheless, assembly language though tedious got a full control of hardware. Most system software has its critical components written in assembly for a better performance.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1001807120" fo:font-style="normal" fo:font-weight="normal">Above the assembly is the C language, which typically is classified to mid level language. The mid level language provides some low level hardware control along with high-level abstraction for solving problems. In C language, the powerful pointer arithmetic gives programmers a very flexible way of memory manipulation. Yet, its high-level characteristics allow programmers to implement sophisticated systems. As an example, most of the contemporary operating systems are written in C language.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1428177136" fo:font-style="normal" fo:font-weight="normal">High-level languages are designed to be the highest abstraction for solving programs. Since the main purpose of the high-level languages is for problem solving, some of the hardware details are hidden to the programmers. A programmer needs not be aware of the hardware features when programming. In doing so, the programmers may focus on how to solve the problem, instead of how to write a program to solve it. High-level languages include Java, Basic, Fortran, C++, and script languages such as Perl, Bash, Python, and the like.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm379553200" fo:font-style="normal" fo:font-weight="normal">Most of the program languages share some characteristics such as syntax and semantics. </para>
+    </section>
+<section id="fs-idm397270016">
+      <title>Compilation Versus Assembly</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm964756848" fo:font-style="normal" fo:font-weight="normal">Computer hardware can only understand and execute binary machine code. Programs written in non-machine code have to be converted to machine code of a machine. Normally, a compiler is used to translate a program, written in a high-level language, to its equivalent assembly code. An assembly program is then converted to machine code for execution. The process of translating a program written in a high-level language to assembly program is called compilation. An assembler is then used to convert the assembly program to machine code. Compilation involves a series of processing including lexical analysis, syntax analysis, error recovery, scope analysis, optimization, and code generation. Compilation could be very tedious and difficult subject to the complexity of a language. Assembly languages are typically employed a table lookup method to replace assembly mnemonics with actually machine code. Therefore, the design of an assembler is less complex than that of a compiler. table 1 shows the relation of compilation and assembly.</para>
+    <table id="eip-831" summary="d">
+<tgroup cols="4"><tbody>
+  <row>
+   
+<entry>X</entry>
+    <entry>DW</entry>
+    <entry>0</entry>
+    <entry>define word for X and initialize it to 0</entry>
+  </row>
+  <row>
+     <entry>Y</entry>
+    <entry>DW</entry>
+    <entry>2</entry>
+    <entry>define word for Y and initialize it to 1</entry>
+  </row>
+  <row>
+    <entry>Z</entry>
+    <entry>DW</entry>
+    <entry>2</entry>
+    <entry>define word for Z and initialize it to 2</entry>
+  </row>
+  <row>
+    <entry>Main:</entry>
+    <entry>MOV</entry>
+    <entry>EAX,Y</entry>
+    <entry>move Y to EAX</entry>
+  </row>
+  <row>
+    <entry/>
+    <entry>ADD</entry>
+    <entry>EAX,Z</entry>
+    <entry>add Y and Z</entry>
+  </row>
+  <row>
+    <entry/>
+    <entry>MOV</entry>
+    <entry>X,EAX,Z</entry>
+    <entry>move EAX to X</entry>
+  </row>
+</tbody>
+
+</tgroup>
+</table><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1223412992" fo:font-style="normal" fo:font-weight="normal">table 1 The Relation of Compilation and Assembly</para><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1262581504" fo:font-style="normal" fo:font-weight="normal">By and large, programs written in assembly language have a higher performance than those written in high-level languages. However, assembly programming is tedious and error-prone. It would be very unproductive should a software project is fully in assembly programming. A program follows the 20/80 rule, i.e., 80% of the program execution time is spent in the 20% of the code. Based on the 20/80 rule, though the whole program may not fully be written assembly, it would be beneficial if the 20% of the code is written in assembly. This leads to a hybrid project, i.e., the system is developed in both assembly and high-level languages. For example, a project written in an assembly language requires 100 programmer-months whereas it requires only 20 programmers-months using a high-level language. However, the program written in an assembly language runs 20 seconds but 200 seconds if developed in a high-level language. If the program follows the 20/80 rule, the project could be developed in a hybrid way, in which the critical portion (20%) may be developed in an assembly language, and the rest is developed in a high-level language. Table 1 shows the scenario. </para>
+    <para id="import-auto-idm336704096">Table 1 A Comparison of a Project Written in Assembly Language, High-Level Language, or Both</para>
+    <table id="import-auto-idm1017211984" summary="Figure 1">
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Project Type</entry>
+            <entry>Programmer-Month(s)</entry>
+            <entry>Execution Time (seconds)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Fully in Assembly</entry>
+            <entry>100</entry>
+            <entry>20</entry>
+          </row>
+          <row>
+            <entry>Fully in High-Level Language</entry>
+            <entry>20</entry>
+            <entry>200</entry>
+          </row>
+          <row>
+            <entry>Hybrid</entry>
+            <entry>36 (20 assembly and 16 high-level)</entry>
+            <entry>56</entry>
+          </row>
+        </tbody>
+      
+</tgroup>
+</table><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1223575248" fo:font-style="normal" fo:font-weight="normal">With the extra 16 programmer-months on top of the pure high-level programming project, the execution time will be improved to 56 seconds from 200 seconds. Overall, the hybrid approach shows a cost effective way of the project implementation. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1413837328" fo:font-style="normal" fo:font-weight="normal">The 20/80 rule is a statistical consequence. In reality, there are occasions that assembly will be the best choice. If the speed or the size of a program is critical, it is hard to achieve this design constraint using a high-level language. Compilers may be developed in a general architecture that neglects subtle device specific features. Assembly programming provides a full control of instruction set architecture, and takes advantage of each unique feather in a processor. If a system has to use those special features, it is inevitable to use assembly programming. However, assembly programming is so close to the machine code, and it is typically lack of programming structures. An assembly programmer will have to code in a consistent way to organize the code. Otherwise, the code is getting bigger, it becomes harder to debug. Since assembly programming is machine specific, i.e., the instructions are bound to the underlying machine architecture, it may not be easily portable. </para>
+    </section>
+<section id="fs-idm234321296">
+      <title>Compilation</title>
+
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1034476096" fo:font-style="normal" fo:font-weight="normal">A compiler is basically a text translator.  Its input is a text (a set of strings), and the output is another text. In this sense, an assembler is a compiler because it converts the assembly program to its machine code (program). However, we normally call assembler given the fact that there is not much compilation for translating an assembly program to machine code. An assembler actually “assembles” instructions according to mnemonics. Compared to a full cycle of compilation, assembly is far simpler than compilation. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm387360640" fo:font-style="normal" fo:font-weight="normal">In a system, when a program source changes, the course code has to be recompiled. The recompilation takes some time for a huge monolithic program source. Therefore, a large software project is sometimes organized into a number of smaller pieces.  Should some of the pieces are modified, a compiler only need to recompile the modified pieces. For example, the “Make” utility in Unix systems keeps track of which pieces in a project have been modified and recompile them when necessary.  In a C project, source code is organized into headers, and source files. Each source file may include headers. The source file will be compiled to an object file. The Make utility uses a rule that setup dependency and actions to build a target like the following</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1441988688" fo:font-style="normal" fo:font-weight="normal">Target: Dependency </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1275523408" fo:font-style="normal" fo:font-weight="normal">[TAB]Command</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1454246288" fo:font-style="normal" fo:font-weight="normal">[TAB]Command</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm988438752" fo:font-style="normal" fo:font-weight="normal">The target of the Make rule indicates the output file generated by the series of the commands. The related headers or other objects that have to be built before this target are listed in the dependency. Each of the commands in the Make rule must be followed by tab key and must be in a line. For example, a main.c includes global.h, and the following Make rule will recompile the source main.c to main.o if either global.h or main.c has been modified.</para>
+    <code id="eip-976" display="block">main.o: global.h main.c
+gcc –c main.c</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1862877152" fo:font-style="normal" fo:font-weight="normal">Note that the Make utility will check the time stamps of main.o, main.c, and global.h. If the time stamps of main.c or global.h are newer than that of the main.o, the command of the Make rule will be activated. The fact is that time stamp of main.o should be newer than any of the other two files if they have not been modified since the last compilation! The Make utility is the fundamental software management tool, and a lot of derivations have been developed such as GNU’s automake and autoconf tool chain. These tools further simplify the creation and maintenance of Make rules.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1430109664" fo:font-style="normal" fo:font-weight="normal">A compiler will compile program source into a specific machine code. The machine code can only be executed in the specific machine. Should the same program will be executed on another machine, another compiler is required to recompile the whole thing. Program source that can be compiled to other machine code is portable. Since portable code may not use machine dependent instructions, performance-wise it is normally not quite as good as some customized code. Compilation may not be easily done on a machine because it involves a variety of factors such as compiler versions, libraries, tools, and the like. </para>
+    </section>
+<section id="fs-idm238767008">
+      <title>Interpretation</title>
+ 
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1430876160" fo:font-style="normal" fo:font-weight="normal">Are there programs that may be executed directly? The answer is yes. Programs written in the original Basic language may be executed in a Basic interpreter. An interpreter is an execution engine (an executable program) that reads the program source line-by-line and executes it. Java, as another example, is an interpreter language where Java byte code is interpreted by a Java virtual machine. A Java program is first compiled to Java byte code (machine code ready to be executed in a Java virtual machine). The Java byte code is then executed by a Java virtual machine. Script languages such as Perl scripts are interpreted by a Perl interpreter. If we push to the low-level languages, hardware is an interpreter for machine code. There may not have a clear line to separate interpreter languages from compilation ones for the fact that a compiler may be easily developed for an interpreter language. For example, there are Basic language compilers that translate Basic programs to executables, which no longer require a Basic interpreter for their execution. Thereby, we may roughly say that a language is an interpreter language if programs written in that language may be executed directly by an interpreter without compilation. However, Java is kind of something in-between because Java source has to be compiled to byte code, and Java virtual machine will executed byte code not the Java source. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1224788992" fo:font-style="normal" fo:font-weight="normal">One of the major advantages of the interpreter languages is that the program source can be interpreted (executed) on any machine that has a running interpreter. The lack of compilation makes the program source portable. Here the concept of portability is a little bit different from that in compilation. A program written in an interpreter language may be interpreted on any machine without any effort. However, a program written in a compiler language would need to be compiled for a machine. The compilation requires some effort. This effort of compilation is absorbed by the design and implementation of an interpreter.  Thus, Java virtual machines have a variety of versions, Windows, Linux, etc. Java programming, however, is portable. Systems developed in Java can be ported to any platforms effortlessly. </para>
+    </section>
+<section id="fs-idm237121136">
+      <title>Assembler</title>
+ 
+
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm977948608" fo:font-style="normal" fo:font-weight="normal">An assembler will convert mnemonics (symbolic) instructions to binary machine code. This process will transcribe mnemonics names to op code, assigns labels to memory addresses, executes directives (e.g., DB allocates one byte memory space), strips out comments after semicolon, and calculate addresses (e.g., PC relative). It is not necessary to run an assembler on a machine on which the output machine code will be executed. In fact, an assembler may be run on any machine, though most of the time we use the same machine to run assembler and to run the machine code generated by the assembler. </para>
+    </section>
+<section id="fs-idm221300944">
+      <title>x86 Assembly Programming</title>
+ 
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm380015312" fo:font-style="normal" fo:font-weight="normal">Most of the processors manufactured by AMD and Intel follow the x86 architecture, which is based on the Intel 8086 processor. Let’s first examine available registers, followed by instructions, and addressing modes.</para>
+    </section>
+<section id="fs-idm483713632">
+      <title>Registers</title>
+ 
+    
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm355363120" fo:font-style="normal" fo:font-weight="normal">Registers in the x86 family include 16-bit, 32-bit, and 64-bit versions. There are general purpose registers and special purpose registers. Table lists the 16-bit registers and their purposes. Table 2 lists the four general purpose registers.</para>
+    <para id="import-auto-idm964154160">Table 2 The 16-Bit General Purpose Registers (16-bit) in the x86 Architecture</para>
+    <table id="import-auto-idm1042762368" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>Register</entry>
+            <entry>Purpose</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>AX</entry>
+            <entry>Primary accumulator used for I/O and arithmetic operations.</entry>
+          </row>
+          <row>
+            <entry>BX</entry>
+            <entry>Base register used to hold index in addressing.</entry>
+          </row>
+          <row>
+            <entry>CX</entry>
+            <entry>Counter register used for loop control.</entry>
+          </row>
+          <row>
+            <entry>DX</entry>
+            <entry>Data register used for I/O operations.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1442048720" fo:font-style="normal" fo:font-weight="normal">Each of the 16-bit general purpose registers (AX, BX, CX, and DX) may be accessed as two separate bytes. For example, the high byte and the low byte of AX can be accessed via AH and AL, respectively. Table 3 lists the 16-bit special purpose registers in the x86 architecture.</para>
+    <para id="import-auto-idm1013912016">Table 3 The Special Purpose Registers (16-bit) in the x86 Architecture</para>
+    <table id="import-auto-idm1054226912" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>Register</entry>
+            <entry>Purpose</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>SP</entry>
+            <entry>Stack pointer which points to the top of the stack.</entry>
+          </row>
+          <row>
+            <entry>BP</entry>
+            <entry>Base pointer which points to the base address of the current stack frame.</entry>
+          </row>
+          <row>
+            <entry>SI</entry>
+            <entry>Source index for string processing</entry>
+          </row>
+          <row>
+            <entry>DI</entry>
+            <entry>Destination index for string processing</entry>
+          </row>
+          <row>
+            <entry>CS</entry>
+            <entry>Code segment register</entry>
+          </row>
+          <row>
+            <entry>DS</entry>
+            <entry>Data segment register</entry>
+          </row>
+          <row>
+            <entry>SS</entry>
+            <entry>Stack segment register</entry>
+          </row>
+          <row>
+            <entry>ES</entry>
+            <entry>Extended data segment register</entry>
+          </row>
+          <row>
+            <entry>FLAGS</entry>
+            <entry>Flag register holds operation status such as carry flag, overflow flag and zero flag</entry>
+          </row>
+          <row>
+            <entry>IP</entry>
+            <entry>Instruction pointer (program counter) points to the address of the instruction to be executed next.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1427803296" fo:font-style="normal" fo:font-weight="normal">There are other registers in different x86 processors. For example, in the 80286, there are special registers to hold descriptor table addresses such as global descriptor table register (GDTR), local descriptor table register (LDTR), interrupt descriptor table register (IDTR), and task register (TR).</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm399379872" fo:font-style="normal" fo:font-weight="normal">In the 32-bit 80386 processor, most of the 16-bit registers, except segment register, are extended to 32 bits. A prefix “E” is added to the registers to differentiate them from their 16-bit versions. For example, EAX is the 32-bit version of AX, EIP is the 32-bit version of IP, and so on. There are other registers added in the 32-bit x86 processors as listed in Table 4.</para>
+    <para id="import-auto-idm974068848">Table 4 Extra Registers in the x86 Architecture</para>
+    <table id="import-auto-idm354467232" summary="">
+      <tgroup cols="3">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Register</entry>
+            <entry>Purpose</entry>
+            <entry>Remark</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>FS</entry>
+            <entry>Segment register</entry>
+            <entry>80386 and after </entry>
+          </row>
+          <row>
+            <entry>GS</entry>
+            <entry>Segment register</entry>
+            <entry>80386 and after</entry>
+          </row>
+          <row>
+            <entry>St(0), …, st(7)</entry>
+            <entry>80-bit wide register</entry>
+            <entry>80486 and after</entry>
+          </row>
+          <row>
+            <entry>MMX0, …, MMX7</entry>
+            <entry>64-bit MMX integer register</entry>
+            <entry>Pentium II and after</entry>
+          </row>
+          <row>
+            <entry>MXCSR</entry>
+            <entry>32-bit streaming SIMD extension (SSE) control/status register</entry>
+            <entry>Pentium III and after</entry>
+          </row>
+          <row>
+            <entry>XMM0, …, XMM7</entry>
+            <entry>128-bit SSE floating point registers</entry>
+            <entry>Pentium III and after</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1450113088" fo:font-style="normal" fo:font-weight="normal">Like the 32-bit processors, the 64-bit x86 processors (e.g., AMD Opteron, and Intel Pentium 4F), extend the registers from 32 bits to 64 bits. The prefix “R” is used to indicate the 64-bit version. For example, the 64-bit registers include RAX, RBX, RCX, RDX, RSI, RDI, RBP, RSP, RFLAGS, and RIP. There are 8 64-bit general registers R8-R15. </para>
+    
+    </section>
+<section id="fs-idm231654992">
+      <title>Instructions</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1448721344" fo:font-style="normal" fo:font-weight="normal">Instructions may be classified into data transfer, arithmetic, logic, bit shifting, control, etc. Data transfer instructions are used to move data from one place to another. Available transfers occur at register to register, register to memory, memory to register, and immediate value to register. Note that there is no memory to memory transfer in the x86 instruction set. For example, we may set AX to a value 1234h as illustrated in Table 5. The postfix “h” indicates that the value 1234 is a hexadecimal. The description after the semicolon is comment to what this state is doing. Comments are used for the programmers to document what each statement is doing, and they have no effect in program execution.</para>
+    <para id="import-auto-idm1449000064">Table 5 Set AX to 1234h</para>
+    <code id="eip-73" display="block">MOV AX, 1234h ; set AX to 1234h
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1447958080" fo:font-style="normal" fo:font-weight="normal">Arithmetic instructions include addition (ADD), subtraction (SUB), multiplication (MUL), increment (INC), and decrement (DEC). Instructions are designed to work on some specific registers. For example, MUL can only take CX, i.g., the operand has to be stored in the CX register for the MUL to work correctly. Some instruction may take immediate value such as ADD. Some don’t. Table 6 lists the arithmetic instruction in the x86 architecture.</para>
+    <para id="import-auto-idm1210011776">Table 6 Arithmetic Instruction of the x86 Instruction Set</para>
+    <table id="import-auto-idm1051429904" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>Statement</entry>
+            <entry>Description</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>ADD AX, BX</entry>
+            <entry>; AX := AX + BX</entry>
+          </row>
+          <row>
+            <entry>ADD AX, 1234h</entry>
+            <entry>; AX := AX + 1234h</entry>
+          </row>
+          <row>
+            <entry>SUB BX, AX</entry>
+            <entry>; BX := BX - AX</entry>
+          </row>
+          <row>
+            <entry>MUL CX</entry>
+            <entry>; AX := AX * CX</entry>
+          </row>
+          <row>
+            <entry>INC AX</entry>
+            <entry>; AX := AX + 1</entry>
+          </row>
+          <row>
+            <entry>DEC AX</entry>
+            <entry>; AX := AX -1</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm373316960" fo:font-style="normal" fo:font-weight="normal">To add two numbers together, say 1 and 2, we first set AX to 1, and set BX to 2. Then use ADD instruction to add AX and BX together. The result will be in AX as is illustrated in Table 7.</para>
+    <para id="import-auto-idm1425257872">Table 7 Add Two Numbers Together in the x86 Assembly Programming</para>
+    <code id="eip-179" display="block">MOV AX, 1h ; set AX to 1h
+MOV BX, 2h ; set BX to 2h
+ADD AX, BX ; add 1h and 2h</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1265850688" fo:font-style="normal" fo:font-weight="normal">There are three logic instructions: logic and (AND), logical not (NOT), and exclusive or (XOR). The logic OR operations may be achieved by logic AND and NOT instructions. This is achieved by the De Morgan’s law, . The logic instructions may be applied to a half-word of the registers. Table 8 lists examples of logic operations in the x86 architecture.</para>
+    <para id="import-auto-idm1048662336">Table 8 Examples of Logic Operations in the x86 Architecture</para>
+    <table id="import-auto-idm1472389968" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>AND AL, 7h</entry>
+            <entry>; AL := AL &amp; 0111</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>NOT AH</entry>
+            <entry>; AH := ~AH</entry>
+          </row>
+          <row>
+            <entry>XOR CX, 5h</entry>
+            <entry>; CX := CX  0101</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1874356976" fo:font-style="normal" fo:font-weight="normal">Control instructions change program execution flows. They are typically used in a decision structure like if-then-else statements or a loop. Since the IP points to the next instruction to be executed, the control instructions will set the IP a new value based on some conditions. A typical condition would be whether the result of the previous operation is zero or not. If there is no need to set the condition, the program flow will be altered unconditionally. Prior to a control instruction, a test instruction such as CMP is normally used to set conditions. In a loop implementation, INC or DEC instructions are used to update a loop variable, which controls the number of the needed iterations. Table 9 lists examples of the control instructions in the x86 architecture.</para>
+    <para id="import-auto-idm1228681072">Table 9 Examples of Control Instructions in the x86 Architecture</para>
+    <table id="import-auto-idm1143824256" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>JMP L123</entry>
+            <entry>; unconditionally jump to label L123</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>JZ L123</entry>
+            <entry>; jump to label L123 if the previous ; operation results in zero</entry>
+          </row>
+          <row>
+            <entry>JNZ L123</entry>
+            <entry>; jump to label L123 if the previous ; operation results in non-zero</entry>
+          </row>
+          <row>
+            <entry>CMP BX, 4hJE L123</entry>
+            <entry>; compare BX and 4h; jump if BX==4h</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    
+    </section>
+<section id="fs-idm429774848">
+      <title>Assembly Program Format</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm958300288" fo:font-style="normal" fo:font-weight="normal">Programs written directly in mnemonics instructions are assembly programs. Most of the assembly programs follow a general format. Basically, one statement is occupied one line in a text file, and the line is divided into 4 columns. The first column is used for labels. The second column describes operation code. The third column specifies operands, and the fourth column after a semicolon is for comments. Labels are place holders for addresses corresponding to where they are in the code segment. Programmers may choose any labels they like as long as they are legal and not conflict to those used by the system such as mnemonics instructions. The operation code (op code) is the mnemonics for the instructions. Normally, they are not case sensitive, i.e., you may use upper cases or lower cases for mnemonics. However, some assembler may be designed to be case sensitive. In that case, lower cases and upper cases are different. Between each column, a TAB may be used to line u each column horizontally. It is strongly recommended that programmers should follow the format to make the code clear and easier for debugging.  </para>
+    
+    </section>
+<section id="fs-idm463514720">
+      <title>Examples of the x86 Assembly</title>
+ 
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1065543920" fo:font-style="normal" fo:font-weight="normal">With the control instructions and the arithmetic instructions, a loop that adds integers from 1 to 10 may be implemented as depicted in Table 10. Note that the program performs the summation from 10 down to 1, and the register BX is used as a loop counter (variable). Doing this way will save one instruction that compares if BX reaches 10, should the summation were to be performed from 1 to 10. What is worse is that the comparison instruction must be executed in each iteration!</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm389650096" fo:font-style="normal" fo:font-weight="normal">Another example that uses 32-bit registers in Pentium II is illustrated in the following section. The 32-bit registers have an “E” prefix. Here, we add two numbers in memory and store the sum back to memory. An assembler directive (DW) is needed to allocate memory for the variables. The DW directive means “define a word” in memory. In 32-bit processors, DW will reserve a 32-bit word in memory whereas in 16-bit processors, it will reserve a 16-bit word in memory. Once we define words in memory, we may give them labels for later references. The code is depicted in Table 11. After the snippet of this program is executed, the result 3 should be written to the memory location indicated by X.</para>
+    </section>
+<section id="fs-idm437355824">
+      <title>Motorola 680x0</title>
+ 
+    <list id="import-auto-idm1419801072" list-type="enumerated" number-style="arabic">
+      <item>
+        <emphasis effect="bold">Motorola 680x0 Assembly Programming</emphasis>
+      </item>
+    </list>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1277588704" fo:font-style="normal" fo:font-weight="normal">Released in 1979, Motorola 68000 is a 16-bit /32-bit CISC microprocessor, originally designed for high performance systems such as Alpha Microsystems computers, Hewlett-Packard’s HP9000, Sun Microsystems’ Sun-1, Digital Equipment Corporation’s VAX station, and Silicon Graphics’s IRIS 1000 and 2000. Later, the processor is also used extensively in embedded systems, and industrial control systems. </para>
+    
+    </section>
+<section id="fs-idm406024112">
+      <title>Registers</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1163317424" fo:font-style="normal" fo:font-weight="normal">The Motorola 680x0 has eight 32-bit general-purpose data registers (D0-D7), and eight address registers (A0-A7). The last address register A6 is actually the stack pointer (SP), and thus SP is equivalent to A7 in assembly programming. Separating address from data is unique in the 68000 processor. One can easily identify which register holds data and which register hold addresses. In the 68040 floating-point coprocessor, there are 8 floating-point data registers (FP0-FP7) used for storing floating-point data. Comparison, arithmetic and logic operations set bit flags in a status register to be tested by later conditional jumps. The bit flags include "zero" (Z), "carry" (C), "overflow" (V), "extend" (X), and "negative" (N). The "extend" (X) flag may be used for rotation shift operations, which will not affect the carry flag for use in flow-of-control purpose.</para>
+    </section>
+<section id="fs-idm574534320">
+      <title>Instructions</title>
+ 
+  
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1017998768" fo:font-style="normal" fo:font-weight="normal">Data movement instructions include MOVE, and FMOVE. The MOVE instruction transfers data from memory to memory, memory to register, register to memory, and register to register. So data movement in 68000 is quite flexible. Additionally, there are other specific move instructions such as MOVEQ which moves immediate data to a register (D0-D7). The  FMOVE instruction transfers data to/from floating point data registers.</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1003632432" fo:font-style="normal" fo:font-weight="normal">Instructions may operate upon a designated width of their operands using a suffix. The 680x0 assembly language adopts the following suffixes. </para>
+    <table id="import-auto-idm396952352" summary="">
+      <tgroup cols="1">
+        <colspec colnum="1" colname="c1"/>
+        <thead>
+          <row>
+            <entry>.B—Byte Operands</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>.W—Word Operands</entry>
+          </row>
+          <row>
+            <entry>.L—Long-Word Operands</entry>
+          </row>
+          <row>
+            <entry>.S—Single-Precision Real Operands</entry>
+          </row>
+          <row>
+            <entry>.D—Double-Precision Real Operands</entry>
+          </row>
+          <row>
+            <entry>.X—Extended-Precision Real Operands</entry>
+          </row>
+          <row>
+            <entry>.P—Packed BCD Real Operands</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm336924912" fo:font-style="normal" fo:font-weight="normal">Thus, the following statement will move the low byte of D0 to the low byte of D1.</para>
+    <code id="eip-40" display="block">MOVE.B D0, D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1006678288" fo:font-style="normal" fo:font-weight="normal">The length of the 680x0 family instructions is at least one word, and at most 11 words. The first word specifies the length of the instruction, the effective addressing mode, and the operation. The rest of the words specify further details of the instruction. </para>
+    
+    </section>
+<section id="fs-idm238954608">
+      <title>Addressing Modes</title>
+ 
+   
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1277244464" fo:font-style="normal" fo:font-weight="normal">The addressing modes in the 680x0 family are quite extensive. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1246495920" fo:font-style="normal" fo:font-weight="normal">Effective addressing modes: </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1024691872" fo:font-style="normal" fo:font-weight="normal">Data register direct mode uses one of the data register (D0-D7) for the operand.  For example, the following statement moves data stored in D0 to D1. </para>
+    <code id="eip-493" display="block">MOVE.W D0, D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1862233952" fo:font-style="normal" fo:font-weight="normal">Address register direct mode uses one of the address registers (A0-A7) to hold an operand. For example, the following statement moves data stored in A0 to D1.</para>
+    <code id="eip-463" display="block">MOVE.W A0, D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1265016544" fo:font-style="normal" fo:font-weight="normal">Address register indirect mode uses one of the address registers (A0-A7) which contains the address of the operand. For example, the following statement move the data stored in the address stored in the register A0, to D1. </para>
+    <code id="eip-598" display="block">MOVE.W (A0), D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1419736752" fo:font-style="normal" fo:font-weight="normal">Address register indirect with postincrement mode is similar to the address register indirect mode except the address register will be incremented after the instruction is executed. This is very efficient in array data manipulation. The increment of the address register is subject to the operand width dictated by the suffix of the instruction, which could be one, two, or four for byte, word, or long word, respectively. The following shows an example that the address register A0 will be incremented by two after the instruction is executed. </para>
+    <code id="eip-420" display="block">MOVE.W (A0)+, D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm941510944" fo:font-style="normal" fo:font-weight="normal">Address register indirect with predecrement mode decrements the address register before the instruction is executed. The amount of decrement depends on the size of the operand, which is one, two, or four.  The following gives an example that the address register A0 will be decremented by 2 before the instruction is executed. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1259191728" fo:font-style="normal" fo:font-weight="normal"/>
+    <code id="eip-412" display="block">MOVE.W -(A0), D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1180750960" fo:font-style="normal" fo:font-weight="normal">Address register indirect with displacement mode specifies a 16-bit displacement to be added to the address stored in an address register. The displacement is sign-extended to a 32-bit number before the summation. The following example, move the data in the memory address (A0+2) to the data register D1.</para>
+    <code id="eip-662" display="block">MOVE.W (2, A0), D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm373959088" fo:font-style="normal" fo:font-weight="normal">Program counter indirect with displacement mode uses program counter as the address reference instead of an address register. The following example moves data stored in the memory address (PC+2) to D1.</para>
+    <code id="eip-956" display="block">MOVE.W (2, PC), D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1264465536" fo:font-style="normal" fo:font-weight="normal">Absolute short addressing mode specifies its operand using the extension word (2 bytes) following the instruction. The 16-bit word is sign-extended to 32-bit before it is used.</para>
+    <code id="eip-791" display="block">MOVE.W (100).W, D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1435474560" fo:font-style="normal" fo:font-weight="normal">Absolute long addressing mode specifies its operand using the two extension word (4 bytes) following the instruction. The first 16-bit word is the high-order part of the address whereas the second 16-bit word is the low-order part of the address. They two words will for a 32-bit effective address for the operand in the memory. The following gives an example.</para>
+    <code id="eip-35" display="block">MOVE.W (100).L, D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm393674560" fo:font-style="normal" fo:font-weight="normal">Immediate addressing mode specifies the operand as a value which occupies one or two extension words. The following example moves the value 1234 to D1.</para>
+    <code id="eip-435" display="block">MOVE.W #1234, D1
+</code><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1061555424" fo:font-style="normal" fo:font-weight="normal">There are other sophisticated addressing modes using an index register which contains size and scaling information. For more information, please refer to the programmer’s reference manual by Motorola. </para>
+    
+    </section>
+<section id="fs-idm575147136">
+      <title>Summation in 680x0</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm354925376" fo:font-style="normal" fo:font-weight="normal">The following example (Table 12) illustrates adding array elements together in a loop. The assembly program follows the standard 4-column format. In this example, data are stored in memory pointed by the address register A0. After each iteration, the value of A0 is increased by 2, which points to the next element of the array in memory. The DBF is an instruction that decrements the counter (D2) and check if it reaches -1. If yes, the loop terminates. Otherwise, the loop continues and the next array element is retrieved and stored in D0. It is then added to the D1 using long word operations. The long word (4 bytes) accommodates large integer numbers up to .</para>
+    <table id="eip-884" summary="f">
+<tgroup cols="3"><tbody>
+  <row>
+    <entry>MOVEQ</entry>
+    <entry>#0 D0</entry>
+    <entry>initialize D0 to 0</entry>
+  </row>
+  <row>
+    <entry>MOVEQ</entry>
+    <entry>#0 D1</entry>
+    <entry>initialize D1 to 0</entry>
+  </row>
+  <row>
+    <entry>MOVEQ</entry>
+    <entry>#9 D0</entry>
+    <entry>initialize D2 to 9</entry>
+  </row>
+  <row>
+    <entry>MOVE.W</entry>
+    <entry>(A0)+,D0</entry>
+    <entry>move data @A0 to D0, then increase A0 by 2</entry>
+  </row>
+  <row>
+    <entry>ADD.L</entry>
+    <entry>D0,D1</entry>
+    <entry>D1:= D0 +D1 in long word opperation</entry>
+  </row>
+  <row>
+    <entry>DBF</entry>
+    <entry>D2, Loop</entry>
+    <entry>D2:=D2-1, jump if D2 != -1</entry>
+  </row>
+  <row>
+    <entry>loop</entry>
+    <entry/>
+    <entry/>
+  </row>
+</tbody>
+</tgroup>
+</table><para id="import-auto-idm990102640">Table 12 Sum Array Elements in the 680x0 Assembly Programming</para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1861818016" fo:font-style="normal" fo:font-weight="normal">Not all instructions in the 680x0 family are equally fast. For example, the instruction CLR is 2 clocks slower than the MOVE instruction. Therefore, the example shown in Table 12 may use CLR.L D0 to clear the register. It will do the job but the MOVE instruction is faster. To write a high performance assembly program in the 680x0 assembly, a programmer has to fully understand the performance of each instruction and use it accordingly. </para>
+    </section>
+<section id="fs-idm389173184">
+      <title>Sparc Assembly Programming</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1877034752" fo:font-style="normal" fo:font-weight="normal">Sparc stands for Scalable Processor ARChitecture, and is RISC processor with a 32-bit virtual address space. Sparc is a Big-endian machine meaning that the high byte is stored in the lower address. There are som similarities between Sparc and x86 architecture such as byte-addressable memory, two's complement for signed integers, floating point follows IEEE standard, arithmetic, logical, and shift operations, branching and calling instructions, condition codes used for branch decisions, and stack frame support (sp, fp/bp) for procedure calls.  Both Sparc and x86 can be pipelined and have superscalar implementations. </para>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm943180272" fo:font-style="normal" fo:font-weight="normal">There are differences between Sparc and x86. Table 13 lists the difference between the two architectures.</para>
+    <para id="import-auto-idm1859549664">Table 13 The Difference of Sparc and x86 Architectures</para>
+    <table id="import-auto-idm1066929104" summary="">
+      <tgroup cols="2">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <thead>
+          <row>
+            <entry>SPARC (version 7)</entry>
+            <entry> x86 (8086)</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>32-bit words</entry>
+            <entry>16-bit words</entry>
+          </row>
+          <row>
+            <entry>32 general purpose registers (more on chip but only 32 are visible at any one time)</entry>
+            <entry>8 registers, most w/ special purpose (i.e., have fixed usage in certain operations)</entry>
+          </row>
+          <row>
+            <entry>Special register for multiplication called Y</entry>
+            <entry> (AX and DX registers fixed usage in multiplication)</entry>
+          </row>
+          <row>
+            <entry>Fixed-length instructions (4 bytes)</entry>
+            <entry>Variable-length instructions (1-6 bytes)</entry>
+          </row>
+          <row>
+            <entry>Load-store architecture reg-to-reg ops</entry>
+            <entry>Extended accumulator architecture, reg-to-mem and mem-to-reg ops.</entry>
+          </row>
+          <row>
+            <entry/>
+            <entry>String instructions with both operands in memory (movs, cmps, ...)</entry>
+          </row>
+          <row>
+            <entry>3-register instruction format: rA op rB -&gt; rC</entry>
+            <entry>Mainly 2-operand instruction format: rA &lt;- rA op memory, memory &lt;- memory op rA</entry>
+          </row>
+          <row>
+            <entry>Floating point uses separate set of 32 registers</entry>
+            <entry>Floating point uses a separate stack</entry>
+          </row>
+          <row>
+            <entry>Delayed branches</entry>
+            <entry>Normal branches</entry>
+          </row>
+          <row>
+            <entry>RISC - reduced instruction set computer =&gt; streamlined for ease of hardware implementation  </entry>
+            <entry>CISC - complex instruction set computer=&gt; complicated operations (some of this is due to legacy, i.e., need for compatibility with previous 8080 and 8085 microprocessors)</entry>
+          </row>
+          <row>
+            <entry>Big-endian memory addressing</entry>
+            <entry>Little-endian memory addressing</entry>
+          </row>
+          <row>
+            <entry>Requires aligned operands</entry>
+            <entry>Unaligned operand access in hardware</entry>
+          </row>
+          <row>
+            <entry>Linear memory with paging</entry>
+            <entry>Segmented memory addressing</entry>
+          </row>
+          <row>
+            <entry>Two execution modes (OS, user)</entry>
+            <entry>No protection</entry>
+          </row>
+          <row>
+            <entry>Memory-mapped I/O</entry>
+            <entry>I/O instructions (IN, OUT) with port addresses for device registers</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    
+    </section>
+<section id="fs-idm402117408">
+      <title>Registers</title>
+ 
+    
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1177402800" fo:font-style="normal" fo:font-weight="normal">There are 32 registers in Sparc: 8 global, 8 local, 8 output, 8 input. The register numbering is shown in Table 14.</para>
+    <para id="import-auto-idm1247406448">Table 14 Registers in Sparc</para>
+    <table id="import-auto-idm1176393280" summary="">
+      <tgroup cols="3">
+        <colspec colnum="1" colname="c1"/>
+        <colspec colnum="2" colname="c2"/>
+        <colspec colnum="3" colname="c3"/>
+        <thead>
+          <row>
+            <entry>Sparc Registers</entry>
+            <entry>Symbolic Names</entry>
+            <entry>Remark</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>Global</entry>
+            <entry>%g0 (%r0)%g1 (%r0).%g7 (%r7)</entry>
+            <entry>%g0 always zero</entry>
+          </row>
+          <row>
+            <entry>Output</entry>
+            <entry>%o0 (%r8)%o1 (%r9).%o7 (%r15)</entry>
+            <entry>%r14=%sp stack pointer%r15 for return address</entry>
+          </row>
+          <row>
+            <entry>Local</entry>
+            <entry>%l0 (%r16)%l1 (%r17).%l7 (%r23)</entry>
+            <entry/>
+          </row>
+          <row>
+            <entry>Input</entry>
+            <entry>%i0 (%r24)%i1 (%r25).%i7 (%r31)</entry>
+            <entry>%r30=%fp frame pointer%r31 for return address</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+    
+    
+    <list id="import-auto-idm1440069808" list-type="enumerated" number-style="arabic">
+      <item>
+        <emphasis effect="bold">Instructions</emphasis>
+      </item>
+    </list>
+    <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm944016224" fo:font-style="normal" fo:font-weight="normal">There are 69 instructions which are all fixed 32 bits in length. Only load/store may access memory. </para>
+</section>
+
+ 
+  </content>
+</document>

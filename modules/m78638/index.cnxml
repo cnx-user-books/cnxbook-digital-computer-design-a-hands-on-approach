@@ -1,0 +1,92 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Memory Systems - Part 1</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78638</md:content-id>
+  <md:title>Memory Systems - Part 1</md:title>
+  <md:abstract/>
+  <md:uuid>f35a21e7-5b6f-4c46-a1cc-ed0f48777af3</md:uuid>
+</metadata>
+
+<content>
+    
+    <section id="import-auto-idm1047118032">
+      <title>Memory System</title>
+      <list id="import-auto-idm950099104" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Introduction</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm309950592" fo:font-style="normal" fo:font-weight="normal">After the emergence of stored program computer architectures, the memory plays an important role in a computer system not just keeping programs in the system, but also allowing larger programs to be effectively executed. Other program data such as global variables, temporary auto variables, and dynamic objects are all stored in the memory. A good memory system will have a great impact on the overall system performance.</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1093950016" fo:font-style="normal" fo:font-weight="normal">In this chapter, we will introduce the memory system in a typical contemporary computing platform. Topics include storage systems and their technology (semiconductor, magnetic), storage standards (CD-ROM, DVD, and Blu-Ray), memory hierarchy, latency and throughput, and cache memories - operating principles, replacement policies, multilevel cache, cache coherency. Upon completing reading this chapter, readers will be able to identify the memory technologies found in a computer and be aware of the way in which memory technology is changing, appreciate the need for storage standards for complex data storage mechanisms such as DVD, Blu-Ray, etc., understand why a memory hierarchy is necessary to reduce the effective memory latency,  appreciate that most data on the memory bus is cache refill traffic, describe the various ways of organizing cache memory and appreciate the cost-performance tradeoffs for each arrangement, and appreciate the need for cache coherency in multiprocessor systems.</para>
+      
+      
+    </section>
+    <section id="import-auto-idm1073816448">
+      <title>Storage Systems and Their Technology</title>
+      <list id="import-auto-idm985141744" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Primary Storage</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm919267728" fo:font-style="normal" fo:font-weight="normal">Before a program may be executed, it has to be loaded to the main memory, which is directly accessed by CPUs and thus called primary storage. The primary storage also includes registers, and cache memories. Components in the primary storage are made of semiconductors. The main memory is built from dynamic random access memory (DRAM), which is cheaper than static random access memory (SRAM). DRAM uses charges in millions of capacitors within very large scale integrated circuit (VLSI) to keep digital information. Each capacitor has either charges or not corresponding to logical high and logical low. However, the charge on a capacitor fades unless the capacitor is refreshed periodically. This is why “dynamic” is used in it name. On the other hand, SRAM uses D-type flip-flops, which do not need to be refreshed, and therefore access time for SRAM is faster than DRAM. Each bit in DRAM requires one transistor and one capacitor whereas each bit in SRAM requires four or six transistors. Thus, the capacity of DARM is much higher than that of SRAM. Both DRAM and SRAM are volatile memory because they lose data when the power is off. In CPU, SRAM is built in to the same chip and used for cache memories.  Figure 1 shows the hierarchy of storage in a computer system.</para>
+      <figure id="import-auto-idm1373798688"><media id="import-auto-idm1006119744" alt="">
+          <image mime-type="image/png" src="../../media/officeArt object-f9b4.png"/>
+        </media>
+      </figure><para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1310089088" fo:font-style="normal" fo:font-weight="normal">Figure 1 Hierarchy of Storage in Computer Systems</para>
+      
+      
+      <list id="import-auto-idm1021846656" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Secondary Storage</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1001155424" fo:font-style="normal" fo:font-weight="normal">Storage that CPU has no direct access is classified to secondary storage including hard drives, floppy diskettes, etc. Floppy diskettes (8”, 5 ¼” and 3 ½”) are seldom used nowadays because of their low capacity and low speed. Floppy diskettes use thin flexible magnetic storage medium to keep information. Their typical capacities are 360 KB, 720 KB, and 1.44 MB, with a transfer rate up to 1000 Kb/s. The latest development in floppy technology is Iomega’s LS-240, which employs laser to guide a tiny magnetic head in order to increase its capacity to 240 MB. However, the cost dropped in CD ROM and flash drives caused Iomega’s floppy diskettes obsolete around 2000. </para>
+      
+      
+      <list id="import-auto-idm1504212256" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">Hard Disk Drives</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1033370368" fo:font-style="normal" fo:font-weight="normal">Hard drives are the major components used in the secondary storage. Since it is secondary, infrequently used data or users’ backup files are stored. When CPU needs data from the secondary storage, they have to be loaded to the primary storage. In terms of speed, the secondary storage is 1000 times slower than the primary storage. However, the space could be extremely large. The capacity of hard drives reaches 4 Terabytes in 2012.  </para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm995212480" fo:font-style="normal" fo:font-weight="normal">A hard disk drive (HDD) is composed of one or more rotating “hard” discs coated with magnetic material spinning at high speeds (4,800 – 15,000 RPM, typically 7,200 RPM), and magnetic reading/writing heads. Data are stored in the magnetic material, and accessed by the reading/writing heads. Hard disk drives were first developed by IBM for a real-time transaction processing system running on general purpose mainframe and mini computers in 1956. The 350 RAMAC, IBM’s first hard disk drive, was about the size of two refrigerators with a capacity of 5 million 6-bit characters (3.75 MB), and with 50 discs. Form factors of hard disk drives include 8, 5.25, 3.5, 2.5, 1.8, 1, and 0.85 inches. Most desktop computers use 3.5” hard disk drives whereas most laptop computers use 2.5”. Figure 2 illustrates an example of the organization of discs inside a hard disk drive. In this example, there are 4 discs stacked vertically with totally 8 surfaces. Each surface may be used to store data, accessed via the read/write heads. The read/write heads are movable via an arm controlled electrically. Each disc is subdivided into tracks and each track is further divided into sectors. Several sectors are formed a cluster, which is the basic allocation unit for storing files. It is worth mentioning that all discs are attached to the axle, spinning together, and all read/write heads are moved altogether. Since the time for moving read/write heads are much longer than the data transfer time. It would be beneficial to carefully arrange the way data are stored among the surfaces to achieve high performance, which occurs when the read/write head movement is minimized. </para>
+      <figure id="import-auto-idm922419472">
+        <media id="import-auto-idm1053564592" alt="">
+          <image mime-type="image/png" src="../../media/Image1-dad9.png" height="321" width="563"/>
+        </media>
+      </figure>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1327059424" fo:font-style="normal" fo:font-weight="normal">Figure 2 An Example of the Organization of Discs inside a Hard Disk Drive</para>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1018624896" fo:font-style="normal" fo:font-weight="normal">Organization of tracks and sectors (blocks) is depicted in Figure 3. The tacks are numbered from 0 outwards. Each track is further divided into equal sized sectors. The type size of a sector is 512 Bytes. A collection of contiguous sectors forms a cluster, which is the basic allocation unit in O.S. to request space for a file. A typical size for a cluster is 1 – 32 KB. For example, a cluster in FAT 32 is 32 KB. Larger clusters will waste disk space as the last cluster only got 50 % utilization on average. Should all files on a disk are small, large clusters make things worse. Like other resource management, O.S. keeps the allocation status of the sectors. There are two ways: free list and bit map. The free list uses three tuple (track number, sector number, number of free sectors) to keep a hole, i.e., contiguous free sectors. The bit map approach uses a bit vector to keep free sectors for each track. A free sector will have a corresponding bit cleared in the bit vector.</para>
+      <figure id="import-auto-idm329781088">
+        <media id="import-auto-idm1026179088" alt="">
+          <image mime-type="image/png" src="../../media/Image2-69ee.png" height="275" width="277"/>
+        </media>
+      </figure>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1097266064" fo:font-style="normal" fo:font-weight="normal">Figure 3 Organization of Tracks and Sectors on a Disk of a Hard Disk Drive</para>
+      
+      <list id="import-auto-idm1338182080" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">Storage Standards</emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm364910944" fo:font-style="normal" fo:font-weight="normal">In this section, we will study storage standards such as CD-ROM, DVD, and Blu-Ray. These are commonly used in computer systems to store or backup data. Much attention will be paid on their sizes, capacities, transfer rates, and related interface standards.</para>
+      
+      
+      <list id="import-auto-idm945838048" list-type="enumerated" number-style="arabic">
+        <item>
+          <emphasis effect="bold">
+            <emphasis effect="italics">CD-ROM</emphasis>
+          </emphasis>
+        </item>
+      </list>
+      <para xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" id="import-auto-idm1489222384" fo:font-style="normal" fo:font-weight="normal">A CD-ROM is a pre-pressed compact disc that contains data or music information to be read via a CD-ROM drive, and it is not writeable. It comes with either 8 cm or 12 cm in diameter. Recordable (CD-R) and rewritable (CD-RW) discs are produced to allows data to be recorded by a laser changing the properties of a dye or phase transition material in a process referred to as “burning.”  A CD-ROM sector is composed of 98 24-Byte frames (totally 2,352 Bytes). A standard 74 minute CD contains 333,000 sectors. Due to different error correction schemes, a sector contains 2,048 bytes of PC data (mode 1), 2,336 bytes of PSX/VCD (mode 2), or 2,352 bytes of audio. On a 74-minute CD, one can burn a larger image using raw mode for up to 747 MB (2,352x333,000). An image is always a multiple of 2,352 bytes when extracting in raw mode. Capacities of compact discs are listed Table 1.</para>
+      <para id="import-auto-idm1016538400">Table 1 Capacities of Common Compact Discs</para>
+    </section>
+  </content>
+</document>

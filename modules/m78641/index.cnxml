@@ -1,0 +1,1910 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Boolean Algebra</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78641</md:content-id>
+  <md:title>Boolean Algebra</md:title>
+  <md:abstract>This chapter reviews Boolean algebra with an emphasis on Karnaugh maps for simplifying Boolean expressions. Boolean algebra as the calculus of two values is fundamental to computer circuits, computer programming, and mathematical logic, and is also used in other areas of Mathematics such as set theory and statistics. Therefore, it is a crucial subject in Computer Science. In Part 2, we focus on the principle of simplifying Boolean expressions. This process will have a direct impact on low cost/low redundant hardware design.</md:abstract>
+  <md:uuid>dd2b9f71-3933-4795-8087-e4808760df00</md:uuid>
+</metadata>
+
+<content>
+    <section id="import-auto-idm918419088">
+      <title>Boolean Algebra</title>
+      <para id="import-auto-idm975706480">Boolean expressions are defined as follows:</para>
+      <para id="import-auto-idm1015052688">
+        <emphasis effect="italics">Definition 1: A Boolean expression can be the following</emphasis>
+      </para>
+      <list id="import-auto-idm1150523120" list-type="bulleted">
+        <item>A Boolean variable, </item>
+        <item>A relational expression, or</item>
+        <item>Any combination of Boolean variables, relational expressions, and Boolean expressions with logical operators AND, OR, NOT, and parentheses.</item>
+      </list>
+      <para id="import-auto-idm1025797344">A Boolean expression will be evaluated to either true or false if all of its variables have been substituted with their actual values. For example, a Boolean variable x is a Boolean expression, and it can be evaluated to true or false subject to its actual value. Normally, for two Boolean variables x and y, xy denotes x and y, x+y indicates x OR y, and ~x represents negation of x. They are all well-defined Boolean expressions because x and y are Boolean variables. Parenthesized items will be evaluated first. </para>
+    </section>
+    <section id="import-auto-idm1016515280">
+      <title>Operator Precedence</title>
+      <para id="import-auto-idm950198080">The operators used in Boolean expressions are relational operators (&lt;, &lt;=, ==, &gt;=, &gt;=, and !=), and logic AND, OR, NOT. If there are more than one ways in evaluation, it may be ambiguous or in some cases invalid. For example, x + yz can be evaluated to x + (yz) or (x+y)z, i.e., evaluate y AND z first, or x OR y first. Another example like x + m&lt;n, where m and n are numbers, may cause syntax error should x + m were to be evaluated first. In this case, logical OR is being applied to a number m but in the above definition, logic OR can only applied to Boolean expressions and n is a number not a Boolean expression. Operator precedence dictates the unique order in evaluating a Boolean expression: from left to right if operators are in the same precedence, or the high precedence operator first. The following table lists the operator precedence order for the above operators:</para>
+      <table id="import-auto-idm165056752" summary="Table 1">
+<tgroup cols="2"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <thead>
+            <row>
+              <entry>
+                  <emphasis effect="italics">NOT</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics"> logical not</emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                  <emphasis effect="italics">&lt;, &lt;=</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics"> less than, less than or equal to</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">&gt;, &gt;=</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics"> greater, greater than or equal to</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">==, !=</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics"> equal to, not equal to</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">AND</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics"> logical and</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">OR</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics"> logical or</emphasis>
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm1155781312">Based on the operator precedence order, x+yz will be only evaluated to x+(yz).</para>
+    </section>
+    <section id="import-auto-idm962422512">
+      <title>Laws of Boolean Algebra</title>
+      <para id="import-auto-idm971423632">
+        <emphasis effect="italics">Boolean expressions can be rewritten to other forms which do not change their semantics. For example, a double negation of a Boolean variable is itself: NOT NOT x = x. The “=” sign indicates equivalence of the left hand side Boolean expression and the right hand side Boolean expression. The equivalent relation can be proved by the following truth table:</emphasis>
+      </para>
+      <table id="import-auto-idm908625744" summary="Table 3">
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>
+                  <emphasis effect="italics">x</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">NOT x </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">NOT NOT x</emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                  <emphasis effect="italics">0</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">0</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+           
+              </entry>
+              <entry>
+             
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm182952592">
+        <emphasis effect="italics">The truth table clearly shows that x and NOT NOT x contains identical column. </emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm1146741424">
+      <title>Distribution Law</title>
+      <para id="import-auto-idm967223920">
+        <emphasis effect="italics">An operand of AND can be distributed among OR operators. For example, x(y+z) = xy + xz. The operand x is distributed inside the parenthesized term y+z. The following truth table shows this equivalence.</emphasis>
+      </para>
+      <table id="import-auto-idm1380995968" summary="table 2">
+<tgroup cols="8"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <colspec colnum="7" colname="c7"/>
+          <colspec colnum="8" colname="c8"/>
+          <thead>
+            <row>
+              <entry>
+               
+                  <emphasis effect="italics">x</emphasis>
+         
+              </entry>
+              <entry>
+    
+                  <emphasis effect="italics">y</emphasis>
+             
+              </entry>
+              <entry>
+        
+                  <emphasis effect="italics">z</emphasis>
+             </entry>
+              <entry>
+                
+                  <emphasis effect="italics">y+z</emphasis>
+          
+              </entry>
+              <entry>
+     
+                  <emphasis effect="italics">x(y+z)</emphasis>
+            
+              </entry>
+              <entry>
+         
+                  <emphasis effect="italics">xy</emphasis>
+           
+              </entry>
+              <entry>
+        
+                  <emphasis effect="italics">xz</emphasis>
+         
+              </entry>
+              <entry>
+     
+                  <emphasis effect="italics">xy+zy</emphasis>
+            
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+       
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+      
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+              
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+         
+                  <emphasis effect="italics">0</emphasis>
+        
+              </entry>
+              <entry>
+          
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+
+                  <emphasis effect="italics">0</emphasis>
+  
+              </entry>
+              <entry>
+       
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+            </row>
+            <row>
+              <entry>
+              
+                  <emphasis effect="italics">0</emphasis>
+               
+              </entry>
+              <entry>
+          
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+      
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+              <entry>
+   
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+         
+                  <emphasis effect="italics">0</emphasis>
+         
+              </entry>
+              <entry>
+             
+                  <emphasis effect="italics">0</emphasis>
+           
+              </entry>
+              <entry>
+         
+                  <emphasis effect="italics">0</emphasis>
+               
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+            </row>
+            <row>
+              <entry>
+             
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+              
+                  <emphasis effect="italics">1</emphasis>
+          
+              </entry>
+              <entry>
+             
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+              
+              </entry>
+              <entry>
+         
+                  <emphasis effect="italics">0</emphasis>
+           
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+           
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+                
+              </entry>
+            </row>
+            <row>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+              
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+            
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+               
+              </entry>
+            </row>
+            <row>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+                
+              </entry>
+              <entry>
+             
+                  <emphasis effect="italics">0</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+                
+              </entry>
+            </row>
+            <row>
+              <entry>
+              
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+              
+              </entry>
+              <entry>
+        
+                  <emphasis effect="italics">1</emphasis>
+        
+              </entry>
+              <entry>
+          
+                  <emphasis effect="italics">1</emphasis>
+              
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+                
+              </entry>
+              <entry>
+          
+                  <emphasis effect="italics">1</emphasis>
+          
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+            </row>
+            <row>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+             
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+             
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+         
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+              
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+      
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+            </row>
+            <row>
+              <entry>
+              
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+           
+              </entry>
+              <entry>
+                 <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+              
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm186344688">
+        <emphasis effect="italics">In Algebra, the distribution law applies as well. For example, 2*(3+6) = (2*3) + (2*6) = 18. Now, let’s consider another Boolean expression from the one we have seen by exchanging the operators, i.e., x+(yz). Will x+(yz) = (x+y)(x+z)? Again, let’s find out from the truth table.</emphasis>
+      </para>
+      <table id="import-auto-idm955263232" summary="t">
+<tgroup cols="8"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <colspec colnum="7" colname="c7"/>
+          <colspec colnum="8" colname="c8"/>
+          <thead>
+            <row>
+              <entry>
+                
+                  <emphasis effect="italics">x</emphasis>
+               
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">y</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">z</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">yz</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">x+(yz)</emphasis>
+               
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">x+y</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">x+z</emphasis>
+            
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">(x+y)(x+z)</emphasis>
+            
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+         
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+              
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+           
+              </entry>
+            </row>
+            <row>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+           
+              </entry>
+              <entry>
+             
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+         
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+              
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+              
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+            </row>
+            <row>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+           
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+             
+              </entry>
+              <entry>
+              
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">0</emphasis>
+        
+              </entry>
+            </row>
+            <row>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+         
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+           
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+          
+              </entry>
+              <entry>
+                                 <emphasis effect="italics">1</emphasis>
+         
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+           
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+         
+              </entry>
+            </row>
+            <row>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+          
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+            
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+           
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+          
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+              
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+            </row>
+            <row>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+               
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+               
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+            
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+            </row>
+            <row>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+           
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+                
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+              
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">0</emphasis>
+          
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+            </row>
+            <row>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+             
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+             </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+              
+              </entry>
+              <entry>
+               
+                  <emphasis effect="italics">1</emphasis>
+            
+              </entry>
+              <entry>
+                
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+            </row>
+          </tbody>
+        
+
+
+
+</tgroup>
+</table><para id="import-auto-idm187852144">
+        <emphasis effect="italics">Yes. The distribution law applies for this expression in Boolean Algebra. However, in Algebra, 2+(3*6) = (2+3)*(2+6) is false. The main reason is that the Boolean Algebra does not consider magnitude but the Algebra does.  Nevertheless, the distribution law applies to both AND to OR, and OR to AND in Boolean Algebra. </emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm925942528">
+      <title>Inverse Law </title>
+      <para id="import-auto-idm921738640">
+        <emphasis effect="italics">A Boolean variable or its negation is always true, x OR not x = true. A Boolean variable and its negation is always false, x AND not x = false.</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm1157870608">
+      <title>Commutative Law</title>
+      <para id="import-auto-idm188509904">
+        <emphasis effect="italics">The operand order for a Boolean operator does not matter. For example, xy = yx, and x+y = y+x.</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm1408410848">
+      <title>Associate Law</title>
+      <para id="import-auto-idm172570976">
+        <emphasis effect="italics">The evaluation order for an operator does not matter. For example, (x+y)+z = x+(y+z), and (xy)z = x(yz). </emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm995967680">
+      <title>Identity Law</title>
+      <para id="import-auto-idm928801712">
+        <emphasis effect="italics">A Boolean expression operated by itself will be itself. For example, x+x = x, and xx = x.</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm925377984">
+      <title>Redundance Law</title>
+      <para id="import-auto-idm907779920">
+        <emphasis effect="italics">Sometimes, some terms in a Boolean expression can be eliminated without changing its semantics.  For example, x + xy = x, and x(x+y)=x.</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm936561040">
+      <title>False Law</title>
+      <para id="import-auto-idm1150652912">
+        <emphasis effect="italics">False and anything is false. False or anything is anything. For example, 0x = 0, and 0+x = x.</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm1164241568">
+      <title>True Law</title>
+      <para id="import-auto-idm952643344">
+        <emphasis effect="italics">True or anything is true. True and anything is anything. For example, 1x=x, and 1+x = 1.</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm915862720">
+      <title>De Morgan’s Law</title>
+      <para id="import-auto-idm179882480">
+        <emphasis effect="italics">De Morgan’s law states that a not operator outside a Boolean expression can get inside by negating the variables and change AND operator to OR and vice versa. For example, !(x+y) = !x!y, and !(xy) = !x + !y.</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm173980528">
+      <title>Simplification of Boolean Expressions</title>
+      <para id="import-auto-idm949171072">Given a Boolean expression, we can simplify it using the laws described in the previous section. However, the simplification process may not be so obvious sometimes. A graphical representation of a Boolean expression in the Karnaugh map greatly helps the simplification process.</para>
+    </section>
+    <section id="import-auto-idm172696144">
+      <title>Karnaugh Maps</title>
+      <para id="import-auto-idm164443216">Karnaugh maps are good at simplifying Boolean expressions with less than 4 variables. Although simplifying Boolean expressions with more than 4 variables is normally done by computers with sophisticated algorithms, however, those with a small number of variables occur frequently in practical designs. Thus, Karnaugh maps are worth learning. Additionally, Karnaugh maps provide a great deal of insight into digital logic circuit. </para>
+      <para id="import-auto-idm917470416">In this section, some Karnaugh maps for two to four variables will be presented, and how they can really be used to simplify Boolean functions.</para>
+    </section>
+    <section id="import-auto-idm1145071760">
+      <title>Two-Variable Karnaugh Maps</title>
+      <para id="import-auto-idm1011651088">Suppose two variables, A and B, in a Boolean expression. Each of which has two possible values (true or false) and total number of possible combinations is four. These combinations are represented in a map similar to truth table as follows.</para>
+      <table xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm921207168" summary="Table 4">
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>B</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {B}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>B</m:mi>
+                        <m:annotation encoding="StarMath 5.0">B</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>A</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {A}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">0</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>A</m:mi>
+                        <m:annotation encoding="StarMath 5.0">A</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">2</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">3</emphasis>
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm225333056"> The number in the cell indicates the value of the binary representation of AB, which is called a minterm. Each cell is corresponding to a minterm, i.e., a product of the two variables. For example, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>→</m:mi><m:mn>10</m:mn><m:mi>→</m:mi><m:mn>2</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} →10→2</m:annotation></m:semantics></m:math>. Assume the Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} +AB</m:annotation></m:semantics></m:math> is to be simplified, where <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>→</m:mi><m:mn>2</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} →2</m:annotation></m:semantics></m:math>, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mi>→</m:mi><m:mn>3</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">AB→3</m:annotation></m:semantics></m:math>. So we fill 1’s to the second and the third cells, which results in the following:</para>
+      <table xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1013753296" summary="ol">
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>B</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {B}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>B</m:mi>
+                        <m:annotation encoding="StarMath 5.0">B</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>A</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {A}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>A</m:mi>
+                        <m:annotation encoding="StarMath 5.0">A</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm932014080">The 1’s in the second row can be grouped together and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math> can be used to represent them. That says, the Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} +AB</m:annotation></m:semantics></m:math> can be simplified to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow><m:mi>→</m:mi><m:mi>A</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A( acute {B} +B)→A</m:annotation></m:semantics></m:math>. If <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>B</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} B</m:annotation></m:semantics></m:math> is added to the above Boolean expression, i.e., <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi>B</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} +AB+ acute {A} B</m:annotation></m:semantics></m:math>, the resultant Karnaugh map is as follows:</para>
+      <table xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm992492784" summary="table 7">
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>B</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {B}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>B</m:mi>
+                        <m:annotation encoding="StarMath 5.0">B</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>A</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {A}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry/>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>A</m:mi>
+                        <m:annotation encoding="StarMath 5.0">A</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+               
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm1015529072">We now got the 1’s in the second row and the second column. The second row is corresponding to A. The second column is corresponding to B. Therefore, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi>B</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} +AB+ acute {A} B</m:annotation></m:semantics></m:math> will be simplified to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A+B</m:annotation></m:semantics></m:math>. To show this is true. We only need to show <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mrow><m:mi>B</m:mi><m:mo stretchy="false">=</m:mo><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A+ acute {A} B=A+B</m:annotation></m:semantics></m:math>, which is true because <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mrow><m:mi>B</m:mi><m:mo stretchy="false">=</m:mo><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow></m:mrow><m:mrow><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:mrow><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow><m:mo stretchy="false">=</m:mo><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A+ acute {A} B= left (A+ acute {A} right ) left (A+B right ) =1 left (A+B right ) =A+B</m:annotation></m:semantics></m:math>.</para>
+    </section>
+    <section id="import-auto-idm915463024">
+      <title>Three-Variable Karnaugh Maps</title>
+      <para id="import-auto-idm915462640">Likewise, three-variable Boolean expressions will be reorganized from their truth tables. Assume three variables <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math>, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>B</m:mi><m:annotation encoding="StarMath 5.0">B</m:annotation></m:semantics></m:math>, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>C</m:mi><m:annotation encoding="StarMath 5.0">C</m:annotation></m:semantics></m:math> in a Boolean expression. There are totally 8 combinations of possible values for three variables. They are organized in the following map.</para>
+      <table xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1009559952" summary="Table 8">
+<tgroup cols="5"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mrow>
+                          <m:mover accent="true">
+                            <m:mi>B</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                          <m:mover accent="true">
+                            <m:mi>C</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                        </m:mrow>
+                        <m:annotation encoding="StarMath 5.0">acute {B} acute {C}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mrow>
+                          <m:mover accent="true">
+                            <m:mi>B</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                          <m:mi>C</m:mi>
+                        </m:mrow>
+                        <m:annotation encoding="StarMath 5.0">acute {B} C</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi mathvariant="italic">BC</m:mi>
+                        <m:annotation encoding="StarMath 5.0">BC</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mrow>
+                          <m:mi>B</m:mi>
+                          <m:mover accent="true">
+                            <m:mi>C</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                        </m:mrow>
+                        <m:annotation encoding="StarMath 5.0">B acute {C}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>A</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {A}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">0</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">3</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">2</emphasis>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>A</m:mi>
+                        <m:annotation encoding="StarMath 5.0">A</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">4</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">5</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">7</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">6</emphasis>
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm1011403504">The arrangement is based on the rule that only one variable changes in any two contiguous cells vertically or horizontally. Therefore, the numbers go from 0, 1, 3, 2, not 0, 1, 2, 3 because there are two changes from 1(<m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {B}</m:annotation></m:semantics></m:math> C) to 2 (<m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>B</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">B acute {C}</m:annotation></m:semantics></m:math>). With this special arrangement, the contiguous cells can be combined by eliminating the changed variable. For example, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>C</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABC</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} C+ABC</m:annotation></m:semantics></m:math> is represented in the following Karnaugh map:</para>
+      <table xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1019688752" summary="Table 9">
+<tgroup cols="5"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mrow>
+                          <m:mover accent="true">
+                            <m:mi>B</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                          <m:mover accent="true">
+                            <m:mi>C</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                        </m:mrow>
+                        <m:annotation encoding="StarMath 5.0">acute {B} acute {C}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mrow>
+                          <m:mover accent="true">
+                            <m:mi>B</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                          <m:mi>C</m:mi>
+                        </m:mrow>
+                        <m:annotation encoding="StarMath 5.0">acute {B} C</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi mathvariant="italic">BC</m:mi>
+                        <m:annotation encoding="StarMath 5.0">BC</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mrow>
+                          <m:mi>B</m:mi>
+                          <m:mover accent="true">
+                            <m:mi>C</m:mi>
+                            <m:mo stretchy="false">´</m:mo>
+                          </m:mover>
+                        </m:mrow>
+                        <m:annotation encoding="StarMath 5.0">B acute {C}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mover accent="true">
+                          <m:mi>A</m:mi>
+                          <m:mo stretchy="false">´</m:mo>
+                        </m:mover>
+                        <m:annotation encoding="StarMath 5.0">acute {A}</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry/>
+              <entry/>
+              <entry/>
+              <entry/>
+            </row>
+            <row>
+              <entry>
+                  <emphasis effect="italics">
+                    <m:math display="block">
+                      <m:semantics>
+                        <m:mi>A</m:mi>
+                        <m:annotation encoding="StarMath 5.0">A</m:annotation>
+                      </m:semantics>
+                    </m:math>
+                  </emphasis>
+              </entry>
+              <entry/>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+              <entry>
+                  <emphasis effect="italics">1</emphasis>
+              </entry>
+              <entry/>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table><para id="import-auto-idm935949888">The 1’s in the shaded area can be combined to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>C</m:mi><m:annotation encoding="StarMath 5.0">C</m:annotation></m:semantics></m:math> as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mrow><m:mi>C</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">BC</m:mi></m:mrow><m:mo stretchy="false">=</m:mo><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>B</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow></m:mrow><m:mrow><m:mi>C</m:mi><m:mo stretchy="false">=</m:mo><m:mi>C</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">acute {B} C+BC= left (acute {B} +B right ) C=C</m:annotation></m:semantics></m:math>. Also, the second row indicates <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math> is true. Therefore, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mrow><m:mi>C</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABC</m:mi></m:mrow><m:mo stretchy="false">=</m:mo><m:mi mathvariant="italic">AC</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} C+ABC=AC</m:annotation></m:semantics></m:math>. The process can be interpreted as set operations if the cells are divided according to Boolean variables.</para>
+      <media id="import-auto-idm978639904" alt="Drawing">
+        <image mime-type="image/png" src="draw_odg0.png"/>
+      </media>
+      <para id="import-auto-idm978639648">The graphics shown in Figure 1 will be used to simplify Boolean expressions. Variable A is associated with the second row; Variable C is associated with the middle two columns; Variable B is associated with the last two columns. The red oval is the interaction of the second row and the middle two columns. Thus, we can used AC to represent the two cells. Here AC reads as A intercepts C from the area perspective. The other areas, e.g., the first row, will be represented as negation of some variable. The first row is negation of A, i.e., <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {A}</m:annotation></m:semantics></m:math>. For example, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi>B</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} acute {B} acute {C} + acute {A} B acute {C}</m:annotation></m:semantics></m:math> is depicted as follows:</para>
+      <media id="import-auto-idm1160176112" alt="Drawing">
+        <image mime-type="image/png" src="draw_odg1.png"/>
+      </media>
+      <para id="import-auto-idm987958320">The first row in Figure 2 is <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {A}</m:annotation></m:semantics></m:math> and the two cells are outside <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>C</m:mi><m:annotation encoding="StarMath 5.0">C</m:annotation></m:semantics></m:math>, i.e., <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {C}</m:annotation></m:semantics></m:math>. Thus, we can use  <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} acute {C}</m:annotation></m:semantics></m:math> to represent the two cells. In case there are more 1’s in the Karnaugh map, continue this way until all 1’s are covered. The simplified form is called sum of product. This graphical technique will greatly simplify the Boolean expressions but the order in which the 1’s are filled is important. </para>
+    </section>
+    <section id="import-auto-idm993335776">
+      <title>Four-Variable Karnaugh Maps</title>
+      <para id="import-auto-idm942808256">Let’s now consider the four variable case. There are 16 possible combinations for the variables <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>,</m:mi><m:mi>B</m:mi><m:mi>,</m:mi><m:mi>C</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A, B, C</m:annotation></m:semantics></m:math>, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>D</m:mi><m:annotation encoding="StarMath 5.0">D</m:annotation></m:semantics></m:math>. What we want is arrange the variables on a 2-demensional table in a way that any two adjacent cells only have one change in a variable vertically and horizontally. Therefore, we come up with the following setting.</para>
+      <table id="import-auto-idm1155585520" summary="">
+        <tgroup cols="5">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>C</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mover accent="true">
+                        <m:mi>D</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {C} acute {D}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>C</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mi>D</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {C} D</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mi mathvariant="italic">CD</m:mi>
+                    <m:annotation encoding="StarMath 5.0">CD</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mi>C</m:mi>
+                      <m:mover accent="true">
+                        <m:mi>D</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">C acute {D}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>A</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mover accent="true">
+                        <m:mi>B</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {A} acute {B}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>3</entry>
+              <entry>2</entry>
+            </row>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>A</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mi>B</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {A} B</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>4</entry>
+              <entry>5</entry>
+              <entry>7</entry>
+              <entry>6</entry>
+            </row>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mi mathvariant="italic">AB</m:mi>
+                    <m:annotation encoding="StarMath 5.0">AB</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>12</entry>
+              <entry>13</entry>
+              <entry>15</entry>
+              <entry>14</entry>
+            </row>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mi>A</m:mi>
+                      <m:mover accent="true">
+                        <m:mi>B</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">A acute {B}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>8</entry>
+              <entry>9</entry>
+              <entry>11</entry>
+              <entry>10</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm175061232">C B A DAgain, the numbers in the table cells represent the binary value of <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi mathvariant="italic">ABCD</m:mi><m:annotation encoding="StarMath 5.0">ABCD</m:annotation></m:semantics></m:math>. Note that the order of then numbers goes from outward to inward. These numbers will help you fill in 1’s for a Boolean expression to be simplified.  The graphical representation of the four-variable Karnaugh map is illustrated as follows. </para>
+      <para id="import-auto-idm175060592">Figure  Graphical Representation of the Four-Variable Karnaugh Map</para>
+      <para id="import-auto-idm996547360">For example, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>D</m:mi><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi mathvariant="italic">CD</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} acute {C} D+A acute {B} CD</m:annotation></m:semantics></m:math> will be tabularized in the following Karnaugh map.</para>
+      <media id="import-auto-idm915245328" alt="Drawing">
+        <image mime-type="image/png" src="draw_odg2.png"/>
+      </media>
+      <para id="import-auto-idm982513328">The numbers in the corresponding parentheses indicate the binary value of the corresponding terms. Practically, converting the terms to their binary values and fill in 1’s to their corresponding table cells may avoid unnecessary mistakes. Filling the 1’s directly by looking at row and column headings is error –prone. From the Karnaugh map above, the two cells are inside <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math> and inside <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>D</m:mi><m:annotation encoding="StarMath 5.0">D</m:annotation></m:semantics></m:math> but outside <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>B</m:mi><m:annotation encoding="StarMath 5.0">B</m:annotation></m:semantics></m:math>. Therefore, they can be represented as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} D</m:annotation></m:semantics></m:math>. Note that <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>C</m:mi><m:annotation encoding="StarMath 5.0">C</m:annotation></m:semantics></m:math> is not involved because one cell (9) is outside <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>C</m:mi><m:annotation encoding="StarMath 5.0">C</m:annotation></m:semantics></m:math> and the other cell (11) is inside <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>C</m:mi><m:annotation encoding="StarMath 5.0">C</m:annotation></m:semantics></m:math>.  The Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>D</m:mi><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi mathvariant="italic">CD</m:mi><m:mo stretchy="false">=</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} acute {C} D+A acute {B} CD=A acute {B} D</m:annotation></m:semantics></m:math>. The following proof shows the simplification is correct.</para>
+      <para id="import-auto-idm982513072"><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>D</m:mi><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi mathvariant="italic">CD</m:mi><m:mo stretchy="false">=</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi mathvariant="italic">ΔC</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} acute {C} D+A acute {B} CD=A acute {B} D acute {C} +A acute {B} DC</m:annotation></m:semantics></m:math> ; apply commutative law on both terms</para>
+      <para id="import-auto-idm938058784">= <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>C</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A acute {B} D( acute {C} +C)</m:annotation></m:semantics></m:math> ; apply distribution law</para>
+      <para id="import-auto-idm1153895712"><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow/><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">=A acute {B} D1</m:annotation></m:semantics></m:math>; apply inverse law</para>
+      <para id="import-auto-idm987409472"><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow/><m:mi>A</m:mi><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">=A acute {B} D</m:annotation></m:semantics></m:math> ; apply true law</para>
+    </section>
+    <section id="import-auto-idm993335456">
+      <title>Five-Variable Karnaugh Maps</title>
+      <para id="import-auto-idm1141900384">In practice, simplification of a five-variable (or more) Boolean expression is done by computer programs such as VHDL. However, some compiler may not produce an optimal result. In that case, the five-variable Karnaugh map may help. Normally, we split the variables <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>,</m:mi><m:mi>B</m:mi><m:mi>,</m:mi><m:mi>C</m:mi><m:mi>,</m:mi><m:mi>D</m:mi><m:mi>,</m:mi><m:mi>E</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A,B,C,D,E</m:annotation></m:semantics></m:math> into 2 groups: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi mathvariant="italic">AB</m:mi><m:annotation encoding="StarMath 5.0">AB</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>C</m:mi><m:mi mathvariant="italic">ΔE</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">C DE</m:annotation></m:semantics></m:math>. We now arrange the 32 possible combinations in the following table.</para>
+      <table id="import-auto-idm164107200" summary="">
+        <tgroup cols="9">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <colspec colnum="6" colname="c6"/>
+          <colspec colnum="7" colname="c7"/>
+          <colspec colnum="8" colname="c8"/>
+          <colspec colnum="9" colname="c9"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>C</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mover accent="true">
+                        <m:mi>D</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mover accent="true">
+                        <m:mi>E</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {C} acute {D} acute {E}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>C</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mover accent="true">
+                        <m:mi>D</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mi>E</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {C} acute {D} E</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>C</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mi mathvariant="italic">ΔE</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {C} DE</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>C</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mi>D</m:mi>
+                      <m:mover accent="true">
+                        <m:mi>E</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {C} D acute {E}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mi mathvariant="italic">CD</m:mi>
+                      <m:mover accent="true">
+                        <m:mi>E</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">CD acute {E}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mi mathvariant="italic">CDE</m:mi>
+                    <m:annotation encoding="StarMath 5.0">CDE</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mi>C</m:mi>
+                      <m:mover accent="true">
+                        <m:mi>D</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mi>E</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">C acute {D} E</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mi>C</m:mi>
+                      <m:mover accent="true">
+                        <m:mi>D</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mover accent="true">
+                        <m:mi>E</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">C acute {D} acute {E}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>A</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mover accent="true">
+                        <m:mi>B</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {A} acute {B}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>3</entry>
+              <entry>2</entry>
+              <entry>6</entry>
+              <entry>7</entry>
+              <entry>5</entry>
+              <entry>4</entry>
+            </row>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mover accent="true">
+                        <m:mi>A</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                      <m:mi>B</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">acute {A} B</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>8</entry>
+              <entry>9</entry>
+              <entry>11</entry>
+              <entry>10</entry>
+              <entry>14</entry>
+              <entry>15</entry>
+              <entry>13</entry>
+              <entry>12</entry>
+            </row>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mi mathvariant="italic">AB</m:mi>
+                    <m:annotation encoding="StarMath 5.0">AB</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>24</entry>
+              <entry>25</entry>
+              <entry>27</entry>
+              <entry>26</entry>
+              <entry>30</entry>
+              <entry>31</entry>
+              <entry>29</entry>
+              <entry>28</entry>
+            </row>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mi>A</m:mi>
+                      <m:mover accent="true">
+                        <m:mi>B</m:mi>
+                        <m:mo stretchy="false">´</m:mo>
+                      </m:mover>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">A acute {B}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>16</entry>
+              <entry>17</entry>
+              <entry>19</entry>
+              <entry>18</entry>
+              <entry>22</entry>
+              <entry>23</entry>
+              <entry>21</entry>
+              <entry>20</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm898212960">The corresponding graphical representation is as follows. </para>
+      <media id="import-auto-idm1156947904" alt="Drawing">
+        <image mime-type="image/png" src="draw_odg3.png"/>
+      </media>
+      <para id="import-auto-idm1156948320">Given a Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi mathvariant="italic">ΔE</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCD</m:mi></m:mrow><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCDE</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">AB acute {C} DE+AB acute {C} D acute {E} +ABCD acute {E} +ABCDE</m:annotation></m:semantics></m:math>. Let’s simplify it using the Karnaugh map. First, translate the terms to their corresponding binary values. <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi mathvariant="italic">ΔE</m:mi><m:mo stretchy="false">=</m:mo><m:mn>27,</m:mn></m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mn>26,</m:mn></m:mrow><m:mi mathvariant="italic">ABCD</m:mi><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mn>30,</m:mn></m:mrow><m:mrow><m:mi mathvariant="italic">ABCDE</m:mi><m:mo stretchy="false">=</m:mo><m:mn>31</m:mn></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">AB acute {C} DE=27,AB acute {C} D acute {E} =26,ABCD acute {E} =30,ABCDE=31</m:annotation></m:semantics></m:math>. Then, fill in 1’s at the cell numbered 27, 26, 30, and 31 as depicted in the following diagram.</para>
+      <para id="import-auto-idm924497744">1(30) 1(31) 1(26) 1(27) E E B C D A Figure  The Karnaugh Map for the Five-Variable Boolean Expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi mathvariant="italic">ΔE</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCD</m:mi></m:mrow><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCDE</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">AB acute {C} DE+AB acute {C} D acute {E} +ABCD acute {E} +ABCDE</m:annotation></m:semantics></m:math>.</para>
+      <para id="import-auto-idm221643744">It is clear that the red oval area is the intersection of A, B and D. Therefore, the Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mover accent="true"><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi mathvariant="italic">ΔE</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCD</m:mi></m:mrow><m:mrow><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABCDE</m:mi></m:mrow><m:mo stretchy="false">=</m:mo><m:mi mathvariant="italic">ABD</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">AB acute {acute {C}} DE+AB acute {C} D acute {E} +ABCD acute {E} +ABCDE   =ABD</m:annotation></m:semantics></m:math>.</para>
+    </section>
+    <section id="import-auto-idm1012019408">
+      <title>Special Considerations in Using Karnaugh Maps</title>
+      <para id="import-auto-idm1151101472">As can be seen that the more contiguous 1’s on the map, the higher chance the Boolean expression can be simplified. However, there may be a chance to combine scattered cells using negation. For example, the Boolean expression being mapped to the 4 corners in the five-variable expression: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mn>0</m:mn></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>C</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mn>4</m:mn></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mn>16</m:mn></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>C</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mn>20</m:mn></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} acute {B} acute {C} acute {D} acute {E} (0)+ acute {A} acute {B} C acute {D} acute {E} (4)+A acute {B} acute {C} acute {D} acute {E} (16)+A acute {B} C acute {D} acute {E} (20)</m:annotation></m:semantics></m:math> can be simplified to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">acute {B} acute {D} acute {E}</m:annotation></m:semantics></m:math>. </para>
+      <para id="import-auto-idm976513552">In some cases, we may need to include a cell in several terms of the simplified from. This is fine because of the sum-of-product form. For example, in the Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi mathvariant="italic">ABCD</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABC</m:mi></m:mrow><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi mathvariant="italic">BC</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">ABCD+ABC acute {D} + acute {A} BC acute {D}</m:annotation></m:semantics></m:math>, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">ABC</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">ABC acute {D}</m:annotation></m:semantics></m:math> is used twice in both in simplifying <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi mathvariant="italic">ABCD</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABC</m:mi></m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">ABCD+ABC acute {D}</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">ABC</m:mi><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi mathvariant="italic">BC</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">ABC acute {D} + acute {A} BC acute {D}</m:annotation></m:semantics></m:math> as shown in . The red oval will lead to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi mathvariant="italic">ABC</m:mi><m:annotation encoding="StarMath 5.0">ABC</m:annotation></m:semantics></m:math> whereas the green oval will result in <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">BC</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">BC acute {D}</m:annotation></m:semantics></m:math>. Therefore, the Boolean expression can be simplified as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi mathvariant="italic">ABCD</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">ABC</m:mi></m:mrow><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi mathvariant="italic">BC</m:mi><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mrow><m:mi mathvariant="italic">ABC</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">BC</m:mi></m:mrow></m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">ABCD+ABC acute {D} + acute {A} BC acute {D} =ABC+BC acute {D}</m:annotation></m:semantics></m:math>.</para>
+      <media id="import-auto-idm166757072" alt="Drawing">
+        <image mime-type="image/png" src="draw_odg4.png"/>
+      </media>
+      <para id="import-auto-idm212486080">A term in a Boolean expression may contain fewer variables. The missing variables will not affect the value of the term. Those are “don’t care” to the term. In fact, the term <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math> can be expanded to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mi>B</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A(B+ acute {B} )</m:annotation></m:semantics></m:math>, i.e., <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi mathvariant="italic">AB</m:mi><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">AB+A acute {B}</m:annotation></m:semantics></m:math>. Since <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>B</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">B+ acute {B}</m:annotation></m:semantics></m:math> is always true, adding it to the term <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math> will not change its value. Should there are more variables, we can add them in with their inverse forms (true). It turns out that the cell is filled with an one as long as it belongs to the <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math> area in the corresponding Karnaugh map. For example, in a four-variable case, the Boolean expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">BC</m:mi><m:mo stretchy="false">+</m:mo><m:mi>C</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A+BC+C</m:annotation></m:semantics></m:math> can be mapped to the Karnaugh Map shown in . It can be simplified to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi>C</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A+C</m:annotation></m:semantics></m:math>. </para>
+      <para id="import-auto-idm161156288">1(3) 1(2) 1(7) 1(9) 1(8) ((1(10) 1(11) ((1(12) ((1(13) C B A 1(6) 1(14) 1(15) ((D Figure  A Boolean Expression <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">BC</m:mi><m:mo stretchy="false">+</m:mo><m:mi>C</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">A+BC+C</m:annotation></m:semantics></m:math> with Fewer Variables in the Karanugh Map</para>
+    </section>
+    <section id="import-auto-idm1027876768">
+      <title>Exercise</title>
+      <list id="import-auto-idm1027876384" list-type="enumerated" number-style="arabic">
+        <item>Prove <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>x</m:mi><m:mo stretchy="false">+</m:mo><m:mspace width="2em"/></m:mrow><m:mrow><m:mi mathvariant="italic">xy</m:mi><m:mo stretchy="false">=</m:mo><m:mrow><m:mi>x</m:mi><m:mo stretchy="false">+</m:mo><m:mi>y</m:mi></m:mrow></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">x+~xy=x+y</m:annotation></m:semantics></m:math> using direct applications of Boolean Algebra laws and truth tables.</item>
+        <item>Prove <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>x</m:mi><m:mrow><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:mspace width="2em"/><m:mrow><m:mi>x</m:mi><m:mo stretchy="false">+</m:mo><m:mi>y</m:mi></m:mrow></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow><m:mo stretchy="false">=</m:mo><m:mi mathvariant="italic">xy</m:mi></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">x left (~x+y right ) =xy</m:annotation></m:semantics></m:math> using direct applications of Boolean Algebra laws and truth tables.</item>
+        <item>Derive a Boolean expression for a voting machine which allows three persons to vote. The output is either yes or no dependent on the number of persons voting yes. Two restrictions: 1) No abstain allowed. That is each person has to vote either yes or no. 2) The outcome is yes if two or more yes votes; otherwise, the outcome is no. Normally, when forming a voting group, like board of trustee, the number of voting members is designated to an odd number to avoid a tie situation. Derive a sum-of-product format first and then use Karnaugh maps to simplify the expression.  </item>
+        <item>Simplify the following Boolean expressions using Karnaugh maps:<list id="import-auto-idm988596320" list-type="enumerated" number-style="arabic"><item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>B</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi>B</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>D</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>D</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} B acute {C} acute {D} + acute {A} B acute {C} D+AB acute {C} acute {D} +AB acute {C} D</m:annotation></m:semantics></m:math></item><item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>C</m:mi><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>C</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} acute {B} acute {C} acute {D} + acute {A} acute {B} C acute {D} +A acute {B} acute {C} acute {D} +A acute {B} C acute {D}</m:annotation></m:semantics></m:math></item><item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>E</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>C</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>E</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>C</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi>B</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi>B</m:mi><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>E</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi mathvariant="italic">BC</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mi>E</m:mi><m:mo stretchy="false">+</m:mo><m:mover accent="true"><m:mi>A</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi mathvariant="italic">BC</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mover accent="true"><m:mi>E</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">acute {A} acute {B} acute {C} acute {D} acute {E} + acute {A} acute {B} acute {C} acute {D} E+ acute {A} acute {B} C acute {D} E+ acute {A} acute {B} C acute {D} acute {E}   + acute {A} B acute {C} acute {D} acute {E} + acute {A} B acute {C} acute {D} E+ acute {A} BC acute {D} E+ acute {A} BC acute {D} acute {E}</m:annotation></m:semantics></m:math></item><item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">+</m:mo><m:mi mathvariant="italic">AB</m:mi></m:mrow><m:mover accent="true"><m:mi>C</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mrow><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>A</m:mi></m:mrow><m:mover accent="true"><m:mi>B</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mi>C</m:mi><m:mover accent="true"><m:mi>D</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">A+AB acute {C} acute {D} +A acute {B} C acute {D}</m:annotation></m:semantics></m:math></item></list></item>
+      </list>
+    </section>
+  </content>
+</document>

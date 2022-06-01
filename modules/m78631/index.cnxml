@@ -1,0 +1,354 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>Multiprocessing</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78631</md:content-id>
+  <md:title>Multiprocessing</md:title>
+  <md:abstract>This chapter introduces common multiprocessing models such as SMP, GPU, SIMD vs. MIMD, Amdahl’s Law, and the Flynn Taxonomy. Discuss the concept of parallel processing beyond the classical von Neumann model. Describe alternative parallel architectures such as SIMD and MIMD. Explain the concept of interconnection networks and characterize different approaches. Discuss the special concerns that multiprocessing systems present with respect to memory management and describe how these are addressed. Describe the differences between memory backplane, processor memory interconnect, and remote memory via networks, their implications for access latency and impact on program performance.</md:abstract>
+  <md:uuid>ed056a18-debe-49a4-b13a-4baddd8687a1</md:uuid>
+</metadata>
+
+<content>
+    <section id="import-auto-idm253310800">
+      <title>Multiprocessing</title>
+      <para id="import-auto-idm263361024">A computer system is possible to have more than one processor. Each processor is running an instruction at the same time (or in parallel). The term multiprocessing is used to describe such system. It is certain that a multiprocessing system will process multiple instructions at each time instant. Unlike multiprocessing, a single processing system only has one instruction running at each time instant. From the program’s perspective, multiprocessing can also mean a program is dynamically assigned to several processors working in tandem.  Theoretically, a two-processor  system will be running twice as fast as a single-processor system. However, practically, there are issues such as communication cost among processors, and parallelization. Some problems may not be parallelizable. It is inevitable to synchronize each process’ execution according to algorithms of the program in question. This cost may outweigh the speedup from multiprocessing. There are two types of multiprocessing: symmetric multiprocessing (SMP) and massively parallel processing (MPP).</para>
+    </section>
+    <section id="import-auto-idm230464304">
+      <title>Symmetric Multiprocessing</title>
+      <para id="import-auto-idm269342784">  The SMP is tightly coupled multiprocessing, in which the processors share a single memory and I/O bus or data path. An operating system manages task assignment and management for all the processors. Due to the advent VLSI technology, several processors may be packed in a chip called multi-core processors. When the SMP architecture applies to the multi-core processor, each core is treated as a separate processor. Buses, crossbar switches or on-chip mesh networks are used to interconnect processors in SMP. Processors interconnected by buses or cross bar switches may not scale well due to the low bandwidth and the high power consumption of the interconnection. On-chip m esh architectures avoid these drawbacks, and provide nearly linear scalability to much higher processor counts.</para>
+      
+      <para id="import-auto-idm200385088">
+        <emphasis effect="bold">Figure  A Typical SMP System</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm669776624">
+      <title>Hardware Support for SMP</title>
+      <para id="import-auto-idm630353136">Since the processors in SMP have to communicate each other to achieve a task, a multiprocessing protocol has to be implemented. This protocol dictates how the processors talk to each other to perform a computation. An Advanced Programmable Interrupt Controller (APIC) protocol is provided and implemented by Intel in its processors such as the Pentium and Pentium Pro. Intel chipsets supporting multiprocessing include 430HX, 440FX and 450GX/KX. APIC is a proprietary standard that prevents other CPU manufactures such as AMD and Cyrix from building processors that would communicate with Intel’s processor in the SMP model, though they may build an x86 compatible processors.In addition to the APIC protocol, <emphasis effect="bold">OPEN P</emphasis>rogrammable <emphasis effect="bold">I</emphasis>nterrupt <emphasis effect="bold">C</emphasis>ontroller (OpenPIC) is proposed by AMD and Cyrix for their multiprocessing protocol. It can support up to 32 processors. However, very few motherboards actually implement the OpenPIC. AMD had licensed the APIC for its Athlon and later processors. </para>
+      <para id="import-auto-idm619572176">A shared or non-shared level 2 cache in SMP processors has direct impact on its performance. For example, in processors such as the Intel Pentium Pro or Pentium II, the self-contained level 2 cache makes them a better choice for multiprocessing. If the level 2 cache is built on motherboard, it will be shared by each added processor and the performance will be degraded. Moreover, multiprocessors with a level 3 cache would be a best candidate to build a SMP system. Currently, such processors include Intel Core 2Quad, Core i7 (6 cores), AMD Propus (four AMD K10 cores), and AMD Thuban (6 AMD K10 cores).</para>
+    </section>
+    <section id="import-auto-idm665572016">
+      <title>Massively Parallel Processing</title>
+      <para id="import-auto-idm437776896">Processors can be loosely coupled to form a computing platform. A massively parallel processing (MPP) machine is such a computing platform with many networked processors, typically more than 200 processors. MPPs share many of the same characteristics as clusters, but MPP has a high speed interconnect network that allow communication among each individual processor, where a different operating system may be running. Each processor in MPP contains its own memory running a coordinated task. The number of processors in MPPs tends to be larger than that of clusters. </para>
+    </section>
+    <section id="import-auto-idm436424480">
+      <title>Distributed Computing</title>
+      <para id="import-auto-idm455145936">A program may be executed and distributed among a set of network connected computers. A distributed computer (a.k.a. a distributed memory multiprocessor) is composed of a multiple autonomous computers which communicated each other via a computer network. A program written for a distributed computing platform has to be divided into many coordinated tasks, and each of them is distributed to one or more computers in the system. The partial results from each computer are collected and are used to build the final result for the problem in question.  Distributed computing is highly scalable.</para>
+    </section>
+    <section id="import-auto-idm259285264">
+      <title>Cluster Computing</title>
+      <para id="import-auto-idm734530544">Typically, a cluster is a group of identical network connected computers that work together closely to run an application that solve a problem.  To some extent, this group of computers can be regarded as a single computer. The interconnected network in a cluster is normally, but not always, a fast local area network. Each computer in a cluster may not be symmetric, but in that case, load balancing becomes difficult. One of the advantages of cluster computing is its low cost compared to a single super computer with comparable speed. For example, the Beowulf cluster, a typical setting for cluster computing, is a cluster composed of multiple identical commercial off-the-shelf computers (such as PCs) network connected via the TCP/IP Ethernet. </para>
+    </section>
+    <section id="import-auto-idm482672864">
+      <title>Grid Computing</title>
+      <para id="import-auto-idm481578992">Grid computing is a collection of computing resources from multiple administrative domains so as to solve a difficult problem. The grid can be regarded as a distributed system with each loose coupled computer linked from different geographical areas. What deviated grid computing from traditional high performance computing platforms, such as cluster computing, is that it tends to be more loosely coupled, heterogeneous, and geographically dispersed. Once a grid is built, it may be running a variety of applications or a dedicated application. Middleware, a set of library objects including communication, and synchronization tools, is typically used to construct and manage a general-purpose grid. </para>
+      <para id="import-auto-idm730355552">The size of a grid varies. Grids are a form of distributed computing composed of many networked loosely coupled computers working together to perform a very large task. Therefore, the term “distributed” or “grid” computing, is a special type of parallel computing that relies on multiple computers, each of which has onboard CPUs, storage, power supplies, network interfaces, etc. They are connected via a conventional network interface, such as Ethernet. In contrast, the traditional notion of a supercomputer is build on many tightly connected processors through a local high-speed computer bus.</para>
+    </section>
+    <section id="import-auto-idm320582000">
+      <title>Multiprocessing versus Multiprogramming</title>
+      <para id="import-auto-idm461062176">Multiprocessing should not be confused with multiprogramming, or the interleaved execution of two or more programs by a processor. Today, the term is rarely used since all but the most specialized computer operating systems support multiprogramming. Multiprocessing can also be confused with multitasking, the management of programs and the system services they request as tasks that can be interleaved, and with multithreading, the management of multiple execution paths through the computer or of multiple users sharing the same copy of a program.</para>
+    </section>
+    <section id="import-auto-idm514442096">
+      <title>Multiprocess versus Multithread</title>
+      <para id="import-auto-idm622062208">In order to take advantage of multiprocessing, application software is  designed specifically. Normally, a program has to be decomposed into different tasks, which are implemented into processes or threads. A process is a running program created by the operating system whereas a thread is a light weight process. A process may spawn several threads, each of which has its own control and stacks. The main difference between a process and a thread is that a process is the basic execution unit with a complete set of memory segments such as code, data, heap and stack, whereas a thread may have only a stack segment, and shared other memory segments with a process. The larger process image has a direct impact on the cost of context switching. This is the reason why a thread is called a light weight process. Multiprocessing is managed by the operating system, which assigns task to processes or threads, and schedules them  to be executed by the processors in the system. Programs designed for multiprocessing are called multithreaded applications. Each thread may be executed independently working on a small task. By allowing the OS to schedule several threads to simultaneously run on the available processors in the system will improve performance. However, should an  application is not or cannot be designed this way, obviously only one of the multiple processors is active at a time. </para>
+    </section>
+    <section id="import-auto-idm321460432">
+      <title>Multitasking</title>
+      <para id="import-auto-idm322103168">The term multitasking is referring to running multiple applications at a time. Most contemporary operating systems such as Unix and Windows are multitasking. Although the operating systems seem to run multiple programs simultaneously, there may have only one processor. The illusion is created by using time sharing technique, which iteratively runs a small time tick for each program. Such system may not be multiprocessing because there is only one processor. It is perfectly okay to have a multitasking system over a multiprocessing system. </para>
+    </section>
+    <section id="import-auto-idm479592416">
+      <title>Asymmetric versus Symmetric</title>
+      <para id="import-auto-idm227152992">How the operating system distributes tasks among the available processors in a multiprocessing system can be either <emphasis effect="italics">asymmetric</emphasis> or <emphasis effect="italics">symmetric</emphasis>. Asymmetric multiprocessing reserves some processors for system tasks only, and others are for user applications only. This inflexible design may degrade performance in cases that there are systems tasks but without available system processors to be scheduled with, or vice versa. Symmetric multiprocessing, on the other hand, allows a flexible tasks-to-processors allocation. Either system or user tasks may be scheduled on any available processor. T herefore a better performance may be attained.</para>
+    </section>
+    <section id="import-auto-idm294597088">
+      <title>Cloud Computing</title>
+      <para id="import-auto-idm445830272">Cloud computing provide a virtual platform that integrates applications, data management, and storage. The end-users of the virtual platform do not have the knowledge of where the servers are located physically, and nor is the system configuration. Because most of the computing is done in the cloud, the end-users only need to have a very thin client, such as a netbook or handheld device. Cloud computing is a new IT service model over the Internet with dynamic scalability and virtual resources. It is designed based on a client/server paradigm, which allows users to access the service via a regular web browser. This computing model shifts the burden of software/hardware management, upgrades, backups, and administration from end-users to the service provider.  A net result would be lowering the cost to the users with a better cost/performance ratio.</para>
+      <para id="import-auto-idm464069888">Applications in cloud computing are delivered by their service providers via the Internet. Business software and data are stored in the place where the servicer is located. Any device with the ability to run a browser would be able to access the service without limitation of time and location. A cloud computing may be associated with a data center which stores business data and provide data accesses via web-based technologies such as AJAX. It is also possible to deliver legacy applications using a screen-sharing technology.</para>
+      <para id="import-auto-idm443167088">The idea of cloud computing is to minimize infrastructure cost, and maximize service sharing. An obvious gain is that an enterprise would totally eliminate the cost to maintain its infrastructure such as computers, servers, software, and their administration. Running business applications in cloud computing is normally faster with easier maintenance. This allows IT to quickly response to the unpredictable business demand. </para>
+    </section>
+    <section id="import-auto-idm671683600">
+      <title>Amdahl’s Law</title>
+      <para id="import-auto-idm694381152">It is not always true that a system’s performance may be improved by adding more and more processors. Speedup is a term that is used to gauge the improvement over the old system int terms of execution time. </para>
+      <para id="import-auto-idm454101856">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+          <m:semantics>
+            <m:mrow>
+              <m:mi mathvariant="italic">speedup</m:mi>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:msub>
+                  <m:mi mathvariant="italic">time</m:mi>
+                  <m:mrow>
+                    <m:mi mathvariant="italic">before</m:mi>
+                    <m:mi mathvariant="italic">improvement</m:mi>
+                  </m:mrow>
+                </m:msub>
+                <m:msub>
+                  <m:mi mathvariant="italic">time</m:mi>
+                  <m:mrow>
+                    <m:mi mathvariant="italic">after</m:mi>
+                    <m:mi mathvariant="italic">improvement</m:mi>
+                  </m:mrow>
+                </m:msub>
+              </m:mfrac>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0">speedup= {{time} rsub {before improvement}} over {{time} rsub {after improvement}}</m:annotation>
+          </m:semantics>
+        </m:math>
+      </para>
+      <para id="import-auto-idm231829488">The theoretical upper bound of speedup is 2 by adding one processor to a one-processor system. That says the extra processor will take one half of load evenly. However, in practice, the work load may not be evenly divided, and sometimes the load may not be divided at all. In such case, the speedup is much less than the theoretical upper bound. </para>
+      <para id="import-auto-idm784362432">Gene Amdahl  proposed the Amdahl's law, also known as Amdahl's argument, which is used to find the maximum expected improvement to an overall system when only part of the system is improved. It is often used in parallel computing to predict the theoretical upper bound of speedup when using multiple processors.</para>
+      <para id="import-auto-idm284003264">If a program is consisting of a sequential part and a parallel part, the speedup running it on multiple processors is dominated by the time needed for the sequential part of the program. The rationale is that the parallel part may be executed on <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>x</m:mi><m:annotation encoding="StarMath 5.0">x</m:annotation></m:semantics></m:math> processors, which results in the execution time of the parallel part to be <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>1</m:mn><m:mo stretchy="false">/</m:mo><m:mi>X</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">1/ X</m:annotation></m:semantics></m:math>. The total execution time, however, is <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">max</m:mi><m:mi>⁡</m:mi><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mfrac><m:mn>1</m:mn><m:mi>X</m:mi></m:mfrac><m:mi>,</m:mi><m:mi>Y</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">max⁡( {1} over {X} , Y )</m:annotation></m:semantics></m:math>, where <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Y</m:mi><m:annotation encoding="StarMath 5.0">Y</m:annotation></m:semantics></m:math> is the execution time for the sequential part. <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>1</m:mn><m:mo stretchy="false">/</m:mo><m:mi>X</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">1/ X</m:annotation></m:semantics></m:math> is approaching to zero if unlimited processors are used. The total execution will still be dominated by the sequential part, which is <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Y</m:mi><m:annotation encoding="StarMath 5.0">Y</m:annotation></m:semantics></m:math>. </para>
+      <para id="import-auto-idm243982048">For example, if a program requires 100 hours running on a single processor core, and a sequential part that needs 5 hour, no matter how many processors used to the parallel part (95 hours), its minimum execution time may not be less than the sequential 5 hour. The speedup is calculated as follows:</para>
+      <para id="import-auto-idm669698176">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+          <m:semantics>
+            <m:mrow>
+              <m:mrow>
+                <m:mi mathvariant="italic">speedup</m:mi>
+                <m:mo stretchy="false">=</m:mo>
+                <m:mfrac>
+                  <m:msub>
+                    <m:mi mathvariant="italic">time</m:mi>
+                    <m:mrow>
+                      <m:mi mathvariant="italic">before</m:mi>
+                      <m:mi mathvariant="italic">exeuction</m:mi>
+                    </m:mrow>
+                  </m:msub>
+                  <m:msub>
+                    <m:mi mathvariant="italic">time</m:mi>
+                    <m:mrow>
+                      <m:mi mathvariant="italic">after</m:mi>
+                      <m:mi mathvariant="italic">execution</m:mi>
+                    </m:mrow>
+                  </m:msub>
+                </m:mfrac>
+                <m:mo stretchy="false">=</m:mo>
+                <m:mfrac>
+                  <m:mn>100</m:mn>
+                  <m:mrow>
+                    <m:mn>5</m:mn>
+                    <m:mo stretchy="false">+</m:mo>
+                    <m:mfrac>
+                      <m:mn>95</m:mn>
+                      <m:mi>X</m:mi>
+                    </m:mfrac>
+                  </m:mrow>
+                </m:mfrac>
+              </m:mrow>
+              <m:mi>≤</m:mi>
+              <m:mn>20</m:mn>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0">speedup= {{time} rsub {before exeuction}} over {{time} rsub {after execution } } = {100} over {5+ {95} over {X} } ≤20</m:annotation>
+          </m:semantics>
+        </m:math>
+      </para>
+      <para id="import-auto-idm730474576">The speedup 20x tells a fact that this program will be running up to 20 times faster if it is running on a parallel machine. Sometimes, the number may be smaller and it is arguable whether the program should be parallelized!</para>
+      <para id="import-auto-idm457332608">In the above equation, if both the denominator and numerator are divided by 100, the following equation is derived:</para>
+      <para id="import-auto-idm674806752">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+          <m:semantics>
+            <m:mrow>
+              <m:mi mathvariant="italic">speedup</m:mi>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:msub>
+                  <m:mi mathvariant="italic">time</m:mi>
+                  <m:mrow>
+                    <m:mi mathvariant="italic">before</m:mi>
+                    <m:mi mathvariant="italic">exeuction</m:mi>
+                  </m:mrow>
+                </m:msub>
+                <m:msub>
+                  <m:mi mathvariant="italic">time</m:mi>
+                  <m:mrow>
+                    <m:mi mathvariant="italic">after</m:mi>
+                    <m:mi mathvariant="italic">execution</m:mi>
+                  </m:mrow>
+                </m:msub>
+              </m:mfrac>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:mrow>
+                  <m:mn>100</m:mn>
+                  <m:mo stretchy="false">/</m:mo>
+                  <m:mn>100</m:mn>
+                </m:mrow>
+                <m:mrow>
+                  <m:mrow>
+                    <m:mn>5</m:mn>
+                    <m:mo stretchy="false">/</m:mo>
+                    <m:mn>100</m:mn>
+                  </m:mrow>
+                  <m:mo stretchy="false">+</m:mo>
+                  <m:mfrac>
+                    <m:mrow>
+                      <m:mn>95</m:mn>
+                      <m:mo stretchy="false">/</m:mo>
+                      <m:mn>100</m:mn>
+                    </m:mrow>
+                    <m:mi>X</m:mi>
+                  </m:mfrac>
+                </m:mrow>
+              </m:mfrac>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0">speedup= {{time} rsub {before exeuction}} over {{time} rsub {after execution } } = {100/100} over {5/100+ {95/100} over {X} }</m:annotation>
+          </m:semantics>
+        </m:math>
+      </para>
+      <para id="import-auto-idm634770272">Let <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>P</m:mi><m:annotation encoding="StarMath 5.0">P</m:annotation></m:semantics></m:math> be the parallel portion. The above equation becomes</para>
+      <para id="import-auto-idm233955040">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+          <m:semantics>
+            <m:mrow>
+              <m:mi mathvariant="italic">speedup</m:mi>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:msub>
+                  <m:mi mathvariant="italic">time</m:mi>
+                  <m:mrow>
+                    <m:mi mathvariant="italic">before</m:mi>
+                    <m:mi mathvariant="italic">exeuction</m:mi>
+                  </m:mrow>
+                </m:msub>
+                <m:msub>
+                  <m:mi mathvariant="italic">time</m:mi>
+                  <m:mrow>
+                    <m:mi mathvariant="italic">after</m:mi>
+                    <m:mi mathvariant="italic">execution</m:mi>
+                  </m:mrow>
+                </m:msub>
+              </m:mfrac>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:mn>1</m:mn>
+                <m:mrow>
+                  <m:mrow>
+                    <m:mo fence="true" stretchy="false">(</m:mo>
+                    <m:mrow>
+                      <m:mrow>
+                        <m:mn>1</m:mn>
+                        <m:mo stretchy="false">−</m:mo>
+                        <m:mi>P</m:mi>
+                      </m:mrow>
+                    </m:mrow>
+                    <m:mo fence="true" stretchy="false">)</m:mo>
+                  </m:mrow>
+                  <m:mo stretchy="false">+</m:mo>
+                  <m:mfrac>
+                    <m:mi>P</m:mi>
+                    <m:mi>X</m:mi>
+                  </m:mfrac>
+                </m:mrow>
+              </m:mfrac>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0">speedup= {{time} rsub {before exeuction}} over {{time} rsub {after execution } } = {1} over {(1-P)+ {P} over {X} }</m:annotation>
+          </m:semantics>
+        </m:math>
+      </para>
+      <para id="import-auto-idm266164256"> This is Amdahl’s law which emphasizes the improvement that affects the parallel proportion P. The <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>X</m:mi><m:annotation encoding="StarMath 5.0">X</m:annotation></m:semantics></m:math> is the number of processors added. In general, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>X</m:mi><m:annotation encoding="StarMath 5.0">X</m:annotation></m:semantics></m:math> can be the speedup for the parallel part. For example, if an improvement affects the parallel part, which is rated to 20% of the total computation, P will be 0.2.  If the improvement makes the parallel 2 times faster, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>X</m:mi><m:annotation encoding="StarMath 5.0">X</m:annotation></m:semantics></m:math> will be 2. Amdahl's law states that the overall speedup of applying the improvement will be:</para>
+      <para id="import-auto-idm247136448">
+        <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+          <m:semantics>
+            <m:mrow>
+              <m:mi mathvariant="italic">speedup</m:mi>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:mn>1</m:mn>
+                <m:mrow>
+                  <m:mrow>
+                    <m:mo fence="true" stretchy="true">(</m:mo>
+                    <m:mrow>
+                      <m:mrow>
+                        <m:mn>1</m:mn>
+                        <m:mo stretchy="false">−</m:mo>
+                        <m:mi>P</m:mi>
+                      </m:mrow>
+                    </m:mrow>
+                    <m:mo fence="true" stretchy="true">)</m:mo>
+                  </m:mrow>
+                  <m:mo stretchy="false">+</m:mo>
+                  <m:mfrac>
+                    <m:mi>P</m:mi>
+                    <m:mi>X</m:mi>
+                  </m:mfrac>
+                </m:mrow>
+              </m:mfrac>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:mn>1</m:mn>
+                <m:mrow>
+                  <m:mrow>
+                    <m:mo fence="true" stretchy="true">(</m:mo>
+                    <m:mrow>
+                      <m:mrow>
+                        <m:mn>1</m:mn>
+                        <m:mo stretchy="false">−</m:mo>
+                        <m:mn>0.2</m:mn>
+                      </m:mrow>
+                    </m:mrow>
+                    <m:mo fence="true" stretchy="true">)</m:mo>
+                  </m:mrow>
+                  <m:mo stretchy="false">+</m:mo>
+                  <m:mfrac>
+                    <m:mn>0.2</m:mn>
+                    <m:mn>2</m:mn>
+                  </m:mfrac>
+                </m:mrow>
+              </m:mfrac>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:mn>1</m:mn>
+                <m:mn>0.9</m:mn>
+              </m:mfrac>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mfrac>
+                <m:mn>10</m:mn>
+                <m:mn>9</m:mn>
+              </m:mfrac>
+              <m:mo stretchy="false">=</m:mo>
+              <m:mn>1.1</m:mn>
+            </m:mrow>
+            <m:annotation encoding="StarMath 5.0">speedup= {1} over {left (1-P right ) + {P} over {X} } = {1} over {left (1-0.2 right ) + {0.2} over {2}} = {1} over {0.9} = {10} over {9} =1.1</m:annotation>
+          </m:semantics>
+        </m:math>
+      </para>
+    </section>
+    <section id="import-auto-idm611926464">
+      <title>Many-core Processing - Graphics Processing Unit</title>
+      <para id="import-auto-idm241057168">At present, nearly all microprocessor manufacturers adopt chip-level multiprocessor (CMP) as a way to design and manufacture current and next generation processors. With CMP, multiple processor cores are contained in a single chip. Currently, these multicore processors have already gained widespread adoption in various computing platforms including game consoles, hand-held devices, high-performance computers, network devices, and mission-critical embedded systems. The use of multicore processors in these systems may result in several benefits. First, the use of multicore processors can lower energy consumption because the computation efforts may be distributed to multiple cores that are running at lower clock speed than that of the monolithic counterpart. Lower clock speed can significantly reduce energy consumption of these systems. Second, the use of multicore processors provides an opportunity to exploit thread-level parallelism. When multithreaded programs are executed on these processors, multiple threads may concurrently run on multiple cores. Shared data can also be accessed efficiently using heap memory.</para>
+      <para id="import-auto-idm498708624">A graphics processing unit (GPU) is a specialized processor, consisting of thousands of processing cores in a chip, designed to rapidly manipulate and alter video memory that contains information for displaying pixels on computer monitors. GPUs are used virtually in any system with a display device including embedded systems, mobile phones, personal computers, workstations, and game consoles. The latest development in modern GPUs creates a platform for general high performance computing because their efficient processing at manipulating large blocks of data in parallel. Programming on GPUs for general purpose computing can be really hard before the development <emphasis effect="bold">Compute Unified Device Architecture</emphasis> (CUDA) by Nvidia. With CUDA, a programmer may be crated millions of threads running on thousand of cores in GPU easily.  </para>
+    </section>
+    <section id="import-auto-idm455387520">
+      <title>Flynn's Taxonomy</title>
+      <para id="import-auto-idm406986640">Flynn’s taxonomy was proposed by Michael J. Flynn to be one of the earliest classification systems for parallel/sequential computers and programs. Under Flynn’s taxonomy, programs and computers are classified by whether they were operating using a single set or multiple sets of instructions, whether or not those instructions were using a single or multiple sets of data. The following table listed the Flynn’s taxonomy.</para>
+      <para id="import-auto-idm673539056">Table  Flynn's Taxonomy</para>
+      <table id="import-auto-idm461045584" summary="">
+        <tgroup cols="3">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry/>
+              <entry>Single Instruction</entry>
+              <entry> Multiple Instruction</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Single Data</entry>
+              <entry>SISD</entry>
+              <entry>MISD</entry>
+            </row>
+            <row>
+              <entry>Multiple Data</entry>
+              <entry>SIMD</entry>
+              <entry>MIMD</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm248428528">The single-instruction-single-data (SISD) classification is equivalent to an entirely sequential program. The single-instruction-multiple-data (SIMD) classification is analogous to doing the same operation repeatedly over a large data set. Video data processing belongs to this category as a huge amount of video data is typically processed by an instruction, which may, e.g., change its intensity. Multiple-instruction-single-data (MISD) is a rarely used classification. For example, systolic arrays process single data stream by multiple instructions, which may reduce time complexity for an array multiplication to linear from cubic. Multiple-instruction-multiple-data (MIMD) programs are by far the most common type of parallel programs. </para>
+      <para id="import-auto-idm612450208">Owning to its simplicity and understandability, Flynn’s taxonomy has been widely used to classifying parallel computers, though some machines are hybrids of these categories</para>
+    </section>
+  </content>
+</document>

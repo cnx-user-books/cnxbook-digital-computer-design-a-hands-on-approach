@@ -1,0 +1,467 @@
+<document xmlns="http://cnx.rice.edu/cnxml">
+  <title>State Machines</title>
+<metadata xmlns:md="http://cnx.rice.edu/mdml">
+  <md:content-id>m78632</md:content-id>
+  <md:title>State Machines</md:title>
+  <md:abstract>This chapter describes states and discuss the concept of finite state machines. Describe a computer as a state machine that interprets machine instructions. Describe computations as a system characterized by a known set of configurations with transitions from one unique configuration (state) to another (state). Describe the distinction between systems whose output is only a function of their input (Combinational) and those with memory/history (Sequential). Explain how a program or network protocol can also be expressed as a state machine, and that alternative representations for the same computation can exist. Develop state machine descriptions for simple problem statement solutions (e.g., traffic light sequencing, pattern recognizers). Derive time-series behavior of a state machine from its state machine representation. Design a deterministic finite state machine to accept a specified language. Explain clocks, Latches, sequencing, registers, and memory.</md:abstract>
+  <md:uuid>eede31cf-b678-4083-a3e8-fa8aec9af888</md:uuid>
+</metadata>
+
+<content>
+    <section id="import-auto-idm1475279968">
+      <title>State Machines</title>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <para id="import-auto-idm1452284400">
+        
+      </para>
+    </section>
+    <section id="import-auto-idm1274361712">
+      <title>Introduction</title>
+      <para id="import-auto-idm1451231872">State machines are used extensively to model a system by its states and transitions. In computer science, several core fields rely on state machines to design, and model system behaviors. These fields include software engineering, computer architecture, operating systems, compilers, and the like. In computer architecture, state machines are frequently used to design sequential logic. It’s important to learn state machines and their uses in almost all areas of computer science. Therefore, in theory of computation, state machines play a key role.</para>
+    </section>
+    <section id="import-auto-idm395520240">
+      <title>State Transition System</title>
+      <para id="import-auto-idm355652144">A state transition system is an abstract machine to studying computation. It is composed of a set of states, and transitions between states. The number of states or the number of transitions in a state transition system may not be finite or countable. If the number of states is finite, the state transition system is called finite automata or finite state automata. </para>
+      <para id="import-auto-idm397983360"> The transitions may be labeled. The label is used to indicate expected inputs, conditions that trigger the transition, or actions performed during the transition. For example, a string matcher that recognizes the word “ABC” will have 4 states including an initial state (<m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math>), and one state per each letter (<m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub></m:mrow><m:mrow/></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {1} ,  {s} rsub {2} ,  {s} rsub {3} )</m:annotation></m:semantics></m:math>. There are three transitions: from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {0} → {s} rsub {1}</m:annotation></m:semantics></m:math> on reading A, from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {1} → {s} rsub {2}</m:annotation></m:semantics></m:math> on reading B, and from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {2} → {s} rsub {3}</m:annotation></m:semantics></m:math> on reading C.  illustrates the state machine for the string matcher.</para>
+      <figure id="import-auto-idm398819904"><media id="import-auto-idm1057896272" alt="">
+            <image mime-type="image/png" src="../../media/i1.png" height="200" width="350"/>
+          </media>
+</figure><para id="import-auto-idm382650000">
+        <emphasis effect="bold">Figure  The State Machine for a String Matcher that Recognizes the Word "ABC"</emphasis>
+      </para>
+      <para id="import-auto-idm1479845152">Formally, the labeled state transition system is a triple <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mi>Q</m:mi><m:mi>,</m:mi><m:mi>Σ</m:mi><m:mi>,</m:mi><m:mi>δ</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow><m:annotation encoding="StarMath 5.0">(Q,  Σ , δ)</m:annotation></m:semantics></m:math> where <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> is a set of states, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Σ</m:mi><m:annotation encoding="StarMath 5.0">Σ</m:annotation></m:semantics></m:math> is a set of labels, or alphabet, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>δ</m:mi><m:annotation encoding="StarMath 5.0">δ</m:annotation></m:semantics></m:math> is a transition function that maps <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mi>×</m:mi><m:mi>Σ</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">Q× Σ</m:annotation></m:semantics></m:math> to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math>, i.e., <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>δ</m:mi><m:mi mathvariant="normal">:</m:mi><m:mi>Q</m:mi><m:mi>×</m:mi><m:mi>Σ</m:mi><m:mi>⟶</m:mi><m:mi>Q</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">δ:Q× Σ ⟶Q</m:annotation></m:semantics></m:math>. In the example shown in , <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mo stretchy="false">{</m:mo></m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:mo stretchy="false">}</m:mo></m:mrow><m:annotation encoding="StarMath 5.0">Q=\{ {s} rsub {0} , {s} rsub {1} , {s} rsub {2} , {s} rsub {3} \}</m:annotation></m:semantics></m:math>, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>Σ</m:mi><m:mo stretchy="false">=</m:mo><m:mo stretchy="false">{</m:mo></m:mrow><m:mi>A</m:mi><m:mi>,</m:mi><m:mi>B</m:mi><m:mi>,</m:mi><m:mi>C</m:mi><m:mo stretchy="false">}</m:mo></m:mrow><m:annotation encoding="StarMath 5.0">Σ =\{A, B, C\}</m:annotation></m:semantics></m:math>, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>δ</m:mi><m:annotation encoding="StarMath 5.0">δ</m:annotation></m:semantics></m:math> is defined as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>δ</m:mi><m:mrow><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>,</m:mi><m:mi>A</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow><m:mo stretchy="false">=</m:mo><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub></m:mrow><m:mi>,</m:mi><m:mi>δ</m:mi><m:mrow><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>,</m:mi><m:mi>B</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow><m:mo stretchy="false">=</m:mo><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">δ left ({s} rsub {0} , A right ) = {s} rsub {1} , δ left ({s} rsub {1} , B right ) = {s} rsub {2}</m:annotation></m:semantics></m:math>, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>δ</m:mi><m:mrow><m:mrow><m:mo fence="true" stretchy="true">(</m:mo><m:mrow><m:mrow><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:mi>,</m:mi><m:mi>C</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="true">)</m:mo></m:mrow><m:mo stretchy="false">=</m:mo><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">δ left ({s} rsub {2} , C right ) = {s} rsub {3}</m:annotation></m:semantics></m:math>. </para>
+    </section>
+    <section id="import-auto-idm1284496256">
+      <title>Finite Automata</title>
+      <para id="import-auto-idm1231460544">Practically, we limit the number of states to be finite in state machines for them to be realizable. State machines with finite states are called finite state machines. The example, in , is a finite state machine because it has 4 states. However, the matcher does not output when a string “ABC” is recognized? If the system moves states from state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math>, initial state, to state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {3}</m:annotation></m:semantics></m:math>, according to the state transition function and corresponding inputs, it actually recognizes the string “ABC.” In other words, the system accepts the input string “ABC” as long as it is in state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {3}</m:annotation></m:semantics></m:math>. The state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {3}</m:annotation></m:semantics></m:math> is called a final or accepting state. Note that there may have more than one final state. The term “finite automata” is referring to finite state machines with a set of final or accepting states. For example, if we want the matcher to recognize both “ABC”, and “AB”, both states <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {2}</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {3}</m:annotation></m:semantics></m:math> should be final states.  illustrates an example of a finite automaton with 2 final states. </para>
+      <figure id="import-auto-idm371039200"><media id="b" alt="">
+            <image mime-type="image/png" src="../../media/i2.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm1329177104">
+        <emphasis effect="bold">Figure  The String Matcher with 2 Accepting States Marked by Double Circles</emphasis>
+      </para>
+      <para id="import-auto-idm396385392">It is worth mentioning that the state transition function discussed so far will take the system to a specific state according to the input. The type of final automata is called deterministic finite automata (DAF). Practically, it is convenient to model a system with some non-deterministic features. Given an input that triggers a transition, the system may move to another state or a set of states. For example, in the matcher automaton, if we want to recognize both “AD”, and “ABC”, we could build two state machines, one for “ABC”, and the other for “AD,” and link them together at their initial states as shown in  with final states marked by double circles. In this case, at state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math>, the system could move to state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math> or state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>4</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {4}</m:annotation></m:semantics></m:math> on input A. This creates a nondeterministic finite automaton (NFA). With this non-determinism, one would reuse as many states as possible in modeling a system with more expressive power. Plus, each NFA is equivalent to a DFA. </para>
+      <figure id="import-auto-idm365566304"><media id="import-auto-idm105789627" alt="">
+            <image mime-type="image/png" src="../../media/i3.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm400793536">
+        <emphasis effect="bold">Figure  An Example of Nondeterministic Finite Automata</emphasis>
+      </para>
+      <para id="import-auto-idm1259816800">Formally, the deterministic finite automaton <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>A</m:mi><m:annotation encoding="StarMath 5.0">A</m:annotation></m:semantics></m:math> is defined as a five-tuple </para>
+      <para id="import-auto-idm381468192"><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">=</m:mo><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mi>Q</m:mi><m:mi>,</m:mi><m:mi>Σ</m:mi><m:mi>,</m:mi><m:mi>δ</m:mi><m:mi>,</m:mi><m:msub><m:mi>q</m:mi><m:mn>0</m:mn></m:msub><m:mi>,</m:mi><m:mi>F</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A=(Q,  Σ,  δ,  {q} rsub {0} , F)</m:annotation></m:semantics></m:math> where</para>
+      <list id="import-auto-idm1473579760" list-type="enumerated" number-style="lower-alpha">
+        <item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> is a finite set of states, </item>
+        <item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Σ</m:mi><m:annotation encoding="StarMath 5.0">Σ</m:annotation></m:semantics></m:math> is a finite set of labels or symbols,</item>
+        <item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>δ</m:mi><m:annotation encoding="StarMath 5.0">δ</m:annotation></m:semantics></m:math> is a transition function, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>δ</m:mi><m:mi mathvariant="normal">:</m:mi><m:mi>Q</m:mi><m:mi>×</m:mi><m:mi>Σ</m:mi><m:mi>⟶</m:mi><m:mi>Q</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">δ:Q× Σ ⟶Q</m:annotation></m:semantics></m:math>,</item>
+        <item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>q</m:mi><m:mn>0</m:mn></m:msub><m:mi>∈</m:mi><m:mi>Q</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">{q} rsub {0} ∈Q</m:annotation></m:semantics></m:math> is an initial state, and</item>
+        <item><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>F</m:mi><m:mi>⊆</m:mi><m:mi>Q</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">F⊆Q</m:annotation></m:semantics></m:math> is a set of finite or accepting states.</item>
+      </list>
+      <para id="import-auto-idm1256704272">It can be observed that the definition of the NFA is the same as the DFA except the transition function. Instead of mapping to a specific state in DFA, the transition function maps to a set of states, specifically, a subset of <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math>. Thus, the transition function of NFA is defined as follows:</para>
+      <para id="import-auto-idm398381184"><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>δ</m:mi><m:mi mathvariant="normal">:</m:mi><m:mi>Q</m:mi><m:mi>×</m:mi><m:mi>Σ</m:mi><m:mi>⟶</m:mi><m:msup><m:mn>2</m:mn><m:mi>Q</m:mi></m:msup></m:mrow><m:annotation encoding="StarMath 5.0">δ:Q× Σ ⟶ {2} ^ {Q}</m:annotation></m:semantics></m:math>  where <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msup><m:mn>2</m:mn><m:mi>Q</m:mi></m:msup><m:annotation encoding="StarMath 5.0">{2} ^ {Q}</m:annotation></m:semantics></m:math> denotes subsets of <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math>.</para>
+    </section>
+    <section id="import-auto-idm363779072">
+      <title>The SR Latch</title>
+      <para id="import-auto-idm354883952">A hardware implementation of finite automata requires state transition logic and a state variable that keeps what state is at each moment. The state variable is implemented using a register typically. A register is a basic sequential logic, and it is based on a hardware latch. A latch is like a bi-stable multi-vibrator, an electronic circuit that has two stable states, and thus can be used to store one bit information. Normally, latches are transparent storage devices whereas flip-flops are non-transparent ones with triggering clocks. </para>
+    </section>
+    <section id="import-auto-idm1266693664">
+      <title>The SR NOR Latch</title>
+      <para id="import-auto-idm1217943440">The output of a latch not only depends on its inputs, but also its current state. The most fundamental latch is SR latch that can be built from static logic gates. The letter “S” stands for set and the letter “R” denotes reset. Two NOR gates (not OR) are cross-coupled to build a SR NOR latch as depicts in . The outputs are <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> and its complement <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {Q}</m:annotation></m:semantics></m:math>. Given the inputs <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>S</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1,</m:mn></m:mrow><m:mrow><m:mi>R</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">S=1, R=0</m:annotation></m:semantics></m:math>, There are two cases: 1) when <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">Q=1 ( acute {Q} =0)</m:annotation></m:semantics></m:math> or 2) <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">Q=0 ( acute {Q} =1)</m:annotation></m:semantics></m:math>. Let’s use the aggregated notation for <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">SRQ</m:mi><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">SRQ acute {Q}</m:annotation></m:semantics></m:math> to derive the value change step by step. When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=1</m:annotation></m:semantics></m:math>, the signals <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">SRQ</m:mi><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">SRQ acute {Q}</m:annotation></m:semantics></m:math> change from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>1010</m:mn><m:mi>⇒</m:mi><m:mn>1010</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">1010⇒1010</m:annotation></m:semantics></m:math>. Actually, all signals are not changed in this case because the set signal will set <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> to true but <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> is already true. So nothing got changed. When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=0</m:annotation></m:semantics></m:math>, the <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">SRQ</m:mi><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">SRQ acute {Q}</m:annotation></m:semantics></m:math> changes from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>1001</m:mn><m:mi>⇒</m:mi><m:mn>1010</m:mn><m:mi>⇒</m:mi><m:mn>1010</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">1001⇒1010⇒1010</m:annotation></m:semantics></m:math>. All the signals are stabilized at <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mn>1010</m:mn><m:annotation encoding="StarMath 5.0">1010</m:annotation></m:semantics></m:math>. This result shows that the set operation will make <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> true if it is not.</para>
+      <figure id="import-auto-idm1340923232"><media id="import-auto-idm105896272" alt="">
+            <image mime-type="image/png" src="../../media/i4.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm1257717232">
+        <emphasis effect="bold">Figure  The SR NOR Latch</emphasis>
+      </para>
+      <para id="import-auto-idm380437616">Assume that the inputs <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>S</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">S=0</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>R</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">R=1</m:annotation></m:semantics></m:math>. We again have to consider two cases: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=0</m:annotation></m:semantics></m:math>, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=1</m:annotation></m:semantics></m:math>. When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=0</m:annotation></m:semantics></m:math>, the aggregated signals <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">SRQ</m:mi><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">SRQ acute {Q}</m:annotation></m:semantics></m:math> will change from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>0101</m:mn><m:mi>⇒</m:mi><m:mn>0101</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">0101⇒0101</m:annotation></m:semantics></m:math>. As a matter of fact, the outputs are not changed at all. The reason is because the reset operation on a state that <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> is ready zero will not change anything. When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=1</m:annotation></m:semantics></m:math>, the aggregated signals change from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>0110</m:mn><m:mi>⇒</m:mi><m:mn>0100</m:mn><m:mi>⇒</m:mi><m:mn>0101</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">0110⇒0100⇒0101</m:annotation></m:semantics></m:math>. The signals stabilize at <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mn>0101</m:mn><m:annotation encoding="StarMath 5.0">0101</m:annotation></m:semantics></m:math>, i.e., the output <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> has been reset to zero. Note that the transit value <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mn>0100</m:mn><m:annotation encoding="StarMath 5.0">0100</m:annotation></m:semantics></m:math> is not stable and is caused by the propagation delay. It also violates the complement outputs. Hopefully, it is just a short transit value.</para>
+      <para id="import-auto-idm1310450112">Given the inputs <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>S</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">S=0</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>R</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">R=0</m:annotation></m:semantics></m:math>, the output should not be changed, i.e., the latch keeps its information. To find out why? Recall that the false law in Boolean algebra states <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mn>0</m:mn><m:mo stretchy="false">+</m:mo><m:mi>x</m:mi></m:mrow><m:mo stretchy="false">=</m:mo><m:mi>x</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">0+x=x</m:annotation></m:semantics></m:math>. Since both <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>S</m:mi><m:annotation encoding="StarMath 5.0">S</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>R</m:mi><m:annotation encoding="StarMath 5.0">R</m:annotation></m:semantics></m:math> are zero, each of the NOR gate will be dominated by the inverse of either <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> or <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {Q}</m:annotation></m:semantics></m:math>. Let’s examine the upper NOR gate in : <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">+</m:mo><m:mi>S</m:mi></m:mrow><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">+</m:mo><m:mn>0</m:mn></m:mrow><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">acute {Q+S} = acute {Q+0} = acute {Q}</m:annotation></m:semantics></m:math>, which is the output of the upper NOR gate. The relation of inputs and output of the lower NOR gate: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mover accent="true"><m:mrow><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mi>R</m:mi></m:mrow><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mrow><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">+</m:mo><m:mn>0</m:mn></m:mrow><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">´</m:mo></m:mover><m:mo stretchy="false">=</m:mo><m:mi>Q</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">acute {acute {Q} +R} = acute {acute {Q} +0} = acute {acute {Q}} =Q</m:annotation></m:semantics></m:math>. It is concluded that the outputs <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {Q}</m:annotation></m:semantics></m:math> will not change when both inputs <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>S</m:mi><m:annotation encoding="StarMath 5.0">S</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>R</m:mi><m:annotation encoding="StarMath 5.0">R</m:annotation></m:semantics></m:math> are zero. In other words, this combination of inputs to the SR NOR latch will allow it to keep its current state.</para>
+      <para id="import-auto-idm1265953296">The most interesting combination of inputs is when both <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>S</m:mi><m:annotation encoding="StarMath 5.0">S</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>R</m:mi><m:annotation encoding="StarMath 5.0">R</m:annotation></m:semantics></m:math> are one. Once again, there are two cases to be analyzed: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=0</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=1</m:annotation></m:semantics></m:math>. When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=0</m:annotation></m:semantics></m:math>, the aggregated signals change from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>1101</m:mn><m:mi>⇒</m:mi><m:mn>1100</m:mn><m:mi>⇒</m:mi><m:mn>1100</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">1101⇒1100⇒1100</m:annotation></m:semantics></m:math>. The outputs are stabilized at both <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {Q}</m:annotation></m:semantics></m:math> are zero. It violates our assumption that they have to be complement to each other. On the other hand, when <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=1</m:annotation></m:semantics></m:math>, the aggregated signals change from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mn>1110</m:mn><m:mi>⇒</m:mi><m:mn>1100</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">1110⇒1100</m:annotation></m:semantics></m:math>. Again, the output violates the assumption. Therefore, this combination of inputs is called restricted combination, which results in a forbidden state. This restricted combination may be converted to one of the three non-restricted combinations by adding more preceding logic circuit. For example, if the restricted combination is converted to keep the latch state, the preceding logic will be two NOT gates and two and gates such as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:msup><m:mi>S</m:mi><m:mi>'</m:mi></m:msup><m:mo stretchy="false">=</m:mo><m:mi>S</m:mi></m:mrow><m:mover accent="true"><m:mi>R</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:annotation encoding="StarMath 5.0">{S} ^ {'} =S acute {R}</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:msup><m:mi>R</m:mi><m:mi>'</m:mi></m:msup><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:mi>S</m:mi><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:mi>R</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">{R} ^ {'} = acute {S} R</m:annotation></m:semantics></m:math> where <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>S</m:mi><m:mi>'</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">S'</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>R</m:mi><m:mi>'</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">R'</m:annotation></m:semantics></m:math> are the new inputs to the latch.</para>
+      <para id="import-auto-idm1467154624">Like the truth tablet that describes the relation of inputs and outputs of a combinational logic, a state transition table or characteristic table for the SR NOR latch is shown in . The state transition table is essentially a truth table that includes inputs (some feedback outputs) and output of a sequential logic. The next state of <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> is denoted by <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mi>'</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">Q'</m:annotation></m:semantics></m:math>. Note that the inputs of the latch in the truth table should include <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {Q}</m:annotation></m:semantics></m:math> but it will contains 8 rows (not 16, why?), which is tedious as some of the cases are duplicated. Therefore, by using <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> and its next state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mi>'</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">Q'</m:annotation></m:semantics></m:math>, the truth table is succinct. </para>
+      <para id="import-auto-idm380436400">Table  The State Transition Table of the SR NOR Latch</para>
+      <table xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm1317926880" summary="k">
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>
+                <m:math display="block">
+                  <m:semantics>
+                    <m:mi>S</m:mi>
+                    <m:annotation encoding="StarMath 5.0">S</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math display="block">
+                  <m:semantics>
+                    <m:mi>R</m:mi>
+                    <m:annotation encoding="StarMath 5.0">R</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math display="block">
+                  <m:semantics>
+                    <m:mrow>
+                      <m:mi>Q</m:mi>
+                      <m:mi>'</m:mi>
+                    </m:mrow>
+                    <m:annotation encoding="StarMath 5.0">Q'</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>
+                Q
+              </entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>
+                0             </entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>1</entry>
+              <entry>Restricted</entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table></section>
+    <section id="import-auto-idm1327884176">
+      <title>The SR NAND Latch</title>
+      <para id="import-auto-idm1254319600">Practically, NAND gates are cheaper than NOR gates in most semiconductor devices. Therefore, an equivalent latch to the SR NOR latch may be built from NAND gates.  illustrates the SR NAND latch. </para>
+      <figure id="import-auto-idm1254319888"><media id="import-auto-idm105796272" alt="">
+            <image mime-type="image/png" src="../../media/i5.png" height="200" width="350"/>
+          </media>
+      </figure><para id="import-auto-idm1248946000">
+        <emphasis effect="bold">Figure  The SR NAND Latch</emphasis>
+      </para>
+      <para id="import-auto-idm393024656">The operation of the SR NAND latch is a little bit different from that of the SR NOR latch. When both <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>S</m:mi><m:annotation encoding="StarMath 5.0">S</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>R</m:mi><m:annotation encoding="StarMath 5.0">R</m:annotation></m:semantics></m:math> are 1, the SR NAND latch will keep its state. Moreover, the restricted input combination for the SR NAND latch is when both inputs are zero because that will lead to both <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {Q}</m:annotation></m:semantics></m:math> are 1, which violates the complement assumption. If the inputs are negated and the outputs are swapped, the SR NAND latch is operated identically as the SR NOR latch. The truth table of the SR NAND latch is shown in .</para>
+      <para id="import-auto-idm1309342768">Table  The Truth Table of the SR NAND Latch</para>
+      <table id="import-auto-idm1309342448" summary="d">
+<tgroup cols="3"><colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <thead>
+            <row>
+              <entry>
+                S
+              </entry>
+              <entry>
+              R
+              </entry>
+              <entry>
+               Q
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>Restricted</entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>
+                0
+              </entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>1</entry>
+              <entry>
+                Q
+              </entry>
+            </row>
+          </tbody>
+        
+</tgroup>
+</table></section>
+    <section id="import-auto-idm1470769056">
+      <title>The Gated SR NAND Latch</title>
+      <para id="import-auto-idm1259998688">The inputs to the SR NAND latch may be controlled by AND gates in a way that only allows the latch to change its state in a controlled manner. This is a typical practice in digital design where an enable signal is designated. If the enable is asserted, the latch works as normal. Otherwise, it will keep its state.  illustrates a gated SR NAND latch.</para>
+      <figure id="import-auto-idm402054528"><media id="import-auto-idm157896272" alt="">
+            <image mime-type="image/png" src="../../media/i6.png" height="200" width="350"/>
+          </media>
+      </figure><para id="import-auto-idm1445943808">
+        <emphasis effect="bold">Figure  A Gated SR NAND Latch</emphasis>
+      </para>
+      <para id="import-auto-idm1282031904">In the gated SR NAND latch, the first stage of the circuit is implemented by two NAND gates. The rest of the circuit is the same as the original SR NAND latch. When the EN is 0, the inputs to the SR NAND latch are both 1’s, which will keep the state of the latch as described in the SR NAND latch section. When EN is 1, the inputs to the SR NAND latch are S and R, which is identical to the original SR NAND latch. Therefore, the gated SR NAND latch acts as if there were no gated control stage when the EN is 1. </para>
+    </section>
+    <section id="import-auto-idm1292797440">
+      <title>The D-Type SR NAND Latch</title>
+      <para id="import-auto-idm1470769216">The EN signal may be treated as a clock. When it is low, nothing got changed whereas when it is high, the latch changes its state according the inputs. However, the Gated SR NAND latch does not exclude the restricted inputs, i.e., both the inputs are  0’s. The easiest way to exclude the restricted inputs is to force the inputs to be either 1 and 0, or 0 and 1. This in effect will lead to just one input as shown in . </para>
+      <figure id="import-auto-idm1282030832"><media id="import-auto-idm10576272" alt="">
+            <image mime-type="image/png" src="../../media/i7.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm1306718720">
+        <emphasis effect="bold">Figure  A D-Type SR NAND Latch</emphasis>
+      </para>
+      <para id="import-auto-idm1306718096">We could add a NOT gate to restrict the inputs on top of the gated control. However, the negated signal can be obtained from the bottom NAND gate that receives data input D. Thus, the NOT gate is saved. The rest of the circuit is similar to the gated SR NAND latch. If the EN signal is required, an AND gate may be added to control the clock, which allows the clock to enter the circuit when the EN is 1, and blocks the clock when the EN is 0. </para>
+    </section>
+    <section id="import-auto-idm1444871920">
+      <title>The SR NOR Latch as a Finite State Machine</title>
+      <para id="import-auto-idm1444871376">Because of the nature of the SR NOR Latch, it can be described by a finite state machine. To model the SR NOR Latch by a finite state machine, we will first find out what states it has. Perhaps, it is hard to identify all the states at first place. A rule of thumb is list all variables except inputs, and each combination of their possible values is a state. In the SR NOR latch, there are three variables <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>S</m:mi><m:mi>,</m:mi><m:mi>R</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">S, R</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math>. <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mover accent="true"><m:mi>Q</m:mi><m:mo stretchy="false">´</m:mo></m:mover><m:annotation encoding="StarMath 5.0">acute {Q}</m:annotation></m:semantics></m:math> does not count because its value is determined by <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math>. Since <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>S</m:mi><m:annotation encoding="StarMath 5.0">S</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>R</m:mi><m:annotation encoding="StarMath 5.0">R</m:annotation></m:semantics></m:math> are inputs, the only variable left is <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math>. The possible values for <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>Q</m:mi><m:annotation encoding="StarMath 5.0">Q</m:annotation></m:semantics></m:math> is 0 or 1. Therefore, there are totally two states: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=0</m:annotation></m:semantics></m:math> (denoted by state 0) and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">Q=1</m:annotation></m:semantics></m:math> (denoted by stated 1).</para>
+      <para id="import-auto-idm388998448">What’s next is find out the state transition function. Excluding the restricted inputs, the inputs <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi mathvariant="italic">SR</m:mi><m:annotation encoding="StarMath 5.0">SR</m:annotation></m:semantics></m:math> could be 00, 01, or 10. When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">SR</m:mi><m:mo stretchy="false">=</m:mo><m:mn>00</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">SR=00</m:annotation></m:semantics></m:math>, no state changed, i.e., a transition from whatever state to itself. When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">SR</m:mi><m:mo stretchy="false">=</m:mo><m:mn>01</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">SR=01</m:annotation></m:semantics></m:math>, the next state will be state 0 because of the reset operation. The leads to two transitions: from state 0 to state 0 (already reset), and from state 1 to state 0 (reset). When <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">SR</m:mi><m:mo stretchy="false">=</m:mo><m:mn>10</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">SR=10</m:annotation></m:semantics></m:math>, the next state will be state 1 because of the set operation. Similarly, this leads to two transitions: from state 0 to state 1 (set), and from state 1 to state 1 (already set).  shows the state transition diagram with the aggregated singles of <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>S</m:mi><m:annotation encoding="StarMath 5.0">S</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>R</m:mi><m:annotation encoding="StarMath 5.0">R</m:annotation></m:semantics></m:math> as inputs.</para>
+      <figure id="import-auto-idm1275341648"><media id="import-auto-idm10578972" alt="">
+            <image mime-type="image/png" src="../../media/i8.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm372654320">
+        <emphasis effect="bold">Figure  The State Transition Diagram for the SR NOR Latch</emphasis>
+      </para>
+      <para id="import-auto-idm1581480416">In the , we don’t call it finite automata simply because it does not define final states, and an initial state. However, the state transition diagram does describe the behavior of the SR NOR latch, and it provides a visual representation of the SR NOR latch as a finite state machine. The state transition diagram may indicate outputs via either transition or state. Typically, a slash is used to denote an output. For example, an output associated with a state would be written as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mo stretchy="false">/</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {0} /0</m:annotation></m:semantics></m:math>, i.e., the system outputs 0 at state 0. An output would be associated with a transition as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:munder><m:mrow><m:mn>10</m:mn><m:mo stretchy="false">/</m:mo><m:mn>1</m:mn></m:mrow><m:mi>→</m:mi></m:munder><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {0} {10/1} csub {→} {s} rsub {1}</m:annotation></m:semantics></m:math>, i.e., on input <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mn>10</m:mn><m:annotation encoding="StarMath 5.0">10</m:annotation></m:semantics></m:math>, the system changes state from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math> to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>, and outputs 1.  illustrates the state transition of the SR NOR latch with annotated outputs associated with transitions.</para>
+      <para id="import-auto-idm1581480112">
+        <figure id="import-auto-idm360237168"><media id="import-auto-idm1896272" alt="">
+            <image mime-type="image/png" src="../../media/i9.png" height="200" width="350"/>
+          </media></figure></para>
+      <para id="import-auto-idm359191024">
+        <emphasis effect="bold">Figure  The State Transition Diagram for the SR NOR Latch with Annotated Outputs</emphasis>
+      </para>
+    </section>
+    <section id="import-auto-idm361153680">
+      <title>Acceptors/Recognizers</title>
+      <para id="import-auto-idm361153264">If finite automata are defined to generate an output, say “yes”, when it moves from the initial state to a final state, they are called acceptors or recognizers. This means, they accept something or recognize something. In the string matching example, we will elaborate it to be a recognizer here. The problem statement is that given an input string of length 3, design a finite automaton that recognizes the word “ABC.” In the state machine shown in , what if the incoming character is not “B”? The state machine will stay at state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math> until the input is “B.” It means that any letters in between “A” and “B” will be skipped. This will result in accepting an input that starts with “A”, followed by any letters other than “B”, and followed by “BC”, will still be accepted. Therefore, the state machine will have to be redesigned to take care of the skipping letter error.  shows the finite automaton for the acceptor that recognizes the word “ABC.” In this design, a failure state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:msub><m:mi>s</m:mi><m:mn>4</m:mn></m:msub></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow><m:annotation encoding="StarMath 5.0">( {s} rsub {4} )</m:annotation></m:semantics></m:math> and three more transitions are added to take care of the skipping letter case.</para>
+      <figure id="import-auto-idm1340687920"><media id="import-auto-idm10578272" alt="">
+            <image mime-type="image/png" src="../../media/i10.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm1234141856">
+        <emphasis effect="bold">Figure  An Acceptor/Recognizer for the String Matcher that Recognizes "ABC"</emphasis>
+      </para>
+      <para id="import-auto-idm355615600">Formally, each component of a finite automaton has to be specified. In the above example, the finite automaton is defined as follows:</para>
+      <para id="import-auto-idm355615200"><m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>A</m:mi><m:mo stretchy="false">=</m:mo><m:mrow><m:mo fence="true" stretchy="false">(</m:mo><m:mrow><m:mrow><m:mi>Q</m:mi><m:mi>,</m:mi><m:mi>Σ</m:mi><m:mi>,</m:mi><m:mi>δ</m:mi><m:mi>,</m:mi><m:msub><m:mi>q</m:mi><m:mn>0</m:mn></m:msub><m:mi>,</m:mi><m:mi>F</m:mi></m:mrow></m:mrow><m:mo fence="true" stretchy="false">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A=(Q,  Σ , δ,  {q} rsub {0} , F)</m:annotation></m:semantics></m:math> where <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mi>Q</m:mi><m:mo stretchy="false">=</m:mo><m:mrow><m:mo fence="true" stretchy="true">{</m:mo><m:mrow><m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>4</m:mn></m:msub></m:mrow></m:mrow><m:mo fence="true" stretchy="true">}</m:mo></m:mrow></m:mrow><m:mi>,</m:mi><m:mrow><m:mi>Σ</m:mi><m:mo stretchy="false">=</m:mo><m:mi mathvariant="italic">letters</m:mi></m:mrow><m:mi>,</m:mi><m:mrow><m:msub><m:mi>q</m:mi><m:mn>0</m:mn></m:msub><m:mo stretchy="false">=</m:mo><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub></m:mrow><m:mi>,</m:mi><m:mrow><m:mi>F</m:mi><m:mo stretchy="false">=</m:mo><m:mo stretchy="false">{</m:mo></m:mrow><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:mi>,</m:mi><m:msub><m:mi>s</m:mi><m:mn>4</m:mn></m:msub><m:mo stretchy="false">}</m:mo></m:mrow><m:annotation encoding="StarMath 5.0">Q= left lbrace {s} rsub {0} ,  {s} rsub {1} ,  {s} rsub {2} ,  {s} rsub {3} ,  {s} rsub {4} right rbrace ,  Σ=letters,   {q} rsub {0} = {s} rsub {0} , F=\{ {s} rsub {3} ,  {s} rsub {4} \}</m:annotation></m:semantics></m:math>, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>δ</m:mi><m:annotation encoding="StarMath 5.0">δ</m:annotation></m:semantics></m:math> is the transitions defined in . We can simply associate a “yes” answer when the finite automaton is in state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {3}</m:annotation></m:semantics></m:math>, and “no” to other states. Therefore, one bit output is enough. Note that the acceptor outputs “yes” at state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {3}</m:annotation></m:semantics></m:math>, and “no” at state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>4</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {4}</m:annotation></m:semantics></m:math> but no output for any other states. Therefore, the output should be at least two bits to cover the case that the acceptor is during “computation.” However, employing two bits as outputs will make the state machine as a transducer, which will be discussed later. </para>
+    </section>
+    <section id="import-auto-idm355614896">
+      <title>Moore and Mealy Machines</title>
+      <para id="import-auto-idm1454696416">Finite state machines that produce outputs (other than just 0 or 1 in an acceptor) based on current inputs and/or states are called transducers. These outputs are used to control other components in a system. For example, a control unit in a pipelined CPU belongs to this category. Depending on what the outputs are based, there are two types of transducers: Moore machine and Mealy machine. The outputs of a Moore machine are based on the states whereas those of a Mealy machine are based on both the inputs and the states.</para>
+      <para id="import-auto-idm1454695616">In a Moore machine, a state decoder is used along with other combinational logic to generate outputs accordingly. When implemented in hardware, a state register is used to keep track of the current state in a system. A finite state machine with <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi>n</m:mi><m:annotation encoding="StarMath 5.0">n</m:annotation></m:semantics></m:math> states will need a register of  <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:mrow><m:mrow><m:mi>⌈</m:mi><m:mi mathvariant="italic">lg</m:mi></m:mrow></m:mrow></m:mrow><m:mi>n</m:mi><m:mi>⌉</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">left none ⌈lg right none {n}⌉</m:annotation></m:semantics></m:math> bits, where <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mi mathvariant="italic">lg</m:mi><m:annotation encoding="StarMath 5.0">lg</m:annotation></m:semantics></m:math> denotes the logarithm for base 2, and the ceiling function (<m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi>⌈</m:mi><m:mrow><m:mrow><m:mi>⌉</m:mi></m:mrow></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">⌈left none ⌉ right none</m:annotation></m:semantics></m:math>) maps a real number to the smallest integer not less than it. For example, a finite state machine of 8 states will need a 4-bit register because <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mi mathvariant="italic">lg</m:mi><m:mrow><m:mn>8</m:mn><m:mo stretchy="false">=</m:mo><m:mn>4</m:mn></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">lg {8} =4</m:annotation></m:semantics></m:math>. In the example in , if we want to differentiate the states in computation (not <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>3</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {3}</m:annotation></m:semantics></m:math> or <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>4</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {4}</m:annotation></m:semantics></m:math>), there would have at least a two-bit output. This will make it a Moore machine. The truth table of a state decoder used to generate the two-bit output is shown in . Since there are 5 states, the state register will have 3 bits. </para>
+      <para id="import-auto-idm1325923920">Table  The Truth Table of the State Decoder of a Moore Machine for the String Recognizer that Accepts "ABC"</para>
+      <table id="import-auto-idm1483291856" summary="">
+        <tgroup cols="5">
+          <colspec colnum="1" colname="c1"/>
+          <colspec colnum="2" colname="c2"/>
+          <colspec colnum="3" colname="c3"/>
+          <colspec colnum="4" colname="c4"/>
+          <colspec colnum="5" colname="c5"/>
+          <thead>
+            <row>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:msub>
+                      <m:mi>R</m:mi>
+                      <m:mn>2</m:mn>
+                    </m:msub>
+                    <m:annotation encoding="StarMath 5.0">{R} rsub {2}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:msub>
+                      <m:mi>R</m:mi>
+                      <m:mn>1</m:mn>
+                    </m:msub>
+                    <m:annotation encoding="StarMath 5.0">{R} rsub {1}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:msub>
+                      <m:mi>R</m:mi>
+                      <m:mn>0</m:mn>
+                    </m:msub>
+                    <m:annotation encoding="StarMath 5.0">{R} rsub {0}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:msub>
+                      <m:mi>C</m:mi>
+                      <m:mn>1</m:mn>
+                    </m:msub>
+                    <m:annotation encoding="StarMath 5.0">{C} rsub {1}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+              <entry>
+                <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block">
+                  <m:semantics>
+                    <m:msub>
+                      <m:mi>C</m:mi>
+                      <m:mn>0</m:mn>
+                    </m:msub>
+                    <m:annotation encoding="StarMath 5.0">{C} rsub {0}</m:annotation>
+                  </m:semantics>
+                </m:math>
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+            </row>
+            <row>
+              <entry>0</entry>
+              <entry>1</entry>
+              <entry>1</entry>
+              <entry>1</entry>
+              <entry>0</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>0</entry>
+              <entry>1</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <para id="import-auto-idm1221817872">The 3-bit state register is denoted as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>R</m:mi><m:mn>2</m:mn></m:msub><m:msub><m:mi>R</m:mi><m:mn>1</m:mn></m:msub><m:msub><m:mi>R</m:mi><m:mn>0</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{R} rsub {2} {R} rsub {1} {R} rsub {0}</m:annotation></m:semantics></m:math>, and the 2-bit output is represented as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>C</m:mi><m:mn>1</m:mn></m:msub><m:msub><m:mi>C</m:mi><m:mn>0</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{C} rsub {1} {C} rsub {0}</m:annotation></m:semantics></m:math>. The output is defined as <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mn>00</m:mn><m:annotation encoding="StarMath 5.0">00</m:annotation></m:semantics></m:math> for computation, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mn>01</m:mn><m:annotation encoding="StarMath 5.0">01</m:annotation></m:semantics></m:math> for failure, and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mn>10</m:mn><m:annotation encoding="StarMath 5.0">10</m:annotation></m:semantics></m:math> for success in recognizing a string “ABC.” Based on the truth table, the combinational logic for the state decoder is derived by the two Boolean expressions: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:msub><m:mi>C</m:mi><m:mn>1</m:mn></m:msub><m:mo stretchy="false">=</m:mo><m:mover accent="true"><m:msub><m:mi>R</m:mi><m:mn>2</m:mn></m:msub><m:mo stretchy="false">´</m:mo></m:mover></m:mrow><m:msub><m:mi>R</m:mi><m:mn>1</m:mn></m:msub><m:msub><m:mi>R</m:mi><m:mn>0</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{C} rsub {1} = acute {{R} rsub {2}} {R} rsub {1} {R} rsub {0}</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:mrow><m:msub><m:mi>C</m:mi><m:mn>0</m:mn></m:msub><m:mo stretchy="false">=</m:mo><m:msub><m:mi>R</m:mi><m:mn>2</m:mn></m:msub></m:mrow><m:msub><m:mi>R</m:mi><m:mn>1</m:mn></m:msub><m:msub><m:mi>R</m:mi><m:mn>0</m:mn></m:msub></m:mrow><m:annotation encoding="StarMath 5.0">{C} rsub {0} = {R} rsub {2} {R} rsub {1} {R} rsub {0}</m:annotation></m:semantics></m:math>. It can be seen that the outputs of the Moore machine are dependent on the state register only. From the perspective of the state transition diagram, the Moore machine is modeled by the state transition diagram with outputs associated with the states.</para>
+      <para id="import-auto-idm361580192">If the outputs of a finite state machine depend not only on the current state, but also the current inputs, the finite state machine is called Mealy machine. The Mealy machine in its state transition diagram will have its outputs associated with its transitions. For example, given an input string with any length, transcribe it to another string that records an 1 on each occurrence of the pattern “101.” Therefore, the string “10101” will be transcribed to “00101” as there are two occurrences of “101.” In other words, once the pattern is found, the finite state machine does not reset to the initial state, and keeps searching for the next occurrence.  illustrates the Mealy machine for the pattern transcriber. The leftmost 1 in the input 10101 will move the Mealy machine from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math> to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>, and output 0. While on the state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>, the next 0 will cause the transition from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math> to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {2}</m:annotation></m:semantics></m:math>, and outputs 0. The next 1 one move the state from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {2}</m:annotation></m:semantics></m:math> to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>, and outputs 1, because an occurrence of “101” is found. The next 0 will move the state from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math> to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {2}</m:annotation></m:semantics></m:math>, and outputs 0. Finally, the last 1 will move the state from <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {2}</m:annotation></m:semantics></m:math> to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>, and outputs 1. Therefore, the collected output will be 00101. The output of this Mealy machine depends on both the states and the inputs. On state <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>, for example, with the input 1, the output depends on what current state the Mealy machine is at. If the current state is <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>2</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {2}</m:annotation></m:semantics></m:math>, the output is 1; otherwise, the output is 0. </para>
+      <figure id="import-auto-idm1473337712"><media id="import-auto-idm1057272" alt="">
+            <image mime-type="image/png" src="../../media/i11.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm1286496608">
+        <emphasis effect="bold">Figure  An Example of a Mealy Machine that Transcribes 101 to 001</emphasis>
+      </para>
+      <para id="import-auto-idm1235944736">A typical implement of the state transition logic in a Mealy machine will include the output logic for the reason that the outputs are a function of the inputs and the state register. Sometime, this implementation may result in fewer logic gates. However, the outputs may be perturbed by the inputs. It is typically useful to keep the outputs in registers to stabilize the circuit.</para>
+    </section>
+    <section id="import-auto-idm1235944080">
+      <title>Algorithmic State Machines</title>
+      <para id="import-auto-idm1235943712">Finite state machines are powerful to model a system in terms of states and their transitions. However, the timing and the algorithm for the outputs are not expressed explicitly. One of the methods in designing finite state machines with detailed algorithms and timing information is called algorithmic state machine (ASM). An ASM chart is used to informally describe the sequential operations of a digital system.  Like a flowchart, an ASM chart is composed of three types of basic elements: state box, decision box, and conditional output box. State box is represented in a rectangle; decision box is denoted in a diamond; an oval is used to indicate a condition output box. A state box in an ASM chart contains one state in a regular state transition diagram or a finite state machine, in which the Moore type of outputs are listed. The name of a state box is placed on the top left corner outside the box.  shows a state box in an ASM chart.</para>
+      <figure id="import-auto-idm1232090688"><media id="import-auto-idm1072" alt="">
+            <image mime-type="image/png" src="../../media/i12.png" height="200" width="350"/>
+          </media>
+      </figure><para id="import-auto-idm359308208">
+        <emphasis effect="bold">Figure  A State Box in an ASM Chart</emphasis>
+      </para>
+      <para id="import-auto-idm392346560">A decision box represented in a diamond in an ASM chart is used to conditionally transfer between two states, or a state and a conditional output. The decision box is associated with one input and two outputs (true and false). Within the decision box, the condition is expressed by a Boolean expression that contains inputs from the finite state machine.  illustrates a decision box in an ASM chart.</para>
+      <figure id="import-auto-idm392345888"><media id="import-auto-id72" alt="">
+            <image mime-type="image/png" src="../../media/i13.png" height="200" width="350"/>
+          </media></figure><para id="import-auto-idm411322256">
+        <emphasis effect="bold">Figure  A Decision Box in an ASM Chart</emphasis>
+      </para>
+      <para id="import-auto-idm1467354176">An oval indicates a conditional output box which describes Mealy type outputs in an ASM chart. These Mealy type outputs depend not only on the state, but also the inputs of a finite state machine.  shows a conditional box in an ASM chart.</para>
+      <figure id="import-auto-idm1467353664"><media id="import-auto-idm102" alt="">
+            <image mime-type="image/png" src="../../media/i15.png" height="700" width="350"/>
+          </media></figure><para id="import-auto-idm366879408">
+        <emphasis effect="bold">Figure  A Conditional Box in an ASM Chart</emphasis>
+      </para>
+      <para id="import-auto-idm355762352">Timing in an ASM chart is implicitly expressed by the state box and its associated combinational logic. On each clock (normally rising edge), a state transition is taken, i.e., from a state box to another state (or the same one) box in an ASM chart. The period of the clock has to be long enough to accommodate the propagation delay of the combinational logic associated with any state box. Otherwise, the circuit may not be operated correctly because of wrong timing.  gives an example of a simple ASM chart, where the “:=” denotes an assignment operator, which is different from the comparison operator (“=”). </para>
+      <figure id="import-auto-idm355761456"><media id="import-auto-idm105789" alt="">
+            <image mime-type="image/png" src="../../media/i16.png" height="200" width="500"/>
+          </media></figure><para id="import-auto-idm1293778368">
+        <emphasis effect="bold">Figure  An Example of a ASM Chart</emphasis>
+      </para>
+      <para id="import-auto-idm1293777744">In , there are two state boxes, and one decision box. The names of the state boxes are <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>, respectively. Inside the state boxes, the variable <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>D</m:mi><m:mi>o</m:mi></m:msub><m:annotation encoding="StarMath 5.0">{D} rsub {o}</m:annotation></m:semantics></m:math> (D-Out) is the only Moore output, and it is normally implemented as a register. The value of <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>D</m:mi><m:mi>o</m:mi></m:msub><m:annotation encoding="StarMath 5.0">{D} rsub {o}</m:annotation></m:semantics></m:math> dependent on the current state, and is 0 in <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math>, and 1 in <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>. In the decision box, the input <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>D</m:mi><m:mi>i</m:mi></m:msub><m:annotation encoding="StarMath 5.0">{D} rsub {i}</m:annotation></m:semantics></m:math> is checked. Based the value of the input <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>D</m:mi><m:mi>i</m:mi></m:msub><m:annotation encoding="StarMath 5.0">{D} rsub {i}</m:annotation></m:semantics></m:math>, the current state will be transfer to <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math> when <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>D</m:mi><m:mi>i</m:mi></m:msub><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">{D} rsub {i} =0</m:annotation></m:semantics></m:math> or <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math> when <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>D</m:mi><m:mi>i</m:mi></m:msub><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">{D} rsub {i} =1</m:annotation></m:semantics></m:math>. On each clock, the state transition is triggered. Therefore, the sequence of state transitions when the input <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>D</m:mi><m:mi>i</m:mi></m:msub><m:mo stretchy="false">=</m:mo><m:mn>1</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">{D} rsub {i} =1</m:annotation></m:semantics></m:math> is <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>→</m:mi><m:mi>…</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {0} → {s} rsub {1} → {s} rsub {1} →…</m:annotation></m:semantics></m:math>, and the finite state machine stays at <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math> forever. On the other hand, the sequence of state transitions when the input <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>D</m:mi><m:mi>i</m:mi></m:msub><m:mo stretchy="false">=</m:mo><m:mn>0</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">{D} rsub {i} =0</m:annotation></m:semantics></m:math> is <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:mrow><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:mi>→</m:mi><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:mi>→</m:mi><m:mi>…</m:mi></m:mrow><m:annotation encoding="StarMath 5.0">{s} rsub {0} → {s} rsub {1} → {s} rsub {0} → {s} rsub {1} → {s} rsub {0} →…</m:annotation></m:semantics></m:math>, and the finite state machine vibrates between <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>0</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {0}</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi>s</m:mi><m:mn>1</m:mn></m:msub><m:annotation encoding="StarMath 5.0">{s} rsub {1}</m:annotation></m:semantics></m:math>. This ASM chart actually specifies a simple digital circuit that can be used to design a flashing light. The flashing frequency is equal to half of the clock frequency.</para>
+      <para id="import-auto-idm1232870448"> The ASM chart shown in  may be directly implemented in hardware using VHDL as listed in . The SimpleFSM has two extra inputs (clock and reset) in addition to Di. The clock is used to trigger state transitions, and the reset is for circuit initialization. The state transition logic and output decoding are implemented in a sequential VHDL process. The user-defined enumeration type is defined for the implementation of the state register (one-bit in this case). A case statement is used to implement state transition logic. Note that the output Do is placed in a register and synchronized with the rising edge of the clock. This example shows a typical FSM implementation in VHDL.</para>
+      <para id="import-auto-idm1257764992"/>
+      <para id="import-auto-idm1257764736">Table  The VHDL Code for a Simple FSM</para>
+      <code id="eip-564" display="block">entity SimpleFSM is
+Port ( Di, clock, reset : in STD_LOGIC;
+Do : out STD_LOGIC);
+end SimpleFSM;
+architecture Behavioral of SimpleFSM is
+-- user defined enumeration type
+type state_type is (s0, s1);
+signal c_state: state_type;
+begin
+asm: process(reset, clock, Di)
+begin
+if reset='1' then
+c_state &lt;= s0;
+elsif clock='1' and clock'event then
+case c_state is
+when s0 =&gt;
+c_state &lt;= s1;
+Do &lt;= '1';
+when s1 =&gt;
+if Di='1' then
+c_state &lt;= s1;
+Do &lt;= '1';
+else
+c_state &lt;= s0;
+Do &lt;= '0';
+end if;
+end case;
+end if;
+end process;
+end Behavioral;</code><para id="import-auto-idm1244807600">The simulation of the SimpleFSM is illustrated in . The waveform confirms that the output Do is vibrating between the two states when the input Di is 0 (before 50 ns). The output Do keeps high after the first rising edge of the clock after 50 ns when Di is high.</para>
+      
+      <para id="import-auto-idm399056112">
+        <emphasis effect="bold">Figure  The Simulation Waveform for the SimpleFSM</emphasis>
+      </para>
+      <para id="import-auto-idm399055392">Let’s now consider a slightly complex example: a traffic light on a crossroad with its ASM chart depicted in . State names are encoded by two letters in RGY, indicating red, green or yellow lights. The first letter is for vertical road and the second is for the horizontal road. For example, the RG state represents a red light on the vertical road, and a green light on the horizontal road. First of all, the timer input is set to 60, and the system enters the RG state, in which the timer is updated. Second, the value of the timer is checked. If it reaches zero, the system moves to the RY state with timer set to 15. Otherwise, the system remains in the state RG with timer counting down by 1. When in the RY state, the system stays at the RY state for 15 clocks, and moves the GR state.</para>
+      <figure id="import-auto-idm399055136"><media id="import-auto-idm189272" alt="">
+            <image mime-type="image/png" src="../../media/i17.png" height="300" width="350"/>
+          </media></figure><para id="import-auto-idm365306128">
+        <emphasis effect="bold">Figure  The Partial ASM Chart for a Traffic Light</emphasis>
+      </para>
+      <para id="import-auto-idm1477142368">There are two variables used in the ASM chart: <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi mathvariant="italic">Timer</m:mi><m:mi>i</m:mi></m:msub><m:annotation encoding="StarMath 5.0">Timer_i</m:annotation></m:semantics></m:math> and <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi mathvariant="italic">Timer</m:mi><m:mi>o</m:mi></m:msub><m:annotation encoding="StarMath 5.0">Timer_o</m:annotation></m:semantics></m:math>, which are the input and the output to a countdown timer. The value of the timer is updated by the input <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi mathvariant="italic">Timer</m:mi><m:mi>i</m:mi></m:msub><m:annotation encoding="StarMath 5.0">Timer_i</m:annotation></m:semantics></m:math> on each clock cycle. This input however is not from outside the finite state machine. So <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi mathvariant="italic">Timer</m:mi><m:mi>o</m:mi></m:msub><m:annotation encoding="StarMath 5.0">Timer_o</m:annotation></m:semantics></m:math> appearing in the states RG, RY, and GR, is considered as a Moore type output. <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi mathvariant="italic">Timer</m:mi><m:mi>i</m:mi></m:msub><m:annotation encoding="StarMath 5.0">Timer_i</m:annotation></m:semantics></m:math>, however, does not depend on the current state only. In the state RG, for example, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi mathvariant="italic">Timer</m:mi><m:mi>i</m:mi></m:msub><m:annotation encoding="StarMath 5.0">Timer_i</m:annotation></m:semantics></m:math> could be either 60 or some value between 0 and 59, depending on whether it is coming from the top conditional output box, or the left conditional box. Therefore, <m:math xmlns:m="http://www.w3.org/1998/Math/MathML" display="block"><m:semantics><m:msub><m:mi mathvariant="italic">Tiemr</m:mi><m:mi>i</m:mi></m:msub><m:annotation encoding="StarMath 5.0">Tiemr_i</m:annotation></m:semantics></m:math> is considered as a conditional output, i.e., a Mealy type output.</para>
+    </section>
+    <section id="import-auto-idm1477142064">
+      <title>Summary</title>
+      <para id="import-auto-idm1277712016">Perhaps, finite state machines are the most important computation model as they completely capture the behavior of a digital system. They have been used in multiple fields in computer science such as computer architecture, operating system, compilers, languages, software engineering, and the like. Especially, in computer architecture, finite state machines are used to design the sequential operations of a hardware component.</para>
+      <para id="import-auto-idm1453818160">A formal definition for finite state machine leading to a finite automaton includes a set of states, initial state, alphabet, a transition function, and a set of final states. There are two types of finite automata: deterministic finite automata, and non-deterministic finite automata. On an input, the DFA can only move to a specific state, whereas an NFA may move to a set of states. This non-deterministic characteristic simplifies the modeling for a complex system. The NFA and the DFA are theoretic equivalent. </para>
+      <para id="import-auto-idm1453817504">Finite state machines can be directly implemented by sequential logic (states) and combinational logic (state transition logic). Two types of typical implementations are the Moore machine and the Mealy machine. The Moore machine generates output s purely based on the current state, whereas the Mealy machine produces outputs based on both inputs and states. In a state transition diagram, the Moore type outputs are associated with the states, and the Mealy type outputs are associated with transitions. </para>
+      <para id="import-auto-idm1326242496">To capture the timing information and detailed output generation logic, algorithmic state machine is a method that addresses the deficiency in finite state machines. The ASM chart is similar to a flowchart, and describes the finite state machine on a clock basis. Both the Moore type and Mealy type outputs are denoted within a state box, and a conditional output box, respectively. Variables in state boxes are normally implemented in registers as their values change according to states, whose transitions are triggered by clocks.</para>
+    </section>
+    <section id="import-auto-idm1288033152">
+      <title>Exercise</title>
+      <list id="import-auto-idm1288032672" list-type="enumerated" number-style="arabic">
+        <item>Given an input string of any length, design a finite state machine that outputs a binary string of the same length, where the one’s indicate matches the word “SPSU.”  For example, if the input is “AbCSPSU1234SPSU”, the output will be “000000100000001,” where the one’s are lined up with the letter “U.” </item>
+        <item> Implement the FSM for the staring matcher described in problem 1 in VHDL, and simulate the circuit.</item>
+      </list>
+    </section>
+  </content>
+</document>
