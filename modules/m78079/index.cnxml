@@ -975,7 +975,7 @@
     </section>
     <section id="import-auto-idm1180268144">
       <title>Why Booth’s Algorithm Works?</title>
-      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm404404240">Consider a positive multiplier consisting of a block of 1’s surrounded by 0’s. For example, 00111110. The product, <m:math display="inline"><m:semantics><m:mrow><m:mi>M</m:mi><m:mi>×</m:mi><m:mn>00111110</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">M × 00111110 </m:annotation></m:semantics></m:math> is given by  <m:math display="inline"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>×</m:mi><m:mrow><m:mo stretchy="false" fence="true">(</m:mo><m:mrow><m:mrow><m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>2</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>3</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>4</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>5</m:mn></m:msup></m:mrow></m:mrow><m:mo stretchy="false" fence="true">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A×( {2} ^ {1} + {2} ^ {2} + {2} ^ {3} + {2} ^ {4} + {2} ^ {5} )</m:annotation></m:semantics></m:math>, which is <m:math display="inline"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>×</m:mi><m:mrow><m:mo stretchy="false" fence="true">(</m:mo><m:mrow><m:mrow><m:msup><m:mn>2</m:mn><m:mn>6</m:mn></m:msup><m:mo stretchy="false">−</m:mo><m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup></m:mrow></m:mrow><m:mo stretchy="false" fence="true">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A×( {2} ^ {6} - {2} ^ {1} )</m:annotation></m:semantics></m:math>. So the total number of operations is reduced to two. Given M as a multiplicand, Q as a multiplier, we have the following</para><para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm404341600"><m:math display="block"><m:semantics><m:mtable columnalign="left"><m:mtr><m:mrow><m:mi>M</m:mi><m:mi>×</m:mi><m:mo stretchy="false" fence="true">[</m:mo>
+      <para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm404404240">Consider a positive multiplier consisting of a block of 1’s surrounded by 0’s. For example, 00111110. The product, <m:math display="inline"><m:semantics><m:mrow><m:mi>M</m:mi><m:mi>×</m:mi><m:mn>00111110</m:mn></m:mrow><m:annotation encoding="StarMath 5.0">M × 00111110 </m:annotation></m:semantics></m:math> is given by  <m:math display="inline"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>×</m:mi><m:mrow><m:mo stretchy="false" fence="true">(</m:mo><m:mrow><m:mrow><m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>2</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>3</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>4</m:mn></m:msup><m:mo stretchy="false">+</m:mo><m:msup><m:mn>2</m:mn><m:mn>5</m:mn></m:msup></m:mrow></m:mrow><m:mo stretchy="false" fence="true">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A×( {2} ^ {1} + {2} ^ {2} + {2} ^ {3} + {2} ^ {4} + {2} ^ {5} )</m:annotation></m:semantics></m:math>, which is <m:math display="inline"><m:semantics><m:mrow><m:mi>A</m:mi><m:mi>×</m:mi><m:mrow><m:mo stretchy="false" fence="true">(</m:mo><m:mrow><m:mrow><m:msup><m:mn>2</m:mn><m:mn>6</m:mn></m:msup><m:mo stretchy="false">−</m:mo><m:msup><m:mn>2</m:mn><m:mn>1</m:mn></m:msup></m:mrow></m:mrow><m:mo stretchy="false" fence="true">)</m:mo></m:mrow></m:mrow><m:annotation encoding="StarMath 5.0">A×( {2} ^ {6} - {2} ^ {1} )</m:annotation></m:semantics></m:math>. So the total number of operations is reduced to two. Given M as a multiplicand, Q as a multiplier, we have the following</para><para xmlns:m="http://www.w3.org/1998/Math/MathML" id="import-auto-idm404341600"><m:math display="block"><m:semantics><m:mtable columnalign="left"><m:mtr><m:mtd><m:mi>M</m:mi><m:mi>×</m:mi><m:mo stretchy="false" fence="true">[</m:mo>
   <m:mo stretchy="false" fence="true">(</m:mo>
       <m:msub><m:mi>Q</m:mi><m:mn>-1</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub> 
       <m:mo stretchy="false" fence="true">)</m:mo>
@@ -991,11 +991,11 @@
       <m:mo stretchy="false" fence="true">)</m:mo>
       <m:msup><m:mn>2</m:mn><m:mn>n-1</m:mn></m:msup>
        
-   <m:mo stretchy="false" fence="true">]</m:mo></m:mrow>
+   <m:mo stretchy="false" fence="true">]</m:mo></m:mtd>
 
 </m:mtr>
 <m:mtr>
-<m:mrow><m:mi>=</m:mi><m:mi>M</m:mi><m:mi>×</m:mi><m:mo stretchy="false" fence="true">[</m:mo>
+<m:mtd><m:mi>=</m:mi><m:mi>M</m:mi><m:mi>×</m:mi><m:mo stretchy="false" fence="true">[</m:mo>
   <m:mo stretchy="false" fence="true">(</m:mo>
       <m:msub><m:mi>Q</m:mi><m:mn>-1</m:mn></m:msub><m:mo stretchy="false">−</m:mo><m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub> 
       <m:mo stretchy="false" fence="true">)</m:mo>
@@ -1017,12 +1017,12 @@
       <m:msup><m:mn>2</m:mn><m:mn>n-2</m:mn></m:msup>
       <m:mo stretchy="false" fence="true">)</m:mo>
             
-   <m:mo stretchy="false" fence="true">]</m:mo></m:mrow>
+   <m:mo stretchy="false" fence="true">]</m:mo></m:mtd>
 </m:mtr>
 
 
 <m:mtr>
-<m:mrow><m:mi>=</m:mi><m:mi>M</m:mi><m:mi>×</m:mi>
+<m:mtd><m:mi>=</m:mi><m:mi>M</m:mi><m:mi>×</m:mi>
   <m:mo stretchy="false" fence="true">(</m:mo>
 
       <m:msub><m:mi>Q</m:mi><m:mn>0</m:mn></m:msub><m:msup><m:mn>2</m:mn><m:mn>0</m:mn></m:msup> 
@@ -1037,12 +1037,12 @@
 
       <m:mo stretchy="false" fence="true">)</m:mo>
             
-   </m:mrow>
+   </m:mtd>
 </m:mtr>
 
-<m:mtr><m:mrow>
+<m:mtr><m:mtd>
 <m:mo stretchy="false" fence="true">=</m:mo><m:mi>M</m:mi><m:mi>×</m:mi><m:mi>Q</m:mi>
-</m:mrow></m:mtr>
+</m:mtd></m:mtr>
 
 </m:mtable>
 </m:semantics></m:math>
